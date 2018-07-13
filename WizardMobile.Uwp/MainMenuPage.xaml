@@ -1,0 +1,16 @@
+﻿<Page
+    x:Class="WizardMobile.Uwp.MainMenuPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WizardMobile.Uwp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        <TextBlock HorizontalAlignment="Center" Margin="0,245,0,0" Text="Wizard Mobile" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="90"/>
+        <Button Content="New Game" HorizontalAlignment="Center" Margin="0,500,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="60" x:Name="new_game_button"/>
+
+    </Grid>
+</Page>
