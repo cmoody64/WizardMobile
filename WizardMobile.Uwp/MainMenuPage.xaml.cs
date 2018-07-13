@@ -30,7 +30,7 @@ namespace WizardMobile.Uwp
 
         private void OnNewGameButtonClick(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(GamePage));
+            (Application.Current as WizardUwpApp).NavigateToPage(WizardUwpApp.Page.GAMEPLAY);
         }
     }
 }

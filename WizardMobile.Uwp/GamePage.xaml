@@ -9,6 +9,6 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" FontSize="72">
 
     <Grid>
-        <TextBlock HorizontalAlignment="Center" Text="Game Page" TextWrapping="Wrap" VerticalAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Center" Text="" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.523,-2.104" Margin="0,114,0,0" x:Name="game_message_box"/>
     </Grid>
 </Page>
