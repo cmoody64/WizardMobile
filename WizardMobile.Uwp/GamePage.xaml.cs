@@ -32,8 +32,10 @@ namespace WizardMobile.Uwp
 
         private WizardEngine _engine;
 
+
+        /*************** IWizardFrontend implementation ********************/
         public void DisplayStartGame()
-        {
+        {            
             game_message_box.Text = "Game Starting";
         }
 
