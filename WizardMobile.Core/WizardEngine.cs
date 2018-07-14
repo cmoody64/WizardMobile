@@ -137,22 +137,5 @@ namespace WizardMobile.Core
         private readonly int HIT_SCORE = 10;
         private readonly int MISS_SCORE = -10;
 
-        /********** EVENTS *****************/
-        //  game lifecycle
-        public event Action StartGame;
-        public event Action<int /*roundNum*/> StartRound;
-        public event Action<int /*trickNum*/> StartTrick;
-        public event Action<Card /*cardPlayed*/, Player> TurnTaken;
-        public event Action<int /*bid*/, Player> PlayerBid;
-        public event Action DealInProgress;
-        public event Action<Player /*dealer*/, Card /*trumpCard*/> DealDone;
-        public event Action<Player /*winner*/, Card /*trumpCard*/> TrickWon;
-        public event Action<GameContext> RoundScored;
-        public event Action<int /*roundnum*/, int/*totalBids*/> BidOutcomeAvailable;
-
-        // TODO event or interface for info that needs to be returned from front end
-        // pubsub ??
-
-
     }
 }
