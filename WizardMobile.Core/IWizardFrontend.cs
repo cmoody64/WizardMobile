@@ -8,19 +8,19 @@ namespace WizardMobile.Core
 {
     public interface IWizardFrontend
     {
-        void DisplayStartGame();
-        void DisplayStartRound(int roundNum);
-        void DisplayStartTrick(int trickNum);
-        void DisplayTurnInProgress(Player player);
-        void DisplayTurnTaken(Card cardPlayed, Player player);
-        void DisplayPlayerBid(int bid, Player player);
-        void DisplayDealInProgess(int seconds);
-        void DisplayDealDone(Player dealer, Card trumpCard);
-        void DisplayTrickWinner(Player winner, Card winningCard);
-        void DisplayRoundScores(GameContext gameContext);
-        void DisplayBidOutcome(int roundNum, int totalBids);
-        Card PromptPlayerCardSelection(Player player);
-        int PromptPlayerBid(Player player);
-        List<Player> PromptPlayerCreation();
+        Task DisplayStartGame();
+        Task DisplayStartRound(int roundNum);
+        Task DisplayStartTrick(int trickNum);
+        Task DisplayTurnInProgress(Player player);
+        Task DisplayTurnTaken(Card cardPlayed, Player player);
+        Task DisplayPlayerBid(int bid, Player player);
+        Task DisplayDealInProgess(int seconds);
+        Task DisplayDealDone(Player dealer, Card trumpCard);
+        Task DisplayTrickWinner(Player winner, Card winningCard);
+        Task DisplayRoundScores(GameContext gameContext);
+        Task DisplayBidOutcome(int roundNum, int totalBids);
+        Task<Card> PromptPlayerCardSelection(Player player);
+        Task<int> PromptPlayerBid(Player player);
+        Task<List<Player>> PromptPlayerCreation();
     }
 }
