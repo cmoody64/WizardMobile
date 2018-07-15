@@ -14,7 +14,7 @@ namespace WizardMobile.Core
             _rand = new Random();
         }
 
-        public override int MakeBid(GameContext gameContext)
+        public async override Task<int> MakeBid(GameContext gameContext)
         {
             var trumpCard = gameContext.CurRound.TrumpCard;
             var playerCount = gameContext.PlayerCount;
@@ -59,11 +59,12 @@ namespace WizardMobile.Core
                 .Where(winPctg => winPctg > winPctgBidThreshold)
                 .Count();
 
-            _frontend.DisplayPlayerBid(bid, this);
+            await _frontend.DisplayPlayerBid(bid, this);
+
             return bid;
         }
 
-        public override Card MakeTurn(GameContext gameContext)
+        public async override Task<Card> MakeTurn(GameContext gameContext)
         {
             var curRound = gameContext.CurRound;
             var curTrick = curRound.CurTrick;
@@ -115,7 +116,7 @@ namespace WizardMobile.Core
                 cardToPlay = cardsSortedByWins[indexToPlay].Key;
             }
 
-            _frontend.DisplayTurnInProgress(this);
+            await _frontend.DisplayTurnInProgress(this);
             _hand.Remove(cardToPlay);
             return cardToPlay;
         }

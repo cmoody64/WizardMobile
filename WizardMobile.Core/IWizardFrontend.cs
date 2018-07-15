@@ -21,6 +21,6 @@ namespace WizardMobile.Core
         Task DisplayBidOutcome(int roundNum, int totalBids);
         Task<Card> PromptPlayerCardSelection(Player player);
         Task<int> PromptPlayerBid(Player player);
-        Task<List<Player>> PromptPlayerCreation();
+        Task<List<string>> PromptPlayerCreation();
     }
 }

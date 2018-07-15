@@ -88,7 +88,7 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerBid(player));
         }
 
-        public async Task<List<Player>> PromptPlayerCreation()
+        public async Task<List<string>> PromptPlayerCreation()
         {
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerCreation());
         }

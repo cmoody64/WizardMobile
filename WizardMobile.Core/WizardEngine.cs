@@ -14,22 +14,25 @@ namespace WizardMobile.Core
             _frontend = frontend;
         }
 
-        public WizardEngine()
-        {
-            _frontend = new ConsoleFrontend();
-        }
-
         // blocking method that executes the entirity of the game flow
         public void Run()
         {
             Thread workerThread = new Thread(this.PlaySingleGame);
+            workerThread.Start();
         }
 
         private async void PlaySingleGame()
         {
             _curDeck = new Deck();
             await _frontend.DisplayStartGame();
-            _players = await _frontend.PromptPlayerCreation();
+            List<string> playerNames = await _frontend.PromptPlayerCreation();
+            _players = playerNames.Select<string, Player>((string name) =>
+            {
+                if (name.Contains("bot"))
+                    return new AIPlayer(this._frontend, name);
+                else
+                    return new HumanPlayer(this._frontend, name);
+            }).ToList();
 
             _gameContext = new GameContext(_players);
 
@@ -58,7 +61,7 @@ namespace WizardMobile.Core
             await _frontend.DisplayDealDone(curRound.Dealer, trumpCard);
 
             // bid on current round
-            _players.ForEach(player => curRound.Bids[player] = player.MakeBid(_gameContext));
+            _players.ForEach(async (player) => curRound.Bids[player] = await player.MakeBid(_gameContext));
             int totalBids = curRound.Bids.Aggregate(0, (accumulator, bidPair) => accumulator + bidPair.Value);
             await _frontend.DisplayBidOutcome(roundNum, totalBids);
 
@@ -105,11 +108,11 @@ namespace WizardMobile.Core
                 .GetRange(leaderIndex, _players.Count - leaderIndex)
                 .Concat(_players.GetRange(0, leaderIndex)).ToList();
 
-            trickPlayerOrder.ForEach(player =>
+            trickPlayerOrder.ForEach(async (player) =>
             {
-                var cardPlayed = player.MakeTurn(_gameContext);
+                var cardPlayed = await player.MakeTurn(_gameContext);
                 curTrick.CardsPlayed.Add(cardPlayed);
-                _frontend.DisplayTurnTaken(cardPlayed, player);
+                await _frontend.DisplayTurnTaken(cardPlayed, player);
             });
 
             // find winner and save it to trick context
@@ -128,8 +131,7 @@ namespace WizardMobile.Core
 
 
         private List<Player> _players;
-        private Deck _curDeck;
-        //private Dictionary<Player, int> _playerScores;
+        private Deck _curDeck;        
         private IWizardFrontend _frontend { get; }
         private GameContext _gameContext;
 

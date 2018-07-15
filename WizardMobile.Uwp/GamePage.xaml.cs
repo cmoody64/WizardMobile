@@ -40,7 +40,7 @@ namespace WizardMobile.Uwp
 
         /*************** IWizardFrontend implementation ********************/
         public Task DisplayStartGame()
-        {            
+        {
             game_message_box.Text = "Game Starting";
             return Task.CompletedTask;
     
@@ -108,9 +108,25 @@ namespace WizardMobile.Uwp
             throw new NotImplementedException();
         }
 
-        public Task<List<Player>> PromptPlayerCreation()
+        public Task<List<string>> PromptPlayerCreation()
         {
-            throw new NotImplementedException();
+            game_message_box.Text = "Player Creation";
+            player_creation_input.Visibility = Visibility.Visible;
+
+            TaskCompletionSource<List<string>> cardTaskCompletionSource = new TaskCompletionSource<List<string>>();
+            var x = this.player_creation_input.Visibility;
+            player_creation_input.KeyDown += (object sender, KeyRoutedEventArgs e) =>
+            {
+                var textInput = player_creation_input.Text;
+                if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
+                {
+                    cardTaskCompletionSource.SetResult(new List<string>() { textInput });
+                    player_creation_input.Visibility = Visibility.Collapsed;
+                }
+
+            };
+
+            return cardTaskCompletionSource.Task;
         }
     }
 }
