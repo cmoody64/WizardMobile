@@ -9,6 +9,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Assets/card_table_background.jpg" Stretch="Fill" />
+        </Grid.Background>
         <TextBlock HorizontalAlignment="Center" Margin="0,245,0,0" Text="Wizard Mobile" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="90"/>
         <Button Content="New Game" HorizontalAlignment="Center" Margin="0,500,0,0" VerticalAlignment="Top" FontFamily="Segoe UI" FontSize="60" x:Name="new_game_button"/>
 

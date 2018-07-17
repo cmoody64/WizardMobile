@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -18,15 +19,19 @@ using WizardMobile.Core;
 
 namespace WizardMobile.Uwp
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class GamePage : Page, IWizardFrontend
     {
         public GamePage()
         {
             this.InitializeComponent();
-            _engine = new WizardEngine(this);
+
+            UwpWizardFrontendProxy _proxyFrontend = new UwpWizardFrontendProxy(this);
+
+            // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
+            // must be marshalled through the proxy frontend which implements multithreading protocol
+            // this relationship does not extend two ways - this class can make calls directly to the engine
+            // this is because the engine and this class both live on the same thread, the engine only does work on a different thread
+            _engine = new WizardEngine(_proxyFrontend);
             _engine.Run();
         }
 
@@ -34,75 +39,94 @@ namespace WizardMobile.Uwp
 
 
         /*************** IWizardFrontend implementation ********************/
-        public void DisplayStartGame()
-        {            
+        public Task DisplayStartGame()
+        {
             game_message_box.Text = "Game Starting";
+            return Task.CompletedTask;
+    
         }
 
-        public void DisplayStartRound(int roundNum)
+        public Task DisplayStartRound(int roundNum)
         {
             game_message_box.Text = $"Round {roundNum} Starting";
+            return Task.CompletedTask;
         }
 
-        public void DisplayStartTrick(int trickNum)
+        public Task DisplayStartTrick(int trickNum)
         {
             game_message_box.Text = $"Trick {trickNum} Starting";
+            return Task.CompletedTask;
         }
 
-        public void DisplayTurnInProgress(Player player)
+        public Task DisplayTurnInProgress(Player player)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DisplayTurnTaken(Card cardPlayed, Player player)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DisplayPlayerBid(int bid, Player player)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task DisplayDealInProgess(int seconds)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayTurnTaken(Card cardPlayed, Player player)
+        public Task DisplayDealDone(Player dealer, Card trumpCard)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayPlayerBid(int bid, Player player)
+        public Task DisplayTrickWinner(Player winner, Card winningCard)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayDealInProgess(int seconds)
+        public Task DisplayRoundScores(GameContext gameContext)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayDealDone(Player dealer, Card trumpCard)
+        public Task DisplayBidOutcome(int roundNum, int totalBids)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayTrickWinner(Player winner, Card winningCard)
+        public Task<Card> PromptPlayerCardSelection(Player player)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayRoundScores(GameContext gameContext)
+        public Task<int> PromptPlayerBid(Player player)
         {
             throw new NotImplementedException();
         }
 
-        public void DisplayBidOutcome(int roundNum, int totalBids)
+        public Task<List<string>> PromptPlayerCreation()
         {
-            throw new NotImplementedException();
-        }
+            game_message_box.Text = "Player Creation";
+            player_creation_input.Visibility = Visibility.Visible;
 
-        public Card PromptPlayerCardSelection(Player player)
-        {
-            throw new NotImplementedException();
-        }
+            TaskCompletionSource<List<string>> cardTaskCompletionSource = new TaskCompletionSource<List<string>>();
+            var x = this.player_creation_input.Visibility;
+            player_creation_input.KeyDown += (object sender, KeyRoutedEventArgs e) =>
+            {
+                var textInput = player_creation_input.Text;
+                if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
+                {
+                    cardTaskCompletionSource.SetResult(new List<string>() { textInput });
+                    player_creation_input.Visibility = Visibility.Collapsed;
+                }
 
-        public int PromptPlayerBid(Player player)
-        {
-            throw new NotImplementedException();
-        }
+            };
 
-        public List<Player> PromptPlayerCreation()
-        {
-            game_message_box.Text = $"prompting player creation";
-            return null;
+            return cardTaskCompletionSource.Task;
         }
     }
 }

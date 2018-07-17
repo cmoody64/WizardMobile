@@ -12,14 +12,14 @@ namespace WizardMobile.Core
         {                
         }
 
-        public override int MakeBid(GameContext gameContext)
+        public async override Task<int> MakeBid(GameContext gameContext)
         {
-            return _frontend.PromptPlayerBid(this);
+            return await _frontend.PromptPlayerBid(this);
         }
 
-        public override Card MakeTurn(GameContext gameContext)
+        public async override Task<Card> MakeTurn(GameContext gameContext)
         {
-            var cardToPlay = _frontend.PromptPlayerCardSelection(this);
+            var cardToPlay = await _frontend.PromptPlayerCardSelection(this);
             _hand.Remove(cardToPlay);
             return cardToPlay;
         }

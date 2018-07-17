@@ -15,8 +15,8 @@ namespace WizardMobile.Core
             _frontend = frontend;
         }
         
-        public abstract Card MakeTurn(GameContext gameContext);
-        public abstract int MakeBid(GameContext gameContext);
+        public abstract Task<Card> MakeTurn(GameContext gameContext);
+        public abstract Task<int> MakeBid(GameContext gameContext);
 
         public void TakeCard(Card card)
         {
