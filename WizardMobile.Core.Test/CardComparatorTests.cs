@@ -11,6 +11,7 @@ namespace WizardMobile.Core.Tests
     [TestClass()]
     public class CardComparatorTests
     {
+        //TODO wizard engines are constructed with a null frontend, need mock frontends
         [TestMethod()]
         public void CalcWinningCardTest1()
         {
@@ -31,7 +32,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void CalcWinningCardTest2()
         {
-            PrivateObject engineTester = new PrivateObject(new WizardEngine());
+            PrivateObject engineTester = new PrivateObject(new WizardEngine(null));
             var trumpSuite = CardSuite.DIAMONDS;
             var cardsPlayed = new[]
             {
@@ -49,7 +50,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void CalcWinningCardTest3()
         {
-            PrivateObject engineTester = new PrivateObject(new WizardEngine());
+            PrivateObject engineTester = new PrivateObject(new WizardEngine(null));
             var trumpSuite = CardSuite.CLUBS;
             var cardsPlayed = new[]
             {
@@ -67,7 +68,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void CalcWinningCardTest4()
         {
-            PrivateObject engineTester = new PrivateObject(new WizardEngine());
+            PrivateObject engineTester = new PrivateObject(new WizardEngine(null));
             var trumpSuite = CardSuite.SPADES;
             var cardsPlayed = new[]
             {
@@ -85,7 +86,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void CalcWinningCardTest5()
         {
-            PrivateObject engineTester = new PrivateObject(new WizardEngine());
+            PrivateObject engineTester = new PrivateObject(new WizardEngine(null));
             var trumpSuite = CardSuite.HEARTS;
             var cardsPlayed = new[]
             {
