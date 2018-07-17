@@ -5,11 +5,13 @@
     xmlns:local="using:WizardMobile.Uwp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" FontSize="72">
+    mc:Ignorable="d">
 
     <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="Assets/card_table_background.jpg" Stretch="Fill" />
+        </Grid.Background>
         <TextBlock HorizontalAlignment="Center" Text="" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.523,-2.104" Margin="0,114,0,0" x:Name="game_message_box"/>
-        <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="TextBox" VerticalAlignment="Top" Visibility="Visible" x:Name="player_creation_input" FontSize="36"/>
+        <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_creation_input" FontSize="36"/>
     </Grid>
 </Page>

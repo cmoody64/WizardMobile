@@ -25,7 +25,14 @@ namespace WizardMobile.Core
         {
             _curDeck = new Deck();
             await _frontend.DisplayStartGame();
-            List<string> playerNames = await _frontend.PromptPlayerCreation();
+            Thread.Sleep(2000);
+            List<string> playerNames = await _frontend.PromptPlayerCreation();            
+
+            // add in ai players
+            playerNames.Add("wizbot1");
+            playerNames.Add("wizbot2");
+            playerNames.Add("wizbot3");
+
             _players = playerNames.Select<string, Player>((string name) =>
             {
                 if (name.Contains("bot"))
