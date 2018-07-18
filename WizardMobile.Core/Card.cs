@@ -60,7 +60,7 @@ namespace WizardMobile.Core
         public override string ToString()
         {
             return Suite != CardSuite.SPECIAL
-                ? $"{Value.ToString()} of {Suite.ToString()}"
+                ? $"{Value.ToString().ToLower()}_of_{Suite.ToString().ToLower()}"
                 : Value.ToString();
         }
     }

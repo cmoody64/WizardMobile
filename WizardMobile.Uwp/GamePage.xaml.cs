@@ -12,7 +12,10 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 using WizardMobile.Core;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -75,11 +78,54 @@ namespace WizardMobile.Uwp
 
         public Task DisplayDealInProgess(int seconds)
         {
+            ////Image img = new Image();
+            //////img.Width = bitmapImage.DecodePixelWidth = 80; //natural px width of image source
+            //////                                               // don't need to set Height, system maintains aspect ratio, and calculates the other
+            //////                                               // dimension, so long as one dimension measurement is provided
+
+            ////BitmapImage bitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/cards/back_of_card.png"));
+            ////img.Source = bitmapImage;
+            ////game_canvas.Children.Add(img);
+
+            //var ellipse1 = new Ellipse();
+            //ellipse1.Fill = new SolidColorBrush(Windows.UI.Colors.SteelBlue);
+            //ellipse1.Width = 200;
+            //ellipse1.Height = 200;
+            //game_canvas.Children.Add(ellipse1);
+
+            //Image img = new Image();
+            ////img.Source = back_of_card;
+            ////game_canvas.Children.Add(img);
+
+            //BitmapImage bitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/cards/back_of_card.png"));
+            //img.Source = bitmapImage;
+            //game_canvas.Children.Add(img);
+            Image cardBack = new Image();
+            cardBack.Source = GetCardImage(BACK_OF_CARD_KEY);
+
+            game_canvas.Children.Add(cardBack);
+            Canvas.SetTop(cardBack, 50);
+            Canvas.SetLeft(cardBack, 50);
+
+            DoubleAnimation cardBackAnimation = new DoubleAnimation();
+            cardBackAnimation.From = 50;
+            cardBackAnimation.To = 100;
+            cardBackAnimation.Duration = TimeSpan.FromSeconds(5);
+
+            Storyboard.SetTarget(cardBackAnimation, cardBack);
+            Storyboard.SetTargetProperty(cardBackAnimation, "().()");
+
+
+            game_canvas_storyboard.Children.Add(cardBackAnimation);
+            game_canvas_storyboard.Begin();
+
+            return Task.CompletedTask;
         }
 
         public Task DisplayDealDone(Player dealer, Card trumpCard)
         {
-            throw new NotImplementedException();
+            Task.Yield();
+            return Task.CompletedTask;
         }
 
         public Task DisplayTrickWinner(Player winner, Card winningCard)
@@ -127,5 +173,12 @@ namespace WizardMobile.Uwp
 
             return cardTaskCompletionSource.Task;
         }
+
+        private BitmapImage GetCardImage(string cardImageKey)
+        {
+            return game_canvas.Resources[cardImageKey] as BitmapImage;
+        }
+
+        private static readonly string BACK_OF_CARD_KEY = "back_of_card";
     }
 }

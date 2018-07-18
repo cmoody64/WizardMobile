@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid x:Name="layout_root">
         <Grid.Background>
             <ImageBrush ImageSource="Assets/card_table_background.jpg" Stretch="Fill" />
         </Grid.Background>
@@ -16,6 +16,59 @@
         <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,215,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
             <Canvas.Resources>
                 <Storyboard x:Name="game_canvas_storyboard" />
+                <BitmapImage x:Key="back_of_card" UriSource="Assets/cards/back_of_card.png" />
+                <BitmapImage x:Key="ace_of_clubs" UriSource="Assets/cards/ace_of_clubs.png" />
+                <BitmapImage x:Key="two_of_clubs" UriSource="Assets/cards/two_of_clubs.png" />
+                <BitmapImage x:Key="three_of_clubs" UriSource="Assets/cards/three_of_clubs.png" />
+                <BitmapImage x:Key="four_of_clubs" UriSource="Assets/cards/four_of_clubs.png" />
+                <BitmapImage x:Key="five_of_clubs" UriSource="Assets/cards/five_of_clubs.png" />
+                <BitmapImage x:Key="six_of_clubs" UriSource="Assets/cards/six_of_clubs.png" />
+                <BitmapImage x:Key="seven_of_clubs" UriSource="Assets/cards/seven_of_clubs.png" />
+                <BitmapImage x:Key="eight_of_clubs" UriSource="Assets/cards/eight_of_clubs.png" />
+                <BitmapImage x:Key="nine_of_clubs" UriSource="Assets/cards/nine_of_clubs.png" />
+                <BitmapImage x:Key="ten_of_clubs" UriSource="Assets/cards/ten_of_clubs.png" />
+                <BitmapImage x:Key="jack_of_clubs" UriSource="Assets/cards/jack_of_clubs.png" />
+                <BitmapImage x:Key="queen_of_clubs" UriSource="Assets/cards/queen_of_clubs.png" />
+                <BitmapImage x:Key="king_of_clubs" UriSource="Assets/cards/king_of_clubs.png" />
+                <BitmapImage x:Key="ace_of_diamonds" UriSource="Assets/cards/ace_of_diamonds.png" />
+                <BitmapImage x:Key="two_of_diamonds" UriSource="Assets/cards/two_of_diamonds.png" />
+                <BitmapImage x:Key="three_of_diamonds" UriSource="Assets/cards/three_of_diamonds.png" />
+                <BitmapImage x:Key="four_of_diamonds" UriSource="Assets/cards/four_of_diamonds.png" />
+                <BitmapImage x:Key="five_of_diamonds" UriSource="Assets/cards/five_of_diamonds.png" />
+                <BitmapImage x:Key="six_of_diamonds" UriSource="Assets/cards/six_of_diamonds.png" />
+                <BitmapImage x:Key="seven_of_diamonds" UriSource="Assets/cards/seven_of_diamonds.png" />
+                <BitmapImage x:Key="eight_of_diamonds" UriSource="Assets/cards/eight_of_diamonds.png" />
+                <BitmapImage x:Key="nine_of_diamonds" UriSource="Assets/cards/nine_of_diamonds.png" />
+                <BitmapImage x:Key="ten_of_diamonds" UriSource="Assets/cards/ten_of_diamonds.png" />
+                <BitmapImage x:Key="jack_of_diamonds" UriSource="Assets/cards/jack_of_diamonds.png" />
+                <BitmapImage x:Key="queen_of_diamonds" UriSource="Assets/cards/queen_of_diamonds.png" />
+                <BitmapImage x:Key="king_of_diamonds" UriSource="Assets/cards/king_of_diamonds.png" />
+                <BitmapImage x:Key="ace_of_hearts" UriSource="Assets/cards/ace_of_hearts.png" />
+                <BitmapImage x:Key="two_of_hearts" UriSource="Assets/cards/two_of_hearts.png" />
+                <BitmapImage x:Key="three_of_hearts" UriSource="Assets/cards/three_of_hearts.png" />
+                <BitmapImage x:Key="four_of_hearts" UriSource="Assets/cards/four_of_hearts.png" />
+                <BitmapImage x:Key="five_of_hearts" UriSource="Assets/cards/five_of_hearts.png" />
+                <BitmapImage x:Key="six_of_hearts" UriSource="Assets/cards/six_of_hearts.png" />
+                <BitmapImage x:Key="seven_of_hearts" UriSource="Assets/cards/seven_of_hearts.png" />
+                <BitmapImage x:Key="eight_of_hearts" UriSource="Assets/cards/eight_of_hearts.png" />
+                <BitmapImage x:Key="nine_of_hearts" UriSource="Assets/cards/nine_of_hearts.png" />
+                <BitmapImage x:Key="ten_of_hearts" UriSource="Assets/cards/ten_of_hearts.png" />
+                <BitmapImage x:Key="jack_of_hearts" UriSource="Assets/cards/jack_of_hearts.png" />
+                <BitmapImage x:Key="queen_of_hearts" UriSource="Assets/cards/queen_of_hearts.png" />
+                <BitmapImage x:Key="king_of_hearts" UriSource="Assets/cards/king_of_hearts.png" />
+                <BitmapImage x:Key="ace_of_spades" UriSource="Assets/cards/ace_of_spades.png" />
+                <BitmapImage x:Key="two_of_spades" UriSource="Assets/cards/two_of_spades.png" />
+                <BitmapImage x:Key="three_of_spades" UriSource="Assets/cards/three_of_spades.png" />
+                <BitmapImage x:Key="four_of_spades" UriSource="Assets/cards/four_of_spades.png" />
+                <BitmapImage x:Key="five_of_spades" UriSource="Assets/cards/five_of_spades.png" />
+                <BitmapImage x:Key="six_of_spades" UriSource="Assets/cards/six_of_spades.png" />
+                <BitmapImage x:Key="seven_of_spades" UriSource="Assets/cards/seven_of_spades.png" />
+                <BitmapImage x:Key="eight_of_spades" UriSource="Assets/cards/eight_of_spades.png" />
+                <BitmapImage x:Key="nine_of_spades" UriSource="Assets/cards/nine_of_spades.png" />
+                <BitmapImage x:Key="ten_of_spades" UriSource="Assets/cards/ten_of_spades.png" />
+                <BitmapImage x:Key="jack_of_spades" UriSource="Assets/cards/jack_of_spades.png" />
+                <BitmapImage x:Key="queen_of_spades" UriSource="Assets/cards/queen_of_spades.png" />
+                <BitmapImage x:Key="king_of_spades" UriSource="Assets/cards/king_of_spades.png" />
             </Canvas.Resources>
         </Canvas>
     </Grid>

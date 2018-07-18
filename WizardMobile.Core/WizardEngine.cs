@@ -65,6 +65,7 @@ namespace WizardMobile.Core
                 : _players[(_players.IndexOf(_gameContext.PrevRound.Dealer) + 1) % _players.Count];
             _players.ForEach(player => curRound.Results[player] = 0);
 
+            Thread.Sleep(5000);
             await _frontend.DisplayDealDone(curRound.Dealer, trumpCard);
 
             // bid on current round
