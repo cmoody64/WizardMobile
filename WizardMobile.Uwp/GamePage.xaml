@@ -13,5 +13,10 @@
         </Grid.Background>
         <TextBlock HorizontalAlignment="Center" Text="" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.523,-2.104" Margin="0,114,0,0" x:Name="game_message_box"/>
         <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_creation_input" FontSize="36"/>
+        <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,215,0,0" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Canvas.Resources>
+                <Storyboard x:Name="game_canvas_storyboard" />
+            </Canvas.Resources>
+        </Canvas>
     </Grid>
 </Page>
