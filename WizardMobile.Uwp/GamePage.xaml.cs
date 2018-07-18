@@ -75,7 +75,6 @@ namespace WizardMobile.Uwp
 
         public Task DisplayDealInProgess(int seconds)
         {
-            throw new NotImplementedException();
         }
 
         public Task DisplayDealDone(Player dealer, Card trumpCard)
