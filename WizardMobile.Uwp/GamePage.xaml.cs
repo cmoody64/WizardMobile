@@ -180,6 +180,7 @@ namespace WizardMobile.Uwp
             return cardTaskCompletionSource.Task;
         }
 
+        // TODO remove getcardimage and animate image to separate ImageHelper class? how would that class know about the game_canvas_resources??
         // TODO implement z index??
         private Image GetCardImage(string cardImageKey, Point position, double angle)
         {
