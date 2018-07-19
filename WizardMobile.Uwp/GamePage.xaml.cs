@@ -101,12 +101,17 @@ namespace WizardMobile.Uwp
             //img.Source = bitmapImage;
             //game_canvas.Children.Add(img);
             Image cardBack = new Image();
-            cardBack.Source = GetCardImage(BACK_OF_CARD_KEY);
-            cardBack.RenderTransformOrigin = new Point(0.5, 0.5);
+            cardBack.Source = game_canvas.Resources[BACK_OF_CARD_KEY] as BitmapImage;
+            //cardBack.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            PlaneProjection cardBackProjection = new PlaneProjection();
+            cardBackProjection.RotationZ = 45;
+            cardBack.Projection = cardBackProjection;
 
             game_canvas.Children.Add(cardBack);
             Canvas.SetTop(cardBack, 50);
             Canvas.SetLeft(cardBack, 50);
+            // Canvas.SetZIndex(cardBack, 1);
 
             DoubleAnimation cardBackAnimation = new DoubleAnimation();
             cardBackAnimation.From = 50;
@@ -175,39 +180,71 @@ namespace WizardMobile.Uwp
             return cardTaskCompletionSource.Task;
         }
 
-        private BitmapImage GetCardImage(string cardImageKey)
+        // TODO implement z index??
+        private Image GetCardImage(string cardImageKey, Point position, double angle)
         {
-            return game_canvas.Resources[cardImageKey] as BitmapImage;
+            var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
+            var image = new Image();
+
+            image.Source = bitmapImage;
+
+            Canvas.SetLeft(image, position.X);
+            Canvas.SetTop(image, position.Y);
+
+            var imagePlaneProjection = new PlaneProjection();
+            imagePlaneProjection.RotationZ = angle;
+            image.Projection = imagePlaneProjection;
+
+            return image;
         }
 
         private List<DoubleAnimation> AnimateImage(Image image, int duration, Point destination, double rotations = 0)
         {            
             var animations = new List<DoubleAnimation>();
-            Point curLocation = new Point((int)image.GetValue(Canvas.LeftProperty), (int)image.GetValue(Canvas.TopProperty));
+            Point curLocation = new Point((double)image.GetValue(Canvas.LeftProperty), (double)image.GetValue(Canvas.TopProperty));
 
 
             // position animations (Canvas.Left and Canvas.Top)
-            var leftPropAnimation = new DoubleAnimation();
-            leftPropAnimation.From = (double)image.GetValue(Canvas.LeftProperty);
-            leftPropAnimation.To = destination.X;
-            leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
+            if(destination.X != curLocation.X)
+            {
+                var leftPropAnimation = new DoubleAnimation();
+                leftPropAnimation.From = curLocation.X;
+                leftPropAnimation.To = destination.X;
+                leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
 
-            Storyboard.SetTarget(leftPropAnimation, image);
-            Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
+                Storyboard.SetTarget(leftPropAnimation, image);
+                Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
 
-            var topPropAnimation = new DoubleAnimation();
-            topPropAnimation.From = (double)image.GetValue(Canvas.TopProperty);
-            topPropAnimation.To = destination.Y;
-            topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
+                animations.Add(leftPropAnimation);
+            }
 
-            Storyboard.SetTarget(topPropAnimation, image);
-            Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
+            if(destination.Y != curLocation.Y)
+            {
+                var topPropAnimation = new DoubleAnimation();
+                topPropAnimation.From = curLocation.Y;
+                topPropAnimation.To = destination.Y;
+                topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
 
+                Storyboard.SetTarget(topPropAnimation, image);
+                Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
 
-            // rotation animations TODO FIGURE OUT
-            var rotationAnimation = new DoubleAnimation();
-            rotationAnimation.From = ((PlaneProjection)image.Projection).RotationX;
+                animations.Add(topPropAnimation);
+            }
 
+            // rotation animations
+            if (rotations != 0 && image.Projection != null && image.Projection.GetType() == typeof(PlaneProjection))
+            {
+                var rotationAnimation = new DoubleAnimation();
+                double curAngle = ((PlaneProjection)image.Projection).RotationZ;
+                rotationAnimation.From = curAngle;
+                rotationAnimation.To = curAngle + 360 * rotations;
+                rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
+
+                Storyboard.SetTarget(rotationAnimation, image);
+                Storyboard.SetTargetProperty(rotationAnimation, "(Image.Projection).(PlaneProjection.RotationZ)");
+
+                animations.Add(rotationAnimation);
+            }
 
             return animations;
         }
