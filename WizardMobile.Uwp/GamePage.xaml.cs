@@ -102,6 +102,7 @@ namespace WizardMobile.Uwp
             //game_canvas.Children.Add(img);
             Image cardBack = new Image();
             cardBack.Source = GetCardImage(BACK_OF_CARD_KEY);
+            cardBack.RenderTransformOrigin = new Point(0.5, 0.5);
 
             game_canvas.Children.Add(cardBack);
             Canvas.SetTop(cardBack, 50);
@@ -113,7 +114,7 @@ namespace WizardMobile.Uwp
             cardBackAnimation.Duration = TimeSpan.FromSeconds(5);
 
             Storyboard.SetTarget(cardBackAnimation, cardBack);
-            Storyboard.SetTargetProperty(cardBackAnimation, "().()");
+            Storyboard.SetTargetProperty(cardBackAnimation, "(Canvas.Left)");
 
 
             game_canvas_storyboard.Children.Add(cardBackAnimation);
@@ -177,6 +178,38 @@ namespace WizardMobile.Uwp
         private BitmapImage GetCardImage(string cardImageKey)
         {
             return game_canvas.Resources[cardImageKey] as BitmapImage;
+        }
+
+        private List<DoubleAnimation> AnimateImage(Image image, int duration, Point destination, double rotations = 0)
+        {            
+            var animations = new List<DoubleAnimation>();
+            Point curLocation = new Point((int)image.GetValue(Canvas.LeftProperty), (int)image.GetValue(Canvas.TopProperty));
+
+
+            // position animations (Canvas.Left and Canvas.Top)
+            var leftPropAnimation = new DoubleAnimation();
+            leftPropAnimation.From = (double)image.GetValue(Canvas.LeftProperty);
+            leftPropAnimation.To = destination.X;
+            leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
+
+            Storyboard.SetTarget(leftPropAnimation, image);
+            Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
+
+            var topPropAnimation = new DoubleAnimation();
+            topPropAnimation.From = (double)image.GetValue(Canvas.TopProperty);
+            topPropAnimation.To = destination.Y;
+            topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
+
+            Storyboard.SetTarget(topPropAnimation, image);
+            Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
+
+
+            // rotation animations TODO FIGURE OUT
+            var rotationAnimation = new DoubleAnimation();
+            rotationAnimation.From = ((PlaneProjection)image.Projection).RotationX;
+
+
+            return animations;
         }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
