@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 using WizardMobile.Core;
+using WizardMobile.Uwp.Common;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -100,6 +101,9 @@ namespace WizardMobile.Uwp
             //BitmapImage bitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/cards/back_of_card.png"));
             //img.Source = bitmapImage;
             //game_canvas.Children.Add(img);
+
+
+            /*** WORKING ANIMATIONS START ************
             Image cardBack = new Image();
             cardBack.Source = game_canvas.Resources[BACK_OF_CARD_KEY] as BitmapImage;
             //cardBack.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -124,6 +128,15 @@ namespace WizardMobile.Uwp
 
             game_canvas_storyboard.Children.Add(cardBackAnimation);
             game_canvas_storyboard.Begin();
+            *** WORKING ANIMATIONS END ************/
+
+            var cardBackImage = GetCardImage(BACK_OF_CARD_KEY, new Point(150, 150), 45);
+            game_canvas.Children.Add(cardBackImage);
+
+            var cardBackAnimations = ComposeImageAnimations(cardBackImage, 4 /*duration*/, new Point(0, 0) /*destination*/,  3/*rotations*/);
+            game_canvas_storyboard.Children.AddRange(cardBackAnimations);
+            game_canvas_storyboard.Begin();
+
 
             return Task.CompletedTask;
         }
@@ -199,7 +212,7 @@ namespace WizardMobile.Uwp
             return image;
         }
 
-        private List<DoubleAnimation> AnimateImage(Image image, int duration, Point destination, double rotations = 0)
+        private List<DoubleAnimation> ComposeImageAnimations(Image image, int duration, Point destination, double rotations = 0)
         {            
             var animations = new List<DoubleAnimation>();
             Point curLocation = new Point((double)image.GetValue(Canvas.LeftProperty), (double)image.GetValue(Canvas.TopProperty));
