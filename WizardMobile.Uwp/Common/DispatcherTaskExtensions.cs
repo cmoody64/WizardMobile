@@ -31,10 +31,21 @@ namespace WizardMobile.Uwp.Common
 
     public static class TimelineCollectionExtensions
     {
+        // Binding to a timeline collection ensures that a timeline is only present in the timeline collection while the timeline is active
+        // thus, it is bound to the timeline collection for its lifetime, and unbound after
+        public static void Bind(this TimelineCollection timelineCollection, Timeline timeline)
+        {
+            timelineCollection.Add(timeline);
+            timeline.Completed += (sender, eventArgs) =>
+            {
+                //timeline.
+            };
+        }
+
         public static void AddRange(this TimelineCollection timelineCollection, IEnumerable<Timeline> timelines)
         {
             foreach (var timeline in timelines)
                 timelineCollection.Add(timeline);
         }
-    }
+    }    
 }

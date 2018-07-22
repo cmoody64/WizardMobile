@@ -14,7 +14,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void MakeTurnTest()
         {
-            var testFrontend = new ConsoleFrontend();
+            IWizardFrontend testFrontend = null;
 
             var roundNum = 4;
             var deck = new Deck();
@@ -55,7 +55,7 @@ namespace WizardMobile.Core.Tests
         [TestMethod()]
         public void MakeBidTest()
         {
-            var testFrontend = new ConsoleFrontend();
+            IWizardFrontend testFrontend = null;
 
             var roundNum = 3;
             var deck = new Deck();

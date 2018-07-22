@@ -19,8 +19,6 @@ using Windows.UI.Xaml.Shapes;
 using WizardMobile.Core;
 using WizardMobile.Uwp.Common;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
-
 namespace WizardMobile.Uwp
 {
     public sealed partial class GamePage : Page, IWizardFrontend
@@ -79,64 +77,17 @@ namespace WizardMobile.Uwp
 
         public Task DisplayDealInProgess(int seconds)
         {
-            ////Image img = new Image();
-            //////img.Width = bitmapImage.DecodePixelWidth = 80; //natural px width of image source
-            //////                                               // don't need to set Height, system maintains aspect ratio, and calculates the other
-            //////                                               // dimension, so long as one dimension measurement is provided
-
-            ////BitmapImage bitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/cards/back_of_card.png"));
-            ////img.Source = bitmapImage;
-            ////game_canvas.Children.Add(img);
-
-            //var ellipse1 = new Ellipse();
-            //ellipse1.Fill = new SolidColorBrush(Windows.UI.Colors.SteelBlue);
-            //ellipse1.Width = 200;
-            //ellipse1.Height = 200;
-            //game_canvas.Children.Add(ellipse1);
-
-            //Image img = new Image();
-            ////img.Source = back_of_card;
-            ////game_canvas.Children.Add(img);
-
-            //BitmapImage bitmapImage = new BitmapImage(new Uri("ms-appx:///Assets/cards/back_of_card.png"));
-            //img.Source = bitmapImage;
-            //game_canvas.Children.Add(img);
-
-
-            /*** WORKING ANIMATIONS START ************
-            Image cardBack = new Image();
-            cardBack.Source = game_canvas.Resources[BACK_OF_CARD_KEY] as BitmapImage;
-            //cardBack.RenderTransformOrigin = new Point(0.5, 0.5);
-
-            PlaneProjection cardBackProjection = new PlaneProjection();
-            cardBackProjection.RotationZ = 45;
-            cardBack.Projection = cardBackProjection;
-
-            game_canvas.Children.Add(cardBack);
-            Canvas.SetTop(cardBack, 50);
-            Canvas.SetLeft(cardBack, 50);
-            // Canvas.SetZIndex(cardBack, 1);
-
-            DoubleAnimation cardBackAnimation = new DoubleAnimation();
-            cardBackAnimation.From = 50;
-            cardBackAnimation.To = 100;
-            cardBackAnimation.Duration = TimeSpan.FromSeconds(5);
-
-            Storyboard.SetTarget(cardBackAnimation, cardBack);
-            Storyboard.SetTargetProperty(cardBackAnimation, "(Canvas.Left)");
-
-
-            game_canvas_storyboard.Children.Add(cardBackAnimation);
-            game_canvas_storyboard.Begin();
-            *** WORKING ANIMATIONS END ************/
-
-            var cardBackImage = GetCardImage(BACK_OF_CARD_KEY, new Point(150, 150), 45);
+            var cardBackImage = GetCardImage(BACK_OF_CARD_KEY, new Point(0, 0), 45);
             game_canvas.Children.Add(cardBackImage);
 
-            var cardBackAnimations = ComposeImageAnimations(cardBackImage, 4 /*duration*/, new Point(0, 0) /*destination*/,  3/*rotations*/);
+            var cardBackAnimations = ComposeImageAnimations(cardBackImage, 2 /*duration*/, new Point(300, 300) /*destination*/,  1.25/*rotations*/);
             game_canvas_storyboard.Children.AddRange(cardBackAnimations);
             game_canvas_storyboard.Begin();
-
+            game_canvas_storyboard.Completed += (s, e) =>
+            {
+                game_canvas_storyboard.Stop();
+                game_canvas_storyboard.Children.Clear();
+            };
 
             return Task.CompletedTask;
         }
@@ -205,21 +156,34 @@ namespace WizardMobile.Uwp
             Canvas.SetLeft(image, position.X);
             Canvas.SetTop(image, position.Y);
 
-            var imagePlaneProjection = new PlaneProjection();
-            imagePlaneProjection.RotationZ = angle;
-            image.Projection = imagePlaneProjection;
+            image.RenderTransform = new RotateTransform { Angle = angle };
+            image.RenderTransformOrigin = new Point(0.5, 0.5);
 
             return image;
         }
 
-        private List<DoubleAnimation> ComposeImageAnimations(Image image, int duration, Point destination, double rotations = 0)
+        private List<DoubleAnimation> ComposeImageAnimations(Image image, double duration, Point destination, double rotations = 0)
         {            
             var animations = new List<DoubleAnimation>();
             Point curLocation = new Point((double)image.GetValue(Canvas.LeftProperty), (double)image.GetValue(Canvas.TopProperty));
 
+            // rotation animations
+            if (rotations != 0 && image.RenderTransform != null && image.RenderTransform.GetType() == typeof(RotateTransform))
+            {
+                var rotationAnimation = new DoubleAnimation();
+                double curAngle = ((RotateTransform)image.RenderTransform).Angle;
+                var finalAngle = curAngle + 360 * rotations;
+                rotationAnimation.From = curAngle;
+                rotationAnimation.To = finalAngle;
+                rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
+
+                Storyboard.SetTarget(rotationAnimation, image);
+                Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
+                animations.Add(rotationAnimation);                
+            }
 
             // position animations (Canvas.Left and Canvas.Top)
-            if(destination.X != curLocation.X)
+            if (destination.X != curLocation.X)
             {
                 var leftPropAnimation = new DoubleAnimation();
                 leftPropAnimation.From = curLocation.X;
@@ -229,6 +193,8 @@ namespace WizardMobile.Uwp
                 Storyboard.SetTarget(leftPropAnimation, image);
                 Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
 
+                leftPropAnimation.Completed += (sender, eventArgs) => leftPropAnimation.SetValue(Canvas.LeftProperty, destination.X);
+
                 animations.Add(leftPropAnimation);
             }
 
@@ -237,27 +203,14 @@ namespace WizardMobile.Uwp
                 var topPropAnimation = new DoubleAnimation();
                 topPropAnimation.From = curLocation.Y;
                 topPropAnimation.To = destination.Y;
-                topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
+                topPropAnimation.Duration = TimeSpan.FromSeconds(duration);                
 
                 Storyboard.SetTarget(topPropAnimation, image);
                 Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
 
+                topPropAnimation.Completed += (sender, eventArgs) => topPropAnimation.SetValue(Canvas.TopProperty, destination.Y);
+
                 animations.Add(topPropAnimation);
-            }
-
-            // rotation animations
-            if (rotations != 0 && image.Projection != null && image.Projection.GetType() == typeof(PlaneProjection))
-            {
-                var rotationAnimation = new DoubleAnimation();
-                double curAngle = ((PlaneProjection)image.Projection).RotationZ;
-                rotationAnimation.From = curAngle;
-                rotationAnimation.To = curAngle + 360 * rotations;
-                rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
-
-                Storyboard.SetTarget(rotationAnimation, image);
-                Storyboard.SetTargetProperty(rotationAnimation, "(Image.Projection).(PlaneProjection.RotationZ)");
-
-                animations.Add(rotationAnimation);
             }
 
             return animations;
