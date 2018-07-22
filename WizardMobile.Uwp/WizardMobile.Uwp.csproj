@@ -95,7 +95,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\AnimationHelper.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
+    <Compile Include="Common\TimelineCollectionExtensions.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
