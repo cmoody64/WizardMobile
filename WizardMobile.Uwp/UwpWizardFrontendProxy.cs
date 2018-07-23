@@ -53,14 +53,14 @@ namespace WizardMobile.Uwp
             await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayPlayerBid(bid, player));
         }
 
-        public async Task DisplayDealInProgess(int seconds)
+        public async Task DisplayShuffle()
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayDealInProgess(seconds));
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayShuffle());
         }
 
-        public async Task DisplayDealDone(Player dealer, Card trumpCard)
+        public async Task DisplayDeal(GameContext gameContext, List<Player> players)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayDealDone(dealer, trumpCard));
+            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayDeal(gameContext, players));
         }
 
         public async Task DisplayTrickWinner(Player winner, Card winningCard)
@@ -92,6 +92,5 @@ namespace WizardMobile.Uwp
         {
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerCreation());
         }
-
     }
 }

@@ -14,8 +14,8 @@ namespace WizardMobile.Core
         Task DisplayTurnInProgress(Player player);
         Task DisplayTurnTaken(Card cardPlayed, Player player);
         Task DisplayPlayerBid(int bid, Player player);
-        Task DisplayDealInProgess(int seconds);
-        Task DisplayDealDone(Player dealer, Card trumpCard);
+        Task DisplayShuffle();
+        Task DisplayDeal(GameContext gameContext, List<Player> players);
         Task DisplayTrickWinner(Player winner, Card winningCard);
         Task DisplayRoundScores(GameContext gameContext);
         Task DisplayBidOutcome(int roundNum, int totalBids);

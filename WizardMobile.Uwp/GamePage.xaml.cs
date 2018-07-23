@@ -69,22 +69,52 @@ namespace WizardMobile.Uwp
             return Task.CompletedTask;
         }
 
-        public Task DisplayDealInProgess(int seconds)
+        public Task DisplayShuffle()
         {
-            var cardBackImage = GetCardImage(BACK_OF_CARD_KEY, new Point(0, 0), 45);
-            game_canvas.Children.Add(cardBackImage);
+            int shuffleAnimationCount = 6;
+            Point leftStackStartingPoint = new Point(-300, 50);
+            Point rightStackStartingPoint = new Point(300, 50);
+            Point centerStackEndPoint = new Point(0, 50);
+            for (int i = 0; i < shuffleAnimationCount; i++)
+            {
+                Point rightPosition = new Point(rightStackStartingPoint.X, rightStackStartingPoint.Y + 5 * i);
+                Image rightCard = GetCardImage(BACK_OF_CARD_KEY, rightPosition);
+                var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                {
+                    Image = rightCard,
+                    Destination = centerStackEndPoint,
+                    DurationSeconds = 0.2,
+                    DelaySeconds = i * .1
+                });
+                game_canvas.Children.Add(rightCard);
+                game_canvas_storyboard.Children.AddRange(rightCardAnimations);
 
-            var cardBackAnimations = AnimationHelper.ComposeImageAnimations(cardBackImage, 2 /*duration*/, new Point(300, 300) /*destination*/,  1.25/*rotations*/);
-            game_canvas_storyboard.Children.AddRange(cardBackAnimations);
+                Point leftPosition = new Point(leftStackStartingPoint.X, leftStackStartingPoint.Y + 5 * i);
+                Image leftCard = GetCardImage(BACK_OF_CARD_KEY, leftPosition);
+                var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                {
+                    Image = leftCard,
+                    Destination = centerStackEndPoint,
+                    DurationSeconds = 0.2,
+                    DelaySeconds = .05 + i * .1
+                });
+                game_canvas.Children.Add(leftCard);
+                game_canvas_storyboard.Children.AddRange(leftCardAnimations);
+            }
+
             game_canvas_storyboard.Begin();
-
-
             return Task.CompletedTask;
         }
 
-        public Task DisplayDealDone(Player dealer, Card trumpCard)
-        {
-            Task.Yield();
+        public Task DisplayDeal(GameContext gameContext, List<Player> players)
+        {            
+            for(int i = 0; i < gameContext.CurRound.RoundNum; i++)
+            {
+
+            }
+
+            game_canvas_storyboard.Begin();
+
             return Task.CompletedTask;
         }
 
@@ -135,10 +165,9 @@ namespace WizardMobile.Uwp
         }
         /*************** IWizardFrontend implementation end ********************/
 
-        
-        // TODO remove getcardimage and animate image to separate ImageHelper class? how would that class know about the game_canvas_resources??
+
         // TODO implement z index??
-        private Image GetCardImage(string cardImageKey, Point position, double angle)
+        private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
         {
             var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
             var image = new Image();

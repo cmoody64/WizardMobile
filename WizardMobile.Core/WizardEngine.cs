@@ -25,7 +25,6 @@ namespace WizardMobile.Core
         {
             _curDeck = new Deck();
             await _frontend.DisplayStartGame();
-            Thread.Sleep(2000);
             List<string> playerNames = await _frontend.PromptPlayerCreation();            
 
             // add in ai players
@@ -54,7 +53,7 @@ namespace WizardMobile.Core
 
             // shuffle, deal, and initialize round context
             _curDeck.Shuffle();
-            await _frontend.DisplayDealInProgess(3/*message duration seconds*/);
+            await _frontend.DisplayShuffle();
             DealDeck(roundNum);
             Card trumpCard = _curDeck.Cards.Count > 0 ? _curDeck.PopTop() : null;
 
@@ -65,8 +64,8 @@ namespace WizardMobile.Core
                 : _players[(_players.IndexOf(_gameContext.PrevRound.Dealer) + 1) % _players.Count];
             _players.ForEach(player => curRound.Results[player] = 0);
 
-            Thread.Sleep(5000);
-            await _frontend.DisplayDealDone(curRound.Dealer, trumpCard);
+
+            await _frontend.DisplayDeal(_gameContext, _players);
 
             // bid on current round
             _players.ForEach(async (player) => curRound.Bids[player] = await player.MakeBid(_gameContext));
