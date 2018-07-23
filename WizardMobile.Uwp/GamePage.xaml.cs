@@ -35,66 +35,66 @@ namespace WizardMobile.Uwp
 
 
         /*************** IWizardFrontend implementation ********************/
-        public Task DisplayStartGame()
+        public Task<bool> DisplayStartGame()
         {
             game_message_box.Text = "Game Starting";
-            return Task.CompletedTask;
+            return Task.FromResult(true);
     
         }
 
-        public Task DisplayStartRound(int roundNum)
+        public Task<bool> DisplayStartRound(int roundNum)
         {
             game_message_box.Text = $"Round {roundNum} Starting";
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
-        public Task DisplayStartTrick(int trickNum)
+        public Task<bool> DisplayStartTrick(int trickNum)
         {
             game_message_box.Text = $"Trick {trickNum} Starting";
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
-        public Task DisplayTurnInProgress(Player player)
+        public Task<bool> DisplayTurnInProgress(Player player)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
-        public Task DisplayTurnTaken(Card cardPlayed, Player player)
+        public Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
-        public Task DisplayPlayerBid(int bid, Player player)
+        public Task<bool> DisplayPlayerBid(int bid, Player player)
         {
-            return Task.CompletedTask;
+            return Task.FromResult(true);
         }
 
-        public Task DisplayShuffle()
+        public Task<bool> DisplayShuffle()
         {
-            int shuffleAnimationCount = 6;
-            Point leftStackStartingPoint = new Point(-300, 50);
-            Point rightStackStartingPoint = new Point(300, 50);
-            Point centerStackEndPoint = new Point(0, 50);
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            int shuffleAnimationCount = 0;
+            
             for (int i = 0; i < shuffleAnimationCount; i++)
             {
-                Point rightPosition = new Point(rightStackStartingPoint.X, rightStackStartingPoint.Y + 5 * i);
+                Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
                 Image rightCard = GetCardImage(BACK_OF_CARD_KEY, rightPosition);
                 var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                 {
                     Image = rightCard,
-                    Destination = centerStackEndPoint,
+                    Destination = CENTER_STACK_STARTING_POINT,
                     DurationSeconds = 0.2,
                     DelaySeconds = i * .1
                 });
                 game_canvas.Children.Add(rightCard);
                 game_canvas_storyboard.Children.AddRange(rightCardAnimations);
 
-                Point leftPosition = new Point(leftStackStartingPoint.X, leftStackStartingPoint.Y + 5 * i);
+                Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
                 Image leftCard = GetCardImage(BACK_OF_CARD_KEY, leftPosition);
                 var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                 {
                     Image = leftCard,
-                    Destination = centerStackEndPoint,
+                    Destination = CENTER_STACK_STARTING_POINT,
                     DurationSeconds = 0.2,
                     DelaySeconds = .05 + i * .1
                 });
@@ -103,32 +103,66 @@ namespace WizardMobile.Uwp
             }
 
             game_canvas_storyboard.Begin();
-            return Task.CompletedTask;
+            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+
+            return taskCompletionSource.Task;
         }
 
-        public Task DisplayDeal(GameContext gameContext, List<Player> players)
-        {            
-            for(int i = 0; i < gameContext.CurRound.RoundNum; i++)
+        public Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+
+            game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
+
+            var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+            for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
             {
+                // iterate through all AI players and deal cards face  down
+                for(int j = 0; j < players.Count - 1; j++)
+                {
+                    Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
+                    game_canvas.Children.Add(aiPlayercard);
+                    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                    {
+                        Image = aiPlayercard,
+                        Destination = CENTER_STACK_STARTING_POINT,
+                        DurationSeconds = 0.2,
+                        DelaySeconds = 0.5 * i + .125 * j,
+                        Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
+                    }));
+                }
+
+                // deal Human players hand face up
+                Image humanPlayerCard = GetCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
+                game_canvas.Children.Add(humanPlayerCard);
+                game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                {
+                    Image = humanPlayerCard,
+                    Destination = CENTER_STACK_STARTING_POINT,
+                    DurationSeconds = 0.2,
+                    DelaySeconds = 0.5 * i + 1,
+                    Rotations = 3
+                }));
 
             }
 
             game_canvas_storyboard.Begin();
+            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
 
-            return Task.CompletedTask;
+            return taskCompletionSource.Task;
         }
 
-        public Task DisplayTrickWinner(Player winner, Card winningCard)
+        public Task<bool> DisplayTrickWinner(Player winner, Card winningCard)
         {
             throw new NotImplementedException();
         }
 
-        public Task DisplayRoundScores(GameContext gameContext)
+        public Task<bool> DisplayRoundScores(GameContext gameContext)
         {
             throw new NotImplementedException();
         }
 
-        public Task DisplayBidOutcome(int roundNum, int totalBids)
+        public Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
         {
             throw new NotImplementedException();
         }
@@ -191,5 +225,8 @@ namespace WizardMobile.Uwp
         }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
+        private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
+        private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
+        private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);
     }
 }
