@@ -73,7 +73,7 @@ namespace WizardMobile.Uwp
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            int shuffleAnimationCount = 0;
+            int shuffleAnimationCount = 6;
             
             for (int i = 0; i < shuffleAnimationCount; i++)
             {

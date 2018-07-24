@@ -34,7 +34,8 @@ namespace WizardMobile.Uwp.Common
                 Storyboard.SetTarget(leftPropAnimation, image);
                 Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
 
-                leftPropAnimation.Completed += (sender, eventArgs) => leftPropAnimation.SetValue(Canvas.LeftProperty, destination.X);
+                //TODO pause and restart storyboard before setting new props
+                //leftPropAnimation.Completed += (sender, eventArgs) => leftPropAnimation.SetValue(Canvas.LeftProperty, destination.X);
 
                 animations.Add(leftPropAnimation);
             }
@@ -50,7 +51,8 @@ namespace WizardMobile.Uwp.Common
                 Storyboard.SetTarget(topPropAnimation, image);
                 Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
 
-                topPropAnimation.Completed += (sender, eventArgs) => topPropAnimation.SetValue(Canvas.TopProperty, destination.Y);
+                //TODO pause and restart storyboard before setting new props
+                //topPropAnimation.Completed += (sender, eventArgs) => topPropAnimation.SetValue(Canvas.TopProperty, destination.Y);
 
                 animations.Add(topPropAnimation);
             }
