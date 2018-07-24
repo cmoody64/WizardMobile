@@ -23,59 +23,59 @@ namespace WizardMobile.Uwp
         private GamePage _principalFrontend;
         private CoreDispatcher _dispatcher;
 
-        public async Task DisplayStartGame()
+        public async Task<bool> DisplayStartGame()
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayStartGame());
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartGame());
         }
 
-        public async Task DisplayStartRound(int roundNum)
+        public async Task<bool> DisplayStartRound(int roundNum)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayStartRound(roundNum));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartRound(roundNum));
         }
 
-        public async Task DisplayStartTrick(int trickNum)
+        public async Task<bool> DisplayStartTrick(int trickNum)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayStartTrick(trickNum));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartTrick(trickNum));
         }
 
-        public async Task DisplayTurnInProgress(Player player)
+        public async Task<bool> DisplayTurnInProgress(Player player)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayTurnInProgress(player));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTurnInProgress(player));
         }
 
-        public async Task DisplayTurnTaken(Card cardPlayed, Player player)
+        public async Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayTurnTaken(cardPlayed, player));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTurnTaken(cardPlayed, player));
         }
 
-        public async Task DisplayPlayerBid(int bid, Player player)
+        public async Task<bool> DisplayPlayerBid(int bid, Player player)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayPlayerBid(bid, player));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayPlayerBid(bid, player));
         }
 
-        public async Task DisplayShuffle()
+        public async Task<bool> DisplayShuffle()
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayShuffle());
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayShuffle());
         }
 
-        public async Task DisplayDeal(GameContext gameContext, List<Player> players)
+        public async Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayDeal(gameContext, players));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayDeal(gameContext, players));
         }
 
-        public async Task DisplayTrickWinner(Player winner, Card winningCard)
+        public async Task<bool> DisplayTrickWinner(Player winner, Card winningCard)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayTrickWinner(winner, winningCard));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTrickWinner(winner, winningCard));
         }
 
-        public async Task DisplayRoundScores(GameContext gameContext)
+        public async Task<bool> DisplayRoundScores(GameContext gameContext)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayRoundScores(gameContext));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayRoundScores(gameContext));
         }
 
-        public async Task DisplayBidOutcome(int roundNum, int totalBids)
+        public async Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
         {
-            await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => _principalFrontend.DisplayBidOutcome(roundNum, totalBids));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayBidOutcome(roundNum, totalBids));
         }
 
         public async Task<Card> PromptPlayerCardSelection(Player player)
