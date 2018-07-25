@@ -195,25 +195,24 @@ namespace WizardMobile.Uwp
 
             return cardTaskCompletionSource.Task;
         }
-        /*************** IWizardFrontend implementation end ********************/
 
 
-        // TODO implement z index??
-        private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
-        {
-            var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
-            var image = new Image();
+        // TODO implement z index??        
+        //private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
+        //{
+        //    var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
+        //    var image = new Image();
 
-            image.Source = bitmapImage;
+        //    image.Source = bitmapImage;
 
-            Canvas.SetLeft(image, position.X);
-            Canvas.SetTop(image, position.Y);
+        //    Canvas.SetLeft(image, position.X);
+        //    Canvas.SetTop(image, position.Y);
 
-            image.RenderTransform = new RotateTransform { Angle = angle };
-            image.RenderTransformOrigin = new Point(0.5, 0.5);
+        //    image.RenderTransform = new RotateTransform { Angle = angle };
+        //    image.RenderTransformOrigin = new Point(0.5, 0.5);
 
-            return image;
-        }
+        //    return image;
+        //}
 
         // callback that ensures that the storyboard clears out itself after each animation group completes
         private void OnGameCanvasStoryboard_Completed(object sender, object eventArgs)
