@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using WizardMobile.Core;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using WizardMobile.Core;
 using WizardMobile.Uwp.Common;
 
 namespace WizardMobile.Uwp
 {
-    public sealed partial class GamePage : Page, IWizardFrontend
+    public sealed partial class GamePage: IWizardFrontend
     {
-        public GamePage()
+        private WizardEngine _engine;
+        private void InitializeWizardFrontend()
         {
-            this.InitializeComponent();
-
             UwpWizardFrontendProxy _proxyFrontend = new UwpWizardFrontendProxy(this);
 
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
@@ -31,15 +32,12 @@ namespace WizardMobile.Uwp
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboard_Completed;
         }
 
-        private WizardEngine _engine;
-
-
         /*************** IWizardFrontend implementation ********************/
         public Task<bool> DisplayStartGame()
         {
             game_message_box.Text = "Game Starting";
             return Task.FromResult(true);
-    
+
         }
 
         public Task<bool> DisplayStartRound(int roundNum)
@@ -74,7 +72,7 @@ namespace WizardMobile.Uwp
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             int shuffleAnimationCount = 6;
-            
+
             for (int i = 0; i < shuffleAnimationCount; i++)
             {
                 Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
@@ -118,7 +116,7 @@ namespace WizardMobile.Uwp
             for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
             {
                 // iterate through all AI players and deal cards face  down
-                for(int j = 0; j < players.Count - 1; j++)
+                for (int j = 0; j < players.Count - 1; j++)
                 {
                     Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
                     game_canvas.Children.Add(aiPlayercard);
