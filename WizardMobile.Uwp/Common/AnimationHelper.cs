@@ -81,11 +81,18 @@ namespace WizardMobile.Uwp.Common
         }
     }
 
-    public class ImageAnimationRequest
+    // extends animation behavior by providing enough details to produce an instance of an animation
+    public class ImageAnimationRequest: AnimationBehavior
     {
-        public Image Image { get; set; }
-        public double Rotations { get; set; }
         public Point Destination { get; set; }
+        public Image Image { get; set; }
+    }
+
+    // description of animation without providing concrete details about an animation instance
+    // tells how while excluding the what / where
+    public class AnimationBehavior
+    {
+        public double Rotations { get; set; }
         public double DurationSeconds { get; set; }
         public double DelaySeconds { get; set; }
     }

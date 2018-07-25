@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using WizardMobile.Uwp.Common;
 
 namespace WizardMobile.Uwp
 {
@@ -36,9 +37,17 @@ namespace WizardMobile.Uwp
             private GamePage _parent;
             private LayoutType _layoutType;
 
-            public void Add(string cardName) { }
+            public void AddWithAnimation(string cardName) { }
 
-            public void Remove(string cardName) { }
+            public void RemoveWithAnimation(string cardName) { }
+
+            // moves a card from this card group to the provided card group
+            public void TransferWithAnimation(CardGroup otherCardGroup) { }
+
+            // NOTE an attempt will be made to apply the provided beavior, however, if this animation will result in a misaligned card
+            // at the destination card group, the behavior will be overriden. i.e. the number of rotations provided does not align with the
+            // destination group (rotations round up to nearest alignment)
+            public void TransferWithAnimation(CardGroup otherCardgroup, AnimationBehavior animationBehavior) { }
 
             private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
             {
@@ -55,6 +64,13 @@ namespace WizardMobile.Uwp
 
                 return image;
             }
+
+            private static readonly AnimationBehavior DEFAULT_INTERGROUP_ANIMATION_BEHAVIOR = new AnimationBehavior
+            {
+                DelaySeconds = 0.5,
+                Rotations = 0.5,
+                DurationSeconds = 0.5
+            };
         }
     }
 }
