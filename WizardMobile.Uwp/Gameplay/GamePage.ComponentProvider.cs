@@ -27,6 +27,23 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboard_Completed;
         }
 
+        // TODO should this live in the Card group class?
+        public enum CardGroupName
+        {
+            CENTER,
+            LFET_CENTER,
+            RIGHT_CENTER,
+            DISCARD,
+            PLAYER_1,
+            PLAYER_2,
+            PLAYER_3,
+            PLAYER_4,
+            PLAYER_1_STAGING,
+            PLAYER_2_STAGING,
+            PLAYER_3_STAGING,
+            PLAYER_4_STAGING
+        }
+
         /*************** IWizardFrontend implementation ********************/
         public Task<bool> DisplayStartGame()
         {
