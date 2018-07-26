@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using WizardMobile.Core;
 using Windows.UI.Core;
 using WizardMobile.Uwp.Common;
+using WizardMobile.Uwp.GamePage;
 
 // this class acts as an adapater that exposes a synchronous interface to the engine but implements UWP multithreading protocol under the hood
 // since the engine and the real front end (GamePage.xaml.cs) reside on different threads, this class serves an in between
@@ -13,14 +14,14 @@ namespace WizardMobile.Uwp
 {
     class UwpWizardFrontendProxy: IWizardFrontend
     {
-        public UwpWizardFrontendProxy(GamePage principalFrontend)
+        public UwpWizardFrontendProxy(GamePageController principalFrontend, CoreDispatcher dispatcher)
         {
             _principalFrontend = principalFrontend;
-            _dispatcher = _principalFrontend.Dispatcher;
+            _dispatcher = dispatcher;
         }
 
         // the proxy passes all calls through to the actual frontend implementation (GamePage)
-        private GamePage _principalFrontend;
+        private GamePageController _principalFrontend;
         private CoreDispatcher _dispatcher;
 
         public async Task<bool> DisplayStartGame()
