@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 using WizardMobile.Core;
+using WizardMobile.Uwp.Gameplay.Game
 
 namespace WizardMobile.Uwp.Gameplay
 {
@@ -61,39 +62,20 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<bool> DisplayShuffle()
         {
+            var animationSession = _componentProvider.CreateAnimationSession();
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            int shuffleAnimationCount = 6;
+            const int shuffleCount = 5;
+            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), GamePage.CardLocations.LEFT_CENTER);
+            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), GamePage.CardLocations.RIGHT_CENTER);
 
-            for (int i = 0; i < shuffleAnimationCount; i++)
+            for (int i = 0; i < shuffleCount; i++)
             {
-                Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
-                Image rightCard = GetCardImage(BACK_OF_CARD_KEY, rightPosition);
-                var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-                {
-                    Image = rightCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = i * .1
-                });
-                game_canvas.Children.Add(rightCard);
-                game_canvas_storyboard.Children.AddRange(rightCardAnimations);
-
-                Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
-                Image leftCard = GetCardImage(BACK_OF_CARD_KEY, leftPosition);
-                var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-                {
-                    Image = leftCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = .05 + i * .1
-                });
-                game_canvas.Children.Add(leftCard);
-                game_canvas_storyboard.Children.AddRange(leftCardAnimations);
+                animationSession.TransferCard(BACK_OF_CARD_KEY, GamePage.CardLocations.LEFT_CENTER, GamePage.CardLocations.RIGHT_CENTER, 0.3 /*delay*/);
             }
 
-            game_canvas_storyboard.Begin();
-            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            animationSession.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            animationSession.Begin();
 
             return taskCompletionSource.Task;
         }

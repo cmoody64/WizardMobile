@@ -98,11 +98,15 @@
     <Compile Include="Common\AnimationHelper.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
     <Compile Include="Common\TimelineCollectionExtensions.cs" />
-    <Compile Include="GamePage\GamePage.CardGroup.cs" />
-    <Compile Include="GamePage\GamePage.WizardFrontend.cs" />
-    <Compile Include="GamePage\GamePage.xaml.cs">
+    <Compile Include="Gameplay\CardLocation.cs" />
+    <Compile Include="Gameplay\GamePage.AnimationSession.cs" />
+    <Compile Include="Gameplay\GamePage.CardGroup.cs" />
+    <Compile Include="Gameplay\GamePage.ComponentProvider.cs" />
+    <Compile Include="Gameplay\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Gameplay\GamePageController.cs" />
+    <Compile Include="Gameplay\IWizardComponentProvider.cs" />
     <Compile Include="MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
@@ -185,7 +189,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GamePage\GamePage.xaml">
+    <Page Include="Gameplay\GamePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

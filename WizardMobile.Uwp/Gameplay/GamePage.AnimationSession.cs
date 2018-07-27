@@ -39,24 +39,30 @@ namespace WizardMobile.Uwp.Gameplay
 
             public event EventHandler Completed;
 
-            public void AddCard(string cardName, CardGroupName cardGroup, double delay)
+            public void AddCard(string cardName, CardLocations cardGroup, double delay = 0.0)
             {
 
             }
 
-            public void RemoveCard(string cardName, CardGroupName cardGroup, double delay)
+            // adds multiple cards at the same time arranged in the order specified by the cardNames list
+            public void AddCards(IEnumerable<string> cardNames, CardLocations cardGroup, double delay = 0.0)
+            {
+                
+            }
+
+            public void RemoveCard(string cardName, CardLocations cardGroup, double delay = 0.0)
             {
 
             }
 
-            // default animation behavior
-            public void TransferCard(string cardName, CardGroupName source, CardGroupName destination)
+            // default animation behavior with optional delay param
+            public void TransferCard(string cardName, CardLocations source, CardLocations destination, double delay = 0.0)
             {
 
             }
 
             // custom animation behavior
-            public void TransferCard(string cardName, CardGroupName source, CardGroupName destination, AnimationBehavior animBehavior)
+            public void TransferCard(string cardName, CardLocations source, CardLocations destination, AnimationBehavior animBehavior)
             {
 
             }
