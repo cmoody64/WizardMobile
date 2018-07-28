@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WizardMobile.Core;
 using Windows.UI.Core;
 using WizardMobile.Uwp.Common;
-using WizardMobile.Uwp.GamePage;
+using WizardMobile.Uwp.Gameplay;
 
 // this class acts as an adapater that exposes a synchronous interface to the engine but implements UWP multithreading protocol under the hood
 // since the engine and the real front end (GamePage.xaml.cs) reside on different threads, this class serves an in between

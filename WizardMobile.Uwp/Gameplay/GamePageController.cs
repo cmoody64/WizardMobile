@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
 using Windows.UI.Core;
 using WizardMobile.Core;
-using WizardMobile.Uwp.Gameplay.Game
+using WizardMobile.Uwp.Common;
 
 namespace WizardMobile.Uwp.Gameplay
 {
@@ -66,12 +67,13 @@ namespace WizardMobile.Uwp.Gameplay
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             const int shuffleCount = 5;
-            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), GamePage.CardLocations.LEFT_CENTER);
-            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), GamePage.CardLocations.RIGHT_CENTER);
+            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), CardLocation.LEFT_CENTER);
+            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), CardLocation.RIGHT_CENTER);
 
             for (int i = 0; i < shuffleCount; i++)
             {
-                animationSession.TransferCard(BACK_OF_CARD_KEY, GamePage.CardLocations.LEFT_CENTER, GamePage.CardLocations.RIGHT_CENTER, 0.3 /*delay*/);
+                animationSession.TranslateCard(BACK_OF_CARD_KEY, CardLocation.LEFT_CENTER, CardLocation.CENTER, new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 });
+                animationSession.TranslateCard(BACK_OF_CARD_KEY, CardLocation.RIGHT_CENTER, CardLocation.CENTER, new AnimationBehavior { Delay = 0.1 + 0.2 * i, Duration = 0.2 });
             }
 
             animationSession.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
@@ -84,42 +86,42 @@ namespace WizardMobile.Uwp.Gameplay
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
+            //game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
 
-            var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
-            for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
-            {
-                // iterate through all AI players and deal cards face  down
-                for (int j = 0; j < players.Count - 1; j++)
-                {
-                    Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
-                    game_canvas.Children.Add(aiPlayercard);
-                    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-                    {
-                        Image = aiPlayercard,
-                        Destination = CENTER_STACK_STARTING_POINT,
-                        DurationSeconds = 0.2,
-                        DelaySeconds = 0.5 * i + .125 * j,
-                        Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
-                    }));
-                }
+            //var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+            //for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
+            //{
+            //    // iterate through all AI players and deal cards face  down
+            //    for (int j = 0; j < players.Count - 1; j++)
+            //    {
+            //        Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
+            //        game_canvas.Children.Add(aiPlayercard);
+            //        game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+            //        {
+            //            Image = aiPlayercard,
+            //            Destination = CENTER_STACK_STARTING_POINT,
+            //            Duration = 0.2,
+            //            Delay = 0.5 * i + .125 * j,
+            //            Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
+            //        }));
+            //    }
 
-                // deal Human players hand face up
-                Image humanPlayerCard = GetCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
-                game_canvas.Children.Add(humanPlayerCard);
-                game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-                {
-                    Image = humanPlayerCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = 0.5 * i + 1,
-                    Rotations = 3
-                }));
+            //    // deal Human players hand face up
+            //    Image humanPlayerCard = GetCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
+            //    game_canvas.Children.Add(humanPlayerCard);
+            //    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+            //    {
+            //        Image = humanPlayerCard,
+            //        Destination = CENTER_STACK_STARTING_POINT,
+            //        Duration = 0.2,
+            //        Delay = 0.5 * i + 1,
+            //        Rotations = 3
+            //    }));
 
-            }
+            //}
 
-            game_canvas_storyboard.Begin();
-            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            //game_canvas_storyboard.Begin();
+            //game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
 
             return taskCompletionSource.Task;
         }
@@ -151,49 +153,19 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<List<string>> PromptPlayerCreation()
         {
-            game_message_box.Text = "Player Creation";
-            player_creation_input.Visibility = Visibility.Visible;
+            _componentProvider.SetMessageBoxText("Player Creation");
+            _componentProvider.SetPlayerCreationInputVisibility(true);            
 
-            TaskCompletionSource<List<string>> cardTaskCompletionSource = new TaskCompletionSource<List<string>>();
-            var x = this.player_creation_input.Visibility;
-            player_creation_input.KeyDown += (object sender, KeyRoutedEventArgs e) =>
+            TaskCompletionSource<List<string>> taskCompletionSource = new TaskCompletionSource<List<string>>();
+            _componentProvider.PlayerCreationInputEntered += (string input) =>
             {
-                var textInput = player_creation_input.Text;
-                if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
-                {
-                    cardTaskCompletionSource.SetResult(new List<string>() { textInput });
-                    player_creation_input.Visibility = Visibility.Collapsed;
-                }
-
+                taskCompletionSource.SetResult(new List<string>() { input });
+                _componentProvider.SetPlayerCreationInputVisibility(false);
             };
 
-            return cardTaskCompletionSource.Task;
+            return taskCompletionSource.Task;
         }
 
-
-        // TODO implement z index??        
-        //private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
-        //{
-        //    var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
-        //    var image = new Image();
-
-        //    image.Source = bitmapImage;
-
-        //    Canvas.SetLeft(image, position.X);
-        //    Canvas.SetTop(image, position.Y);
-
-        //    image.RenderTransform = new RotateTransform { Angle = angle };
-        //    image.RenderTransformOrigin = new Point(0.5, 0.5);
-
-        //    return image;
-        //}
-
-        // callback that ensures that the storyboard clears out itself after each animation group completes
-        private void OnGameCanvasStoryboard_Completed(object sender, object eventArgs)
-        {
-            game_canvas_storyboard.Stop();
-            game_canvas_storyboard.Children.Clear();
-        }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);

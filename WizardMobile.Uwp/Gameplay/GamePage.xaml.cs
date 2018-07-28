@@ -18,7 +18,7 @@ namespace WizardMobile.Uwp.Gameplay
         public GamePage()
         {
             this.InitializeComponent();
-            this.InitializeWizardFrontend();
+            this.InitializeWizardComponentProvider();
         }
     }
 }

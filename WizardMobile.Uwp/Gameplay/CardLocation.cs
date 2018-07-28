@@ -9,7 +9,7 @@ namespace WizardMobile.Uwp.Gameplay
 {
     // strongly typed enum representing playable locations on the game board
     // TODO needs a reference to application for screen size and to subscribe to screen resize event so that it can dynamically resize
-    class CardLocation
+    public class CardLocation
     {
         private CardLocation(Point position)
         {
@@ -26,22 +26,12 @@ namespace WizardMobile.Uwp.Gameplay
         public static CardLocation RIGHT_CENTER = new CardLocation(new Point(0, 0));
         public static CardLocation DISCARD = new CardLocation(new Point(0, 0));
         public static CardLocation PLAYER_1 = new CardLocation(new Point(0, 0));
-        public static CardLocation CENTER = new CardLocation(new Point(0, 0));
-        public static CardLocation CENTER = new CardLocation(new Point(0, 0));
-        public static CardLocation CENTER = new CardLocation(new Point(0, 0));
-        public static CardLocation CENTER = new CardLocation(new Point(0, 0));
-
-        CENTER,
-            LEFT_CENTER,
-            RIGHT_CENTER,
-            DISCARD,
-            PLAYER_1,
-            PLAYER_2,
-            PLAYER_3,
-            PLAYER_4,
-            PLAYER_1_STAGING,
-            PLAYER_2_STAGING,
-            PLAYER_3_STAGING,
-            PLAYER_4_STAGING
+        public static CardLocation PLAYER_2 = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_3 = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_4 = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_1_STAGING = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_2_STAGING = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_3_STAGING = new CardLocation(new Point(0, 0));
+        public static CardLocation PLAYER_4_STAGING = new CardLocation(new Point(0, 0));
     }
 }

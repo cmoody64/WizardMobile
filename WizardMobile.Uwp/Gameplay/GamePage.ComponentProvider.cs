@@ -18,13 +18,12 @@ namespace WizardMobile.Uwp.Gameplay
     {
         private GamePageController _gamePageController;
         private WizardEngine _engine;
-        private void InitializeWizardFrontend()
+        private void InitializeWizardComponentProvider()
         {
             _gamePageController = new GamePageController(this, this.Dispatcher);
 
-
             // bind callbacks to UI elements
-            game_canvas_storyboard.Completed += this.OnGameCanvasStoryboard_Completed;
+            player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
         }
 
         /*************** IWizardFrontend implementation ********************/
@@ -76,8 +75,8 @@ namespace WizardMobile.Uwp.Gameplay
                 {
                     Image = rightCard,
                     Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = i * .1
+                    Duration = 0.2,
+                    Delay = i * .1
                 });
                 game_canvas.Children.Add(rightCard);
                 game_canvas_storyboard.Children.AddRange(rightCardAnimations);
@@ -88,8 +87,8 @@ namespace WizardMobile.Uwp.Gameplay
                 {
                     Image = leftCard,
                     Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = .05 + i * .1
+                    Duration = 0.2,
+                    Delay = .05 + i * .1
                 });
                 game_canvas.Children.Add(leftCard);
                 game_canvas_storyboard.Children.AddRange(leftCardAnimations);
@@ -119,8 +118,8 @@ namespace WizardMobile.Uwp.Gameplay
                     {
                         Image = aiPlayercard,
                         Destination = CENTER_STACK_STARTING_POINT,
-                        DurationSeconds = 0.2,
-                        DelaySeconds = 0.5 * i + .125 * j,
+                        Duration = 0.2,
+                        Delay = 0.5 * i + .125 * j,
                         Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
                     }));
                 }
@@ -132,8 +131,8 @@ namespace WizardMobile.Uwp.Gameplay
                 {
                     Image = humanPlayerCard,
                     Destination = CENTER_STACK_STARTING_POINT,
-                    DurationSeconds = 0.2,
-                    DelaySeconds = 0.5 * i + 1,
+                    Duration = 0.2,
+                    Delay = 0.5 * i + 1,
                     Rotations = 3
                 }));
 
@@ -194,17 +193,37 @@ namespace WizardMobile.Uwp.Gameplay
 
         public AnimationSession CreateAnimationSession()
         {
-            return new AnimationSession(this); // TODO restrict animation session to 1 instance at a time?
+            return new AnimationSession(this);
         }
 
+        /*************************** IWizardComponentProvider implementation *******************************/
         public void SetMessageBoxText(string message)
         {
             game_message_box.Text = message;
+        }
+
+        public void SetPlayerCreationInputVisibility(bool isVisible)
+        {
+            player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public event Action<string> PlayerCreationInputEntered;
+
+
+        /********************** event handlers ***********************************/
+        public void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            var textInput = player_creation_input.Text;
+            if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
+            {
+                this.PlayerCreationInputEntered(textInput);
+            }
         }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
         private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
         private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);
+
     }
 }

@@ -67,9 +67,9 @@ namespace WizardMobile.Uwp.Gameplay
 
             private static readonly AnimationBehavior DEFAULT_INTERGROUP_ANIMATION_BEHAVIOR = new AnimationBehavior
             {
-                DelaySeconds = 0.5,
+                Delay = 0.5,
                 Rotations = 0.5,
-                DurationSeconds = 0.5
+                Duration = 0.5
             };
         }
     }

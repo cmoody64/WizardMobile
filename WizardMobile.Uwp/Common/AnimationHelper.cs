@@ -15,8 +15,8 @@ namespace WizardMobile.Uwp.Common
         public static List<DoubleAnimation> ComposeImageAnimations(ImageAnimationRequest animReq)
         {
             var image = animReq.Image ?? throw new ArgumentNullException("ImageAnimationRequest.Image may not be null");
-            var duration = animReq.DurationSeconds;
-            var delay = animReq.DelaySeconds;
+            var duration = animReq.Duration;
+            var delay = animReq.Delay;
 
             var animations = new List<DoubleAnimation>();
             Point curLocation = new Point((double)image.GetValue(Canvas.LeftProperty), (double)image.GetValue(Canvas.TopProperty));
@@ -93,7 +93,7 @@ namespace WizardMobile.Uwp.Common
     public class AnimationBehavior
     {
         public double Rotations { get; set; }
-        public double DurationSeconds { get; set; }
-        public double DelaySeconds { get; set; }
+        public double Duration { get; set; } // length of animation in seconds
+        public double Delay { get; set; } // seconds before animation begins
     }
 }

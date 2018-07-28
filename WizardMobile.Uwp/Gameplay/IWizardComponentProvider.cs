@@ -10,6 +10,9 @@ namespace WizardMobile.Uwp.Gameplay
     {
         GamePage.AnimationSession CreateAnimationSession();
         void SetMessageBoxText(string message);
+        void SetPlayerCreationInputVisibility(bool isVisible);
+
+        event Action<string> PlayerCreationInputEntered; // event passes the string input to each handler
         // TODO add set<text> methods
     }
 }
