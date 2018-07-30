@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.UI.Xaml.Controls;
 
 namespace WizardMobile.Uwp.Gameplay
 {
@@ -10,6 +12,8 @@ namespace WizardMobile.Uwp.Gameplay
     {
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
+        void BeginAnimations();    
+        Image GetCardImage(string cardImageKey, Point position, double angle = 0);
 
         // events
         event EventHandler AnimationsCompleted;  

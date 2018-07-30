@@ -32,7 +32,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         public void Add(string cardName)
         {
-            _cards.Add(cardName);
+            _cards.Add(cardName);            
             // add card to canvas at next location
             OnAnimateCardAddition();
         }

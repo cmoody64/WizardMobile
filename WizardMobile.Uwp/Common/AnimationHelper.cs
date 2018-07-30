@@ -67,12 +67,12 @@ namespace WizardMobile.Uwp.Common
                 rotationAnimation.From = curAngle;
                 rotationAnimation.To = finalAngle;
                 rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
-                rotationAnimation.BeginTime = TimeSpan.FromSeconds(delay);
+                rotationAnimation.BeginTime = TimeSpan.FromSeconds(delay);                
 
                 Storyboard.SetTarget(rotationAnimation, image);
                 Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
 
-                rotationAnimation.Completed += (sender, eventArgs) => ((RotateTransform)image.RenderTransform).Angle = finalAngle;
+                //rotationAnimation.Completed += (sender, eventArgs) => ((RotateTransform)image.RenderTransform).Angle = finalAngle;
 
                 animations.Add(rotationAnimation);
             }

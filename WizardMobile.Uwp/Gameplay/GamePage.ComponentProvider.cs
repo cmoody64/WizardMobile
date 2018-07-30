@@ -11,6 +11,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using WizardMobile.Uwp.Common;
+using Windows.UI.Xaml.Media.Animation;
 
 namespace WizardMobile.Uwp.Gameplay
 {
@@ -24,6 +25,7 @@ namespace WizardMobile.Uwp.Gameplay
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
+            game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
         }
 
 
@@ -133,29 +135,65 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-        // TODO implement z index??        
-        //private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
-        //{
-        //    var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
-        //    var image = new Image();
-
-        //    image.Source = bitmapImage;
-
-        //    Canvas.SetLeft(image, position.X);
-        //    Canvas.SetTop(image, position.Y);
-
-        //    image.RenderTransform = new RotateTransform { Angle = angle };
-        //    image.RenderTransformOrigin = new Point(0.5, 0.5);
-
-        //    return image;
-        //}
-
         // callback that ensures that the storyboard clears out itself after each animation group completes
-        private void OnGameCanvasStoryboard_Completed(object sender, object eventArgs)
+        private void OnGameCanvasStoryboardCompleted(object sender, object eventArgs)
         {
             game_canvas_storyboard.Stop();
             game_canvas_storyboard.Children.Clear();
         }
+
+        // canvas facade interface ?? limit what is exposed to CardGroup ?
+        public void AddToCanvas(UIElement element, Point position)
+        {
+            Canvas.SetLeft(element, position.X);
+            Canvas.SetTop(element, position.Y);
+            game_canvas.Children.Add(element);
+        }
+
+        public void RemoveFromCanvas(UIElement element)
+        {
+            game_canvas.Children.Remove(element);
+        }
+
+        public void QueueAnimation(DoubleAnimation animation)
+        {
+            animation.Completed += OnAnimationCompleted;
+            animationQueue.Add(animation);
+        }
+
+        public void QueueAnimations(IEnumerable<DoubleAnimation> animations)
+        {
+            foreach (var animation in animations)
+                QueueAnimation(animation);
+        }
+
+        private List<DoubleAnimation> animationQueue;
+        private void OnAnimationCompleted(object sender, object args)
+        {
+
+            var animation = sender as DoubleAnimation;
+            string imageName = animation.GetValue(Storyboard.TargetNameProperty) as string;
+            Image image = FindName(imageName) as Image;
+
+            var targetProperty = animation.GetValue(Storyboard.TargetPropertyProperty) as DependencyProperty;
+            var animEndvalue = animation.To ?? 0.0;
+
+            game_canvas_storyboard.Pause();
+
+            // set the end property of the animation to the end property of the image
+            if (targetProperty == Canvas.TopProperty)
+                Canvas.SetTop(image, animEndvalue);
+            else if (targetProperty == Canvas.LeftProperty)
+                Canvas.SetLeft(image, animEndvalue);
+            else if (targetProperty == RotateTransform.AngleProperty)
+                ((RotateTransform)image.RenderTransform).Angle = animEndvalue;
+
+            // remove the animation from the storyboard
+            game_canvas_storyboard.Children.Remove(animation);
+
+            game_canvas_storyboard.Resume();
+        }
+
 
 
         /*************************** IWizardComponentProvider implementation *******************************/
@@ -167,6 +205,31 @@ namespace WizardMobile.Uwp.Gameplay
         public void SetPlayerCreationInputVisibility(bool isVisible)
         {
             player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public void BeginAnimations()
+        {
+            game_canvas_storyboard.Children.AddRange(animationQueue);
+            animationQueue.Clear();
+            game_canvas_storyboard.Begin();
+        }
+
+        // TODO implement z index??        
+        private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
+        {
+            var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
+            var image = new Image();
+
+            image.Source = bitmapImage;
+            image.Name = Guid.NewGuid().ToString(); ; // TODO is this the best way to ID images?
+
+            Canvas.SetLeft(image, position.X);
+            Canvas.SetTop(image, position.Y);
+
+            image.RenderTransform = new RotateTransform { Angle = angle };
+            image.RenderTransformOrigin = new Point(0.5, 0.5);
+
+            return image;
         }
 
         public event Action<string> PlayerCreationInputEntered;
