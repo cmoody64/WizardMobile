@@ -210,7 +210,7 @@ namespace WizardMobile.Uwp.Gameplay
         public event Action<string> PlayerCreationInputEntered;
 
 
-        /********************** event handlers ***********************************/
+        /************************************** event handlers **********************************************/
         public void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
         {
             var textInput = player_creation_input.Text;
@@ -219,6 +219,10 @@ namespace WizardMobile.Uwp.Gameplay
                 this.PlayerCreationInputEntered(textInput);
             }
         }
+
+        /***************************************** card groups **********************************************/
+        // these components are not exposed directly through the IWizardComponentProvider, but indirectly through an animation session        
+        public Dictionary<CardLocation, CardGroup> CardGroups { get; }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);

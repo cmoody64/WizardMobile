@@ -9,11 +9,8 @@ using WizardMobile.Uwp.Common;
 namespace WizardMobile.Uwp.Gameplay
 {
     public sealed partial class GamePage
-    {
-        // todo should be inner class like location
-        // TODO only component provider should be able to create instances of this class
+    {        
         // each session creates and manages its own storyboard, but adds images to the canvas
-        // no global storyboard - prevents animation leaks
         public class AnimationSession
         {
             public AnimationSession(GamePage gamePage)
@@ -47,23 +44,46 @@ namespace WizardMobile.Uwp.Gameplay
 
             public void AddCard(string cardName, CardLocation location, double delay = 0.0)
             {
+                var addAnimationRequests = _gamePage.CardGroups[location].AddWithAnimation(cardName);
+                if (delay > 0)
+                    foreach (var animRequest in addAnimationRequests)
+                        animRequest.Delay += delay;
 
+                var addAnimations = addAnimationRequests.Aggregate(new List<DoubleAnimation>(), (animList, animRequest) =>
+                {
+                    animList.AddRange(AnimationHelper.ComposeImageAnimations(animRequest));
+                    return animList;
+                });
+
+                _storyboard.Children.AddRange(addAnimations);
             }
 
             // adds multiple cards at the same time arranged in the order specified by the cardNames list
             public void AddCards(IEnumerable<string> cardNames, CardLocation location, double delay = 0.0)
             {
-                
+                foreach(var cardName in cardNames)
+                    AddCard(cardName, location, delay);
             }
 
             public void RemoveCard(string cardName, CardLocation location, double delay = 0.0)
             {
+                var removeAnimationRequests = _gamePage.CardGroups[location].RemoveWithAnimation(cardName);
+                if (delay > 0)
+                    foreach (var animRequest in removeAnimationRequests)
+                        animRequest.Delay += delay;
 
+                var removeAnimations = removeAnimationRequests.Aggregate(new List<DoubleAnimation>(), (animList, anim) =>
+                {
+                    animList.AddRange(AnimationHelper.ComposeImageAnimations(anim));
+                    return animList;
+                });
+
+                _storyboard.Children.AddRange(removeAnimations);
             }
 
             public void TranslateCard(string cardName, CardLocation source, CardLocation destination, AnimationBehavior animBehavior)
             {
-
+                
             }
 
             private string StoryboardKey => $"game_canvas_storyboard_{_sessionId}";
