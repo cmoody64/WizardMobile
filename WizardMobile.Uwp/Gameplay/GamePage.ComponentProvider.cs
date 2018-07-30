@@ -26,40 +26,6 @@ namespace WizardMobile.Uwp.Gameplay
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
         }
 
-        /*************** IWizardFrontend implementation ********************/
-        public Task<bool> DisplayStartGame()
-        {
-            game_message_box.Text = "Game Starting";
-            return Task.FromResult(true);
-
-        }
-
-        public Task<bool> DisplayStartRound(int roundNum)
-        {
-            game_message_box.Text = $"Round {roundNum} Starting";
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> DisplayStartTrick(int trickNum)
-        {
-            game_message_box.Text = $"Trick {trickNum} Starting";
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> DisplayTurnInProgress(Player player)
-        {
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
-        {
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> DisplayPlayerBid(int bid, Player player)
-        {
-            return Task.FromResult(true);
-        }
 
         public Task<bool> DisplayShuffle()
         {
@@ -191,10 +157,6 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Children.Clear();
         }
 
-        public AnimationSession CreateAnimationSession()
-        {
-            return new AnimationSession(this);
-        }
 
         /*************************** IWizardComponentProvider implementation *******************************/
         public void SetMessageBoxText(string message)
@@ -208,6 +170,20 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
         public event Action<string> PlayerCreationInputEntered;
+        public event EventHandler AnimationsCompleted;
+
+        public StackCardGroup CenterCardGroup { get; }
+        public TaperedStackCardGroup LeftCenterCardGroup { get; }
+        public TaperedStackCardGroup RightCenterCardGroup { get; }
+        public AdjacentCardGroup DiscardCardGroup { get; }
+        public AdjacentCardGroup Player1CardGroup { get; }
+        public AdjacentCardGroup Player1StagingCardGroup { get; }
+        public AdjacentCardGroup Player2CardGroup { get; }
+        public AdjacentCardGroup Player2StagingCardGroup { get; }
+        public AdjacentCardGroup Player3CardGroup { get; }
+        public AdjacentCardGroup Player3StagingCardGroup { get; }
+        public AdjacentCardGroup Player4CardGroup { get; }
+        public AdjacentCardGroup Player4StagingCardGroup { get; }
 
 
         /************************************** event handlers **********************************************/
@@ -219,10 +195,6 @@ namespace WizardMobile.Uwp.Gameplay
                 this.PlayerCreationInputEntered(textInput);
             }
         }
-
-        /***************************************** card groups **********************************************/
-        // these components are not exposed directly through the IWizardComponentProvider, but indirectly through an animation session        
-        public Dictionary<CardLocation, CardGroup> CardGroups { get; }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);

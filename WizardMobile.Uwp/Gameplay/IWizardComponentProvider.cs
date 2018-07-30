@@ -8,11 +8,26 @@ namespace WizardMobile.Uwp.Gameplay
 {
     public interface IWizardComponentProvider
     {
-        GamePage.AnimationSession CreateAnimationSession();
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
 
+        // events
+        event EventHandler AnimationsCompleted;  
         event Action<string> PlayerCreationInputEntered; // event passes the string input to each handler
-        // TODO add set<text> methods
+
+        // card groups
+        StackCardGroup CenterCardGroup { get; }
+        TaperedStackCardGroup LeftCenterCardGroup { get; }
+        TaperedStackCardGroup RightCenterCardGroup { get; }
+        AdjacentCardGroup DiscardCardGroup { get; }
+        AdjacentCardGroup Player1CardGroup { get; }
+        AdjacentCardGroup Player1StagingCardGroup { get; }
+        AdjacentCardGroup Player2CardGroup { get; }
+        AdjacentCardGroup Player2StagingCardGroup { get; }
+        AdjacentCardGroup Player3CardGroup { get; }
+        AdjacentCardGroup Player3StagingCardGroup { get; }
+        AdjacentCardGroup Player4CardGroup { get; }
+        AdjacentCardGroup Player4StagingCardGroup { get; }
+
     }
 }
