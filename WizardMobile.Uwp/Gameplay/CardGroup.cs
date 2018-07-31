@@ -66,16 +66,27 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
-
-        public void Transfer(string cardName, CardGroup destinationGroup, AnimationBehavior animationBehavior)
+        // transfers the first card in _cards matching the cardName param
+        public bool Transfer(string cardName, CardGroup destinationGroup, AnimationBehavior animationBehavior)
         {
-            _cards.Remove(cardName);
-            OnAnimateCardRemoval();
+            UniqueCard cardToTransfer = _cards.FirstOrDefault(card => card.Name == cardName);
+            if(cardToTransfer != null)
+            {
+                _cards.Remove(cardToTransfer);
+                OnAnimateCardRemoval();
 
-            var destinationPoint = destinationGroup.NextLocation;
-            // todo animate card to destination point
-            destinationGroup._cards.Add(cardName);
-            destinationGroup.OnAnimateCardRemoval();
+                var destinationPoint = destinationGroup.NextLocation;
+                var transferAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+                {
+                    
+                });
+
+                destinationGroup._cards.Add(cardToTransfer);
+                destinationGroup.OnAnimateCardAddition();
+
+                return true;
+            }
+            return false;
         }
 
         // added / transfered cards will be placed in this location

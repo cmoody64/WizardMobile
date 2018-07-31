@@ -12,7 +12,7 @@ namespace WizardMobile.Uwp.Common
     {
 
         // creates the animation objects associated with translating / rotating a single card
-        public static List<DoubleAnimation> ComposeImageAnimations(ImageAnimationRequest animReq)
+        public static List<DoubleAnimation> ComposeImageAnimations(InflatedAnimationRequest animReq)
         {
             var image = animReq.Image ?? throw new ArgumentNullException("ImageAnimationRequest.Image may not be null");
             var duration = animReq.Duration;
@@ -79,13 +79,36 @@ namespace WizardMobile.Uwp.Common
 
             return animations;
         }
+
+        public static InflatedAnimationRequest InflateAnimationRequest(AnimationRequest animRequest, Image image)
+        {
+            return new InflatedAnimationRequest
+            {
+                Destination = animRequest.Destination,
+                Delay = animRequest.Delay,
+                Duration = animRequest.Duration,
+                Rotations = animRequest.Duration,
+                Image = image
+            };
+        }
     }
 
-    // extends animation behavior by providing enough details to produce an instance of an animation
-    public class ImageAnimationRequest: AnimationBehavior
+    // identical to Animation request but instead of a Guid reference to an image, the image has been inflated
+    // to represent a full image object (bitmap, position, etc...)
+    // used in layers that deal directly with the canvas / resource map (e.g. GamePage)
+    public class InflatedAnimationRequest: AnimationBehavior
     {
         public Point Destination { get; set; }
         public Image Image { get; set; }
+    }
+
+    // extends animation behavior by providing enough details to produce an instance of an animation.
+    // used in layers where the concept of a UniqueImage is present, meaning that the layer contains
+    // references to images but not image objects (e.g. CardGroup layer)
+    public class AnimationRequest: AnimationBehavior
+    {
+        public Point Destination { get; set; }
+        public string ImageGuid { get; set; }
     }
 
     // description of animation without providing concrete details about an animation instance

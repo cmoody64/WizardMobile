@@ -39,7 +39,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
                 Image rightCard = CreateCardImage(BACK_OF_CARD_KEY, rightPosition);
-                var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
                 {
                     Image = rightCard,
                     Destination = CENTER_STACK_STARTING_POINT,
@@ -51,7 +51,7 @@ namespace WizardMobile.Uwp.Gameplay
 
                 Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
                 Image leftCard = CreateCardImage(BACK_OF_CARD_KEY, leftPosition);
-                var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
                 {
                     Image = leftCard,
                     Destination = CENTER_STACK_STARTING_POINT,
@@ -82,7 +82,7 @@ namespace WizardMobile.Uwp.Gameplay
                 {
                     Image aiPlayercard = CreateCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
                     game_canvas.Children.Add(aiPlayercard);
-                    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
                     {
                         Image = aiPlayercard,
                         Destination = CENTER_STACK_STARTING_POINT,
@@ -95,7 +95,7 @@ namespace WizardMobile.Uwp.Gameplay
                 // deal Human players hand face up
                 Image humanPlayerCard = CreateCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
                 game_canvas.Children.Add(humanPlayerCard);
-                game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
+                game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
                 {
                     Image = humanPlayerCard,
                     Destination = CENTER_STACK_STARTING_POINT,
@@ -136,16 +136,22 @@ namespace WizardMobile.Uwp.Gameplay
             elementToReplace.Source = game_canvas.Resources[cardToReplace.Name] as BitmapImage;
         }
 
-        public void QueueAnimation(DoubleAnimation animation)
+        public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
-            animation.Completed += OnAnimationCompleted;
-            animationQueue.Add(animation);
+            Image animationTargetImage = FindName(animationRequest.ImageGuid) as Image;
+            InflatedAnimationRequest inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, animationTargetImage);
+            List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
+
+            // make sure each animation is properly cleaned up by assigning the completed handler 
+            animations.ForEach(animation => animation.Completed += OnAnimationCompleted);
+            
+            animationQueue.AddRange(animations);
         }
 
-        public void QueueAnimations(IEnumerable<DoubleAnimation> animations)
+        public void QueueAnimationRequests(IEnumerable<AnimationRequest> animations)
         {
             foreach (var animation in animations)
-                QueueAnimation(animation);
+                QueueAnimationRequest(animation);
         }
 
         private List<DoubleAnimation> animationQueue;
