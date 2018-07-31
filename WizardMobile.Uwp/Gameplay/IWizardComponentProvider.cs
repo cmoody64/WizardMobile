@@ -13,7 +13,6 @@ namespace WizardMobile.Uwp.Gameplay
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
         void BeginAnimations();    
-        Image GetCardImage(string cardImageKey, Point position, double angle = 0);
 
         // events
         event EventHandler AnimationsCompleted;  

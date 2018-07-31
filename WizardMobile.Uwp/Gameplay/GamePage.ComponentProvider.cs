@@ -15,7 +15,7 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace WizardMobile.Uwp.Gameplay
 {
-    public sealed partial class GamePage: IWizardComponentProvider
+    public sealed partial class GamePage: IWizardComponentProvider, ICanvasFacade
     {
         private GamePageController _gamePageController;
         private WizardEngine _engine;
@@ -38,7 +38,7 @@ namespace WizardMobile.Uwp.Gameplay
             for (int i = 0; i < shuffleAnimationCount; i++)
             {
                 Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
-                Image rightCard = GetCardImage(BACK_OF_CARD_KEY, rightPosition);
+                Image rightCard = CreateCardImage(BACK_OF_CARD_KEY, rightPosition);
                 var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                 {
                     Image = rightCard,
@@ -50,7 +50,7 @@ namespace WizardMobile.Uwp.Gameplay
                 game_canvas_storyboard.Children.AddRange(rightCardAnimations);
 
                 Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
-                Image leftCard = GetCardImage(BACK_OF_CARD_KEY, leftPosition);
+                Image leftCard = CreateCardImage(BACK_OF_CARD_KEY, leftPosition);
                 var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                 {
                     Image = leftCard,
@@ -80,7 +80,7 @@ namespace WizardMobile.Uwp.Gameplay
                 // iterate through all AI players and deal cards face  down
                 for (int j = 0; j < players.Count - 1; j++)
                 {
-                    Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
+                    Image aiPlayercard = CreateCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
                     game_canvas.Children.Add(aiPlayercard);
                     game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                     {
@@ -93,7 +93,7 @@ namespace WizardMobile.Uwp.Gameplay
                 }
 
                 // deal Human players hand face up
-                Image humanPlayerCard = GetCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
+                Image humanPlayerCard = CreateCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
                 game_canvas.Children.Add(humanPlayerCard);
                 game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
                 {
@@ -113,46 +113,28 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-        public Task<List<string>> PromptPlayerCreation()
+        /*************************** ICanvasFacade implementation *******************************/
+        public void AddToCanvas(UniqueCard card, Point position, double orientationDegrees)
         {
-            game_message_box.Text = "Player Creation";
-            player_creation_input.Visibility = Visibility.Visible;
+            Image image = CreateCardImage(card, position);
 
-            TaskCompletionSource<List<string>> cardTaskCompletionSource = new TaskCompletionSource<List<string>>();
-            var x = this.player_creation_input.Visibility;
-            player_creation_input.KeyDown += (object sender, KeyRoutedEventArgs e) =>
-            {
-                var textInput = player_creation_input.Text;
-                if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
-                {
-                    cardTaskCompletionSource.SetResult(new List<string>() { textInput });
-                    player_creation_input.Visibility = Visibility.Collapsed;
-                }
-
-            };
-
-            return cardTaskCompletionSource.Task;
+            Canvas.SetLeft(image, position.X);
+            Canvas.SetTop(image, position.Y);
+            ((RotateTransform)image.RenderTransform).Angle = orientationDegrees;
+            game_canvas.Children.Add(image);
         }
 
-
-        // callback that ensures that the storyboard clears out itself after each animation group completes
-        private void OnGameCanvasStoryboardCompleted(object sender, object eventArgs)
+        public void RemoveFromCanvas(UniqueCard card)
         {
-            game_canvas_storyboard.Stop();
-            game_canvas_storyboard.Children.Clear();
+            Image elementToRemove = this.FindName(card.Id) as Image;
+            game_canvas.Children.Remove(elementToRemove);
         }
-
-        // canvas facade interface ?? limit what is exposed to CardGroup ?
-        public void AddToCanvas(UIElement element, Point position)
+         
+        public void ReplaceCard(UniqueCard cardToReplace, string newCardName)
         {
-            Canvas.SetLeft(element, position.X);
-            Canvas.SetTop(element, position.Y);
-            game_canvas.Children.Add(element);
-        }
-
-        public void RemoveFromCanvas(UIElement element)
-        {
-            game_canvas.Children.Remove(element);
+            Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
+            elementToReplace.Source = game_canvas.Resources[cardToReplace.Name] as BitmapImage;
+            cardToReplace.Name = newCardName;
         }
 
         public void QueueAnimation(DoubleAnimation animation)
@@ -214,14 +196,15 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Begin();
         }
 
-        // TODO implement z index??        
-        private Image GetCardImage(string cardImageKey, Point position, double angle = 0)
+        // TODO implement z index??
+
+        private Image CreateCardImage(UniqueCard card, Point position, double angle = 0)
         {
-            var bitmapImage = game_canvas.Resources[cardImageKey] as BitmapImage;
+            var bitmapImage = game_canvas.Resources[card.Name] as BitmapImage;
             var image = new Image();
 
             image.Source = bitmapImage;
-            image.Name = Guid.NewGuid().ToString(); ; // TODO is this the best way to ID images?
+            image.Name = card.Id;
 
             Canvas.SetLeft(image, position.X);
             Canvas.SetTop(image, position.Y);
@@ -250,13 +233,20 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /************************************** event handlers **********************************************/
-        public void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
+        private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
         {
             var textInput = player_creation_input.Text;
             if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
             {
                 this.PlayerCreationInputEntered(textInput);
             }
+        }
+
+        // callback that ensures that the storyboard clears out itself after each animation group completes
+        private void OnGameCanvasStoryboardCompleted(object sender, object eventArgs)
+        {
+            game_canvas_storyboard.Stop();
+            game_canvas_storyboard.Children.Clear();
         }
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";

@@ -17,9 +17,9 @@ namespace WizardMobile.Uwp.Gameplay
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(GamePage parent, Point origin, double orientationDegress)
+        public CardGroup(ICanvasFacade canvasFacade, Point origin, double orientationDegress)
         {
-            _gamePage = parent;
+            _canvasFacade = canvasFacade;
             Origin = origin;
             OrientationDegress = orientationDegress;
         }
@@ -27,21 +27,40 @@ namespace WizardMobile.Uwp.Gameplay
         public Point Origin { get; }
         public double OrientationDegress { get; }
 
-        protected GamePage _gamePage;
-        private List<string> _cards;
+        protected ICanvasFacade _canvasFacade;
+        private List<UniqueCard> _cards;
 
         public void Add(string cardName)
         {
-            _cards.Add(cardName);            
+            _cards.Add(new UniqueCard(cardName));            
             // add card to canvas at next location
             OnAnimateCardAddition();
         }
 
-        public void Remove(string cardName)
+        // removes the first card in _cards matching the cardName param
+        public bool Remove(string cardName)
         {
-            _cards.Remove(cardName);
-            // remove card from canvas
-            OnAnimateCardRemoval();
+            int indexToRemove = _cards.FindIndex(card => card.Name == cardName);
+            if(indexToRemove > -1)
+            {
+                // remove card from canvas
+                OnAnimateCardRemoval();
+                return true;
+            }
+            return false;
+        }
+
+        // replaces the first card in _cards matching the toReplace param
+        // if no match is found, a replacement cannot be done and false is returned
+        public bool Replace(string cardToReplace, string newCard)
+        {
+            var oldCard = _cards.FirstOrDefault(card => card == cardToReplace);
+            if(oldCard != null)
+            {
+                // replace card bitmap with newCard bitmap
+                return true;
+            }
+            return false;
         }
 
 
