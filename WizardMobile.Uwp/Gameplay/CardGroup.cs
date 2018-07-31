@@ -32,18 +32,20 @@ namespace WizardMobile.Uwp.Gameplay
 
         public void Add(string cardName)
         {
-            _cards.Add(new UniqueCard(cardName));            
-            // add card to canvas at next location
+            UniqueCard card = new UniqueCard(cardName);
+            _cards.Add(card);
+            _canvasFacade.AddToCanvas(card, NextLocation, OrientationDegress);
             OnAnimateCardAddition();
         }
 
         // removes the first card in _cards matching the cardName param
         public bool Remove(string cardName)
         {
-            int indexToRemove = _cards.FindIndex(card => card.Name == cardName);
-            if(indexToRemove > -1)
+            UniqueCard cardToRemove = _cards.FirstOrDefault(card => card.Name == cardName);
+            if(cardToRemove != null)
             {
-                // remove card from canvas
+                _cards.Remove(cardToRemove);
+                _canvasFacade.RemoveFromCanvas(cardToRemove);
                 OnAnimateCardRemoval();
                 return true;
             }
@@ -54,10 +56,11 @@ namespace WizardMobile.Uwp.Gameplay
         // if no match is found, a replacement cannot be done and false is returned
         public bool Replace(string cardToReplace, string newCard)
         {
-            var oldCard = _cards.FirstOrDefault(card => card == cardToReplace);
-            if(oldCard != null)
+            UniqueCard cardToUpdate = _cards.FirstOrDefault(card => card.Name == cardToReplace);
+            if(cardToUpdate != null)
             {
-                // replace card bitmap with newCard bitmap
+                cardToUpdate.Name = newCard;
+                _canvasFacade.ReplaceCardBitmap(cardToUpdate, newCard);
                 return true;
             }
             return false;

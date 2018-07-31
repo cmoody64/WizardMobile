@@ -13,7 +13,7 @@ namespace WizardMobile.Uwp.Gameplay
     {
         void AddToCanvas(UniqueCard card, Point position, double orientationDegrees);
         void RemoveFromCanvas(UniqueCard card);
-        void ReplaceCard(UniqueCard cardToReplace, string newCardName);
+        void ReplaceCardBitmap(UniqueCard cardToReplace, string newCardName);
         void QueueAnimation(DoubleAnimation animation);
         void QueueAnimations(IEnumerable<DoubleAnimation> animations);
     }

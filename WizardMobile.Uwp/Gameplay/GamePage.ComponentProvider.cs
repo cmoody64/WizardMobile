@@ -130,11 +130,10 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Remove(elementToRemove);
         }
          
-        public void ReplaceCard(UniqueCard cardToReplace, string newCardName)
+        public void ReplaceCardBitmap(UniqueCard cardToReplace, string newCardName)
         {
             Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
             elementToReplace.Source = game_canvas.Resources[cardToReplace.Name] as BitmapImage;
-            cardToReplace.Name = newCardName;
         }
 
         public void QueueAnimation(DoubleAnimation animation)
