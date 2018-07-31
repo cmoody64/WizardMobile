@@ -76,10 +76,14 @@ namespace WizardMobile.Uwp.Gameplay
                 OnAnimateCardRemoval();
 
                 var destinationPoint = destinationGroup.NextLocation;
-                var transferAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+                var transferAnimRequest = new AnimationRequest()
                 {
-                    
-                });
+                    Destination = destinationPoint,
+                    Duration = animationBehavior.Duration,
+                    Delay = animationBehavior.Delay,
+                    Rotations = animationBehavior.Rotations,
+                    ImageGuid = cardToTransfer.Id
+                };
 
                 destinationGroup._cards.Add(cardToTransfer);
                 destinationGroup.OnAnimateCardAddition();
