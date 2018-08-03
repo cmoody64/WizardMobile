@@ -100,7 +100,7 @@ namespace WizardMobile.Uwp
             switch(page)
             {
                 case Page.GAMEPLAY:
-                    _rootFrame.Navigate(typeof(GamePage));
+                    _rootFrame.Navigate(typeof(Gameplay.GamePage));
                     break;
                 case Page.PAUSE:
                     break;

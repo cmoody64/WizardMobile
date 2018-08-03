@@ -22,6 +22,20 @@ namespace WizardMobile.Uwp.Gameplay
         private void InitializeWizardComponentProvider()
         {
             _gamePageController = new GamePageController(this, this.Dispatcher);
+            animationQueue = new List<DoubleAnimation>();
+
+            CenterCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new Point(0, 0), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new Point(0, 0), 0);
+            AdjacentCardGroup DiscardCardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
+            AdjacentCardGroup Player1CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
+            StackCardGroup Player1StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
+            AdjacentCardGroup Player2CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
+            StackCardGroup Player2StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
+            AdjacentCardGroup Player3CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
+            StackCardGroup Player3StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
+            AdjacentCardGroup Player4CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
+            StackCardGroup Player4StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -29,88 +43,88 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-        public Task<bool> DisplayShuffle()
-        {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+        //public Task<bool> DisplayShuffle()
+        //{
+        //    TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            int shuffleAnimationCount = 6;
+        //    int shuffleAnimationCount = 6;
 
-            for (int i = 0; i < shuffleAnimationCount; i++)
-            {
-                Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
-                Image rightCard = CreateCardImage(BACK_OF_CARD_KEY, rightPosition);
-                var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
-                {
-                    Image = rightCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    Duration = 0.2,
-                    Delay = i * .1
-                });
-                game_canvas.Children.Add(rightCard);
-                game_canvas_storyboard.Children.AddRange(rightCardAnimations);
+        //    for (int i = 0; i < shuffleAnimationCount; i++)
+        //    {
+        //        Point rightPosition = new Point(RIGHT_STACK_STARTING_POINT.X, RIGHT_STACK_STARTING_POINT.Y + 5 * i);
+        //        Image rightCard = CreateCardImage(BACK_OF_CARD_KEY, rightPosition);
+        //        var rightCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+        //        {
+        //            Image = rightCard,
+        //            Destination = CENTER_STACK_STARTING_POINT,
+        //            Duration = 0.2,
+        //            Delay = i * .1
+        //        });
+        //        game_canvas.Children.Add(rightCard);
+        //        game_canvas_storyboard.Children.AddRange(rightCardAnimations);
 
-                Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
-                Image leftCard = CreateCardImage(BACK_OF_CARD_KEY, leftPosition);
-                var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
-                {
-                    Image = leftCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    Duration = 0.2,
-                    Delay = .05 + i * .1
-                });
-                game_canvas.Children.Add(leftCard);
-                game_canvas_storyboard.Children.AddRange(leftCardAnimations);
-            }
+        //        Point leftPosition = new Point(LEFT_STACK_STARTING_POINT.X, LEFT_STACK_STARTING_POINT.Y + 5 * i);
+        //        Image leftCard = CreateCardImage(BACK_OF_CARD_KEY, leftPosition);
+        //        var leftCardAnimations = AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+        //        {
+        //            Image = leftCard,
+        //            Destination = CENTER_STACK_STARTING_POINT,
+        //            Duration = 0.2,
+        //            Delay = .05 + i * .1
+        //        });
+        //        game_canvas.Children.Add(leftCard);
+        //        game_canvas_storyboard.Children.AddRange(leftCardAnimations);
+        //    }
 
-            game_canvas_storyboard.Begin();
-            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+        //    game_canvas_storyboard.Begin();
+        //    game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
 
-            return taskCompletionSource.Task;
-        }
+        //    return taskCompletionSource.Task;
+        //}
 
-        public Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
-        {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+        //public Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
+        //{
+        //    TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
+        //    game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
 
-            var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
-            for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
-            {
-                // iterate through all AI players and deal cards face  down
-                for (int j = 0; j < players.Count - 1; j++)
-                {
-                    Image aiPlayercard = CreateCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
-                    game_canvas.Children.Add(aiPlayercard);
-                    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
-                    {
-                        Image = aiPlayercard,
-                        Destination = CENTER_STACK_STARTING_POINT,
-                        Duration = 0.2,
-                        Delay = 0.5 * i + .125 * j,
-                        Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
-                    }));
-                }
+        //    var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+        //    for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
+        //    {
+        //        // iterate through all AI players and deal cards face  down
+        //        for (int j = 0; j < players.Count - 1; j++)
+        //        {
+        //            Image aiPlayercard = CreateCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
+        //            game_canvas.Children.Add(aiPlayercard);
+        //            game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+        //            {
+        //                Image = aiPlayercard,
+        //                Destination = CENTER_STACK_STARTING_POINT,
+        //                Duration = 0.2,
+        //                Delay = 0.5 * i + .125 * j,
+        //                Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
+        //            }));
+        //        }
 
-                // deal Human players hand face up
-                Image humanPlayerCard = CreateCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
-                game_canvas.Children.Add(humanPlayerCard);
-                game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
-                {
-                    Image = humanPlayerCard,
-                    Destination = CENTER_STACK_STARTING_POINT,
-                    Duration = 0.2,
-                    Delay = 0.5 * i + 1,
-                    Rotations = 3
-                }));
+        //        // deal Human players hand face up
+        //        Image humanPlayerCard = CreateCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
+        //        game_canvas.Children.Add(humanPlayerCard);
+        //        game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new InflatedAnimationRequest
+        //        {
+        //            Image = humanPlayerCard,
+        //            Destination = CENTER_STACK_STARTING_POINT,
+        //            Duration = 0.2,
+        //            Delay = 0.5 * i + 1,
+        //            Rotations = 3
+        //        }));
 
-            }
+        //    }
 
-            game_canvas_storyboard.Begin();
-            game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+        //    game_canvas_storyboard.Begin();
+        //    game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
 
-            return taskCompletionSource.Task;
-        }
+        //    return taskCompletionSource.Task;
+        //}
 
 
         /*************************** ICanvasFacade implementation *******************************/
@@ -223,18 +237,18 @@ namespace WizardMobile.Uwp.Gameplay
         public event Action<string> PlayerCreationInputEntered;
         public event EventHandler AnimationsCompleted;
 
-        public StackCardGroup CenterCardGroup { get; }
-        public TaperedStackCardGroup LeftCenterCardGroup { get; }
-        public TaperedStackCardGroup RightCenterCardGroup { get; }
-        public AdjacentCardGroup DiscardCardGroup { get; }
-        public AdjacentCardGroup Player1CardGroup { get; }
-        public AdjacentCardGroup Player1StagingCardGroup { get; }
-        public AdjacentCardGroup Player2CardGroup { get; }
-        public AdjacentCardGroup Player2StagingCardGroup { get; }
-        public AdjacentCardGroup Player3CardGroup { get; }
-        public AdjacentCardGroup Player3StagingCardGroup { get; }
-        public AdjacentCardGroup Player4CardGroup { get; }
-        public AdjacentCardGroup Player4StagingCardGroup { get; }
+        public StackCardGroup CenterCardGroup { get; private set; }
+        public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
+        public TaperedStackCardGroup RightCenterCardGroup { get; private set; }
+        public AdjacentCardGroup DiscardCardGroup { get; private set; }
+        public AdjacentCardGroup Player1CardGroup { get; private set; }
+        public AdjacentCardGroup Player1StagingCardGroup { get; private set; }
+        public AdjacentCardGroup Player2CardGroup { get; private set; }
+        public AdjacentCardGroup Player2StagingCardGroup { get; private set; }
+        public AdjacentCardGroup Player3CardGroup { get; private set; }
+        public AdjacentCardGroup Player3StagingCardGroup { get; private set; }
+        public AdjacentCardGroup Player4CardGroup { get; private set; }
+        public AdjacentCardGroup Player4StagingCardGroup { get; private set; }
 
 
         /************************************** event handlers **********************************************/
@@ -252,9 +266,9 @@ namespace WizardMobile.Uwp.Gameplay
         {
             game_canvas_storyboard.Stop();
             game_canvas_storyboard.Children.Clear();
+            this.AnimationsCompleted(this, null);
         }
 
-        private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
         private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
         private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);

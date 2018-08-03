@@ -38,6 +38,12 @@ namespace WizardMobile.Uwp.Gameplay
             OnAnimateCardAddition();
         }
 
+        public void AddRange(IEnumerable<string> cardNames)
+        {
+            foreach (string cardName in cardNames)
+                Add(cardName);
+        }
+
         // removes the first card in _cards matching the cardName param
         public bool Remove(string cardName)
         {

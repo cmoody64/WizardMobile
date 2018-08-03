@@ -14,6 +14,8 @@ namespace WizardMobile.Uwp.Gameplay
     {
         public GamePageController(IWizardComponentProvider componentProvider, CoreDispatcher uiDispatcher)
         {
+            _componentProvider = componentProvider;
+
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
             // must be marshalled through the proxy frontend which implements multithreading protocol
             // this relationship does not extend two ways - this class can make calls directly to the engine
@@ -27,28 +29,33 @@ namespace WizardMobile.Uwp.Gameplay
         private WizardEngine _engine;
 
         /*************** IWizardFrontend implementation ********************/
-        public Task<bool> DisplayStartGame()
+        public async Task<bool> DisplayStartGame()
         {
             _componentProvider.SetMessageBoxText("Game Starting");
-            return Task.FromResult(true);
+            await Task.Delay(2000);
+            return true;
 
         }
 
-        public Task<bool> DisplayStartRound(int roundNum)
+        public async Task<bool> DisplayStartRound(int roundNum)
         {
             _componentProvider.SetMessageBoxText($"Round {roundNum} Starting");
-            return Task.FromResult(true);
+            await Task.Delay(1000);
+            return true;
         }
 
-        public Task<bool> DisplayStartTrick(int trickNum)
+        public async Task<bool> DisplayStartTrick(int trickNum)
         {
             _componentProvider.SetMessageBoxText($"Trick {trickNum} Starting");
-            return Task.FromResult(true);
+            await Task.Delay(1000);
+            return true;
         }
 
-        public Task<bool> DisplayTurnInProgress(Player player)
+        public async Task<bool> DisplayTurnInProgress(Player player)
         {
-            return Task.FromResult(true);
+            _componentProvider.SetMessageBoxText($"{player.Name}'s turn");
+            await Task.Delay(1000);
+            return true;
         }
 
         public Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
@@ -63,21 +70,30 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<bool> DisplayShuffle()
         {
-            var animationSession = _componentProvider.CreateAnimationSession();
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             const int shuffleCount = 5;
-            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), CardLocation.LEFT_CENTER);
-            animationSession.AddCards(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount), CardLocation.RIGHT_CENTER);
+            _componentProvider.LeftCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
+            _componentProvider.RightCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
 
             for (int i = 0; i < shuffleCount; i++)
             {
-                animationSession.TranslateCard(BACK_OF_CARD_KEY, CardLocation.LEFT_CENTER, CardLocation.CENTER, new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 });
-                animationSession.TranslateCard(BACK_OF_CARD_KEY, CardLocation.RIGHT_CENTER, CardLocation.CENTER, new AnimationBehavior { Delay = 0.1 + 0.2 * i, Duration = 0.2 });
+                _componentProvider.LeftCenterCardGroup.Transfer
+                (
+                    BACK_OF_CARD_KEY,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                );
+                _componentProvider.RightCenterCardGroup.Transfer
+                (
+                    BACK_OF_CARD_KEY,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                );
             }
 
-            animationSession.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
-            animationSession.Begin();
+            _componentProvider.AnimationsCompleted += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
         }
