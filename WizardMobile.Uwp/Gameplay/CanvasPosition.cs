@@ -31,7 +31,7 @@ namespace WizardMobile.Uwp.Gameplay
         public double NormalizedX { get; }
         public double NormalizedY { get; }
 
-        private readonly static int NORMALIZED_WIDTH = 100;
-        private readonly static int NORMALIZED_HEIGHT = 100;
+        public readonly static int NORMALIZED_WIDTH = 100;
+        public readonly static int NORMALIZED_HEIGHT = 100;
     }
 }

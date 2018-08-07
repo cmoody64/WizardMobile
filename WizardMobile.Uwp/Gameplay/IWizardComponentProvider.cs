@@ -18,19 +18,19 @@ namespace WizardMobile.Uwp.Gameplay
         event EventHandler AnimationsCompleted;  
         event Action<string> PlayerCreationInputEntered; // event passes the string input to each handler
 
-        // card groups
+        // card groups 
         StackCardGroup CenterCardGroup { get; }
         TaperedStackCardGroup LeftCenterCardGroup { get; }
         TaperedStackCardGroup RightCenterCardGroup { get; }
         AdjacentCardGroup DiscardCardGroup { get; }
         AdjacentCardGroup Player1CardGroup { get; }
-        AdjacentCardGroup Player1StagingCardGroup { get; }
+        StackCardGroup Player1StagingCardGroup { get; }
         AdjacentCardGroup Player2CardGroup { get; }
-        AdjacentCardGroup Player2StagingCardGroup { get; }
+        StackCardGroup Player2StagingCardGroup { get; }
         AdjacentCardGroup Player3CardGroup { get; }
-        AdjacentCardGroup Player3StagingCardGroup { get; }
+        StackCardGroup Player3StagingCardGroup { get; }
         AdjacentCardGroup Player4CardGroup { get; }
-        AdjacentCardGroup Player4StagingCardGroup { get; }
+        StackCardGroup Player4StagingCardGroup { get; }
 
     }
 }
