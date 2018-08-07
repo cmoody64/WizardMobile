@@ -20,6 +20,7 @@ namespace WizardMobile.Uwp.Gameplay
         public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress)
         {
             _canvasFacade = canvasFacade;
+            _cards = new List<UniqueCard>();
             Origin = origin;
             OrientationDegress = orientationDegress;
         }
@@ -90,6 +91,7 @@ namespace WizardMobile.Uwp.Gameplay
                     Rotations = animationBehavior.Rotations,
                     ImageGuid = cardToTransfer.Id
                 };
+                _canvasFacade.QueueAnimationRequest(transferAnimRequest);
 
                 destinationGroup._cards.Add(cardToTransfer);
                 destinationGroup.OnAnimateCardAddition();

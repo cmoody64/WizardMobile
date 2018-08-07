@@ -21,7 +21,6 @@ namespace WizardMobile.Uwp.Gameplay
 
         private void InitializeWizardComponentProvider()
         {
-            _gamePageController = new GamePageController(this, this.Dispatcher);
             animationQueue = new List<DoubleAnimation>();
 
             CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
@@ -40,6 +39,8 @@ namespace WizardMobile.Uwp.Gameplay
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
+
+            _gamePageController = new GamePageController(this, this.Dispatcher);
         }
 
 
@@ -49,9 +50,9 @@ namespace WizardMobile.Uwp.Gameplay
             Point position = CanvasPositionToPoint(canvasPositon);
             Image image = CreateCardImage(card, position);
 
-            Canvas.SetLeft(image, position.X);
-            Canvas.SetTop(image, position.Y);
-            ((RotateTransform)image.RenderTransform).Angle = orientationDegrees;
+            //Canvas.SetLeft(image, position.X);
+            //Canvas.SetTop(image, position.Y);
+            //((RotateTransform)image.RenderTransform).Angle = orientationDegrees;
             game_canvas.Children.Add(image);
         }
 
@@ -192,8 +193,8 @@ namespace WizardMobile.Uwp.Gameplay
         /************************************** helpers **********************************************/
         private Point CanvasPositionToPoint(CanvasPosition pos)
         {
-            double x = pos.NormalizedX * game_canvas.Width / CanvasPosition.NORMALIZED_WIDTH;
-            double y = pos.NormalizedY * game_canvas.Height / CanvasPosition.NORMALIZED_HEIGHT;
+            double x = pos.NormalizedX * game_canvas.ActualWidth / CanvasPosition.NORMALIZED_WIDTH;
+            double y = pos.NormalizedY * game_canvas.ActualHeight / CanvasPosition.NORMALIZED_HEIGHT;
             return new Point(x, y);
         }
 
