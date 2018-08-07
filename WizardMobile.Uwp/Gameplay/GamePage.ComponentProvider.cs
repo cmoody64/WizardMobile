@@ -91,9 +91,8 @@ namespace WizardMobile.Uwp.Gameplay
         private void OnAnimationCompleted(object sender, object args)
         {
 
-            var animation = sender as DoubleAnimation;
-            string imageName = animation.GetValue(Storyboard.TargetNameProperty) as string;
-            Image image = FindName(imageName) as Image;
+            var animation = sender as DoubleAnimation;            
+            Image image = animation.GetValue(Storyboard.TargetPropertyProperty) as Image;
 
             var targetProperty = animation.GetValue(Storyboard.TargetPropertyProperty) as DependencyProperty;
             var animEndvalue = animation.To ?? 0.0;
