@@ -18,24 +18,24 @@ namespace WizardMobile.Uwp.Gameplay
     public sealed partial class GamePage: IWizardComponentProvider, ICanvasFacade
     {
         private GamePageController _gamePageController;
-        private WizardEngine _engine;
+
         private void InitializeWizardComponentProvider()
         {
             _gamePageController = new GamePageController(this, this.Dispatcher);
             animationQueue = new List<DoubleAnimation>();
 
-            CenterCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new Point(0, 0), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new Point(0, 0), 0);
-            AdjacentCardGroup DiscardCardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
-            AdjacentCardGroup Player1CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
-            StackCardGroup Player1StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
-            AdjacentCardGroup Player2CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
-            StackCardGroup Player2StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
-            AdjacentCardGroup Player3CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
-            StackCardGroup Player3StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
-            AdjacentCardGroup Player4CardGroup = new AdjacentCardGroup(this, new Point(0, 0), 0);
-            StackCardGroup Player4StagingCardGroup = new StackCardGroup(this, new Point(0, 0), 0);
+            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(0, 0), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(0, 0), 0);
+            AdjacentCardGroup DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(0, 0), 0);
+            AdjacentCardGroup Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(0, 0), 0);
+            StackCardGroup Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
+            AdjacentCardGroup Player2CardGroup = new AdjacentCardGroup(this, new CanvasPosition(0, 0), 0);
+            StackCardGroup Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
+            AdjacentCardGroup Player3CardGroup = new AdjacentCardGroup(this, new CanvasPosition(0, 0), 0);
+            StackCardGroup Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
+            AdjacentCardGroup Player4CardGroup = new AdjacentCardGroup(this, new CanvasPosition(0, 0), 0);
+            StackCardGroup Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -128,8 +128,9 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddToCanvas(UniqueCard card, Point position, double orientationDegrees)
+        public void AddToCanvas(UniqueCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
+            Point position = CanvasPositionToPoint(canvasPositon);
             Image image = CreateCardImage(card, position);
 
             Canvas.SetLeft(image, position.X);
@@ -153,7 +154,8 @@ namespace WizardMobile.Uwp.Gameplay
         public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
             Image animationTargetImage = FindName(animationRequest.ImageGuid) as Image;
-            InflatedAnimationRequest inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, animationTargetImage);
+            Point destination = CanvasPositionToPoint(animationRequest.Destination);
+            var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, animationTargetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
 
             // make sure each animation is properly cleaned up by assigning the completed handler 
@@ -267,6 +269,14 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Stop();
             game_canvas_storyboard.Children.Clear();
             this.AnimationsCompleted(this, null);
+        }
+
+
+
+        /************************************** helpers **********************************************/
+        private Point CanvasPositionToPoint(CanvasPosition pos)
+        {
+            return null;
         }
 
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);

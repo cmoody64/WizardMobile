@@ -12,7 +12,7 @@ namespace WizardMobile.Uwp.Gameplay
     {
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
-        void BeginAnimations();    
+        void BeginAnimations();
 
         // events
         event EventHandler AnimationsCompleted;  

@@ -4,7 +4,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-
+using WizardMobile.Uwp.Gameplay;
 
 namespace WizardMobile.Uwp.Common
 {
@@ -80,11 +80,11 @@ namespace WizardMobile.Uwp.Common
             return animations;
         }
 
-        public static InflatedAnimationRequest InflateAnimationRequest(AnimationRequest animRequest, Image image)
+        public static InflatedAnimationRequest InflateAnimationRequest(AnimationRequest animRequest, Image image, Point destination)
         {
             return new InflatedAnimationRequest
             {
-                Destination = animRequest.Destination,
+                Destination = destination,
                 Delay = animRequest.Delay,
                 Duration = animRequest.Duration,
                 Rotations = animRequest.Duration,
@@ -96,6 +96,7 @@ namespace WizardMobile.Uwp.Common
     // identical to Animation request but instead of a Guid reference to an image, the image has been inflated
     // to represent a full image object (bitmap, position, etc...)
     // used in layers that deal directly with the canvas / resource map (e.g. GamePage)
+    // also contains a Destination point member that corresponds directly to a canvas position
     public class InflatedAnimationRequest: AnimationBehavior
     {
         public Point Destination { get; set; }
@@ -105,9 +106,10 @@ namespace WizardMobile.Uwp.Common
     // extends animation behavior by providing enough details to produce an instance of an animation.
     // used in layers where the concept of a UniqueImage is present, meaning that the layer contains
     // references to images but not image objects (e.g. CardGroup layer)
+    // also contains a higher-level CanvasPosition member describing the normalized position on an abstract canvas
     public class AnimationRequest: AnimationBehavior
     {
-        public Point Destination { get; set; }
+        public CanvasPosition Destination { get; set; }
         public string ImageGuid { get; set; }
     }
 

@@ -17,14 +17,14 @@ namespace WizardMobile.Uwp.Gameplay
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICanvasFacade canvasFacade, Point origin, double orientationDegress)
+        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress)
         {
             _canvasFacade = canvasFacade;
             Origin = origin;
             OrientationDegress = orientationDegress;
         }
 
-        public Point Origin { get; }
+        public CanvasPosition Origin { get; }
         public double OrientationDegress { get; }
 
         protected ICanvasFacade _canvasFacade;
@@ -101,7 +101,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         // added / transfered cards will be placed in this location
         // this determines the layout of a subclass
-        protected abstract Point NextLocation { get; }
+        protected abstract CanvasPosition NextLocation { get; }
 
         protected virtual void OnAnimateCardAddition() { }
         protected virtual void OnAnimateCardRemoval() { }
@@ -111,22 +111,22 @@ namespace WizardMobile.Uwp.Gameplay
     // no addition / removal animations
     public class StackCardGroup : CardGroup
     {
-        public StackCardGroup(GamePage parent, Point origin, double orientationDegress)
+        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
             : base(parent, origin, orientationDegress)
         { }
 
-        protected override Point NextLocation => Origin;
+        protected override CanvasPosition NextLocation => Origin;
     }
 
     // cards are in a vertical line and cover up 90% of the card beneath them
     public class TaperedStackCardGroup : CardGroup
     {
-        public TaperedStackCardGroup(GamePage parent, Point origin, double orientationDegress)
+        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
             : base(parent, origin, orientationDegress)
         {
         }
 
-        protected override Point NextLocation => Origin;
+        protected override CanvasPosition NextLocation => Origin;
 
         protected override void OnAnimateCardAddition() { }
         protected override void OnAnimateCardRemoval() { }
@@ -134,12 +134,12 @@ namespace WizardMobile.Uwp.Gameplay
 
     public class AdjacentCardGroup : CardGroup
     {
-        public AdjacentCardGroup(GamePage parent, Point origin, double orientationDegrees)
+        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees)
             : base(parent, origin, orientationDegrees)
         {
         }
 
-        protected override Point NextLocation => throw new NotImplementedException();
+        protected override CanvasPosition NextLocation => throw new NotImplementedException();
 
         protected override void OnAnimateCardAddition() { }
         protected override void OnAnimateCardRemoval() { }
