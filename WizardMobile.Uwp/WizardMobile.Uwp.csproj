@@ -33,7 +33,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
     <DefineConstants>TRACE;NETFX_CORE;WINDOWS_UWP</DefineConstants>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <NoWarn>;2008</NoWarn>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -98,9 +98,16 @@
     <Compile Include="Common\AnimationHelper.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
     <Compile Include="Common\TimelineCollectionExtensions.cs" />
-    <Compile Include="GamePage.xaml.cs">
+    <Compile Include="Gameplay\CanvasPosition.cs" />
+    <Compile Include="Gameplay\ICanvasFacade.cs" />
+    <Compile Include="Gameplay\CardGroup.cs" />
+    <Compile Include="Gameplay\GamePage.ComponentProvider.cs" />
+    <Compile Include="Gameplay\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Gameplay\GamePageController.cs" />
+    <Compile Include="Gameplay\IWizardComponentProvider.cs" />
+    <Compile Include="Gameplay\UniqueCard.cs" />
     <Compile Include="MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
@@ -111,7 +118,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="WizardMobile.Uwp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\cards\ace_of_clubs.png" />
@@ -184,7 +190,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="GamePage.xaml">
+    <Page Include="Gameplay\GamePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
