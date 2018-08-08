@@ -90,21 +90,22 @@ namespace WizardMobile.Uwp.Gameplay
         private List<DoubleAnimation> animationQueue;
         private void OnAnimationCompleted(object sender, object args)
         {
+            
+            var animation = sender as DoubleAnimation;
+            var imageName = Storyboard.GetTargetName(animation);
+            var targetProperty = Storyboard.GetTargetProperty(animation);
 
-            var animation = sender as DoubleAnimation;            
-            Image image = animation.GetValue(Storyboard.TargetPropertyProperty) as Image;
-
-            var targetProperty = animation.GetValue(Storyboard.TargetPropertyProperty) as DependencyProperty;
+            var image = FindName(imageName) as Image;            
             var animEndvalue = animation.To ?? 0.0;
 
             game_canvas_storyboard.Pause();
 
             // set the end property of the animation to the end property of the image
-            if (targetProperty == Canvas.TopProperty)
+            if (targetProperty == "(Canvas.Top)")
                 Canvas.SetTop(image, animEndvalue);
-            else if (targetProperty == Canvas.LeftProperty)
+            else if (targetProperty == "(Canvas.Left)")
                 Canvas.SetLeft(image, animEndvalue);
-            else if (targetProperty == RotateTransform.AngleProperty)
+            else if (targetProperty == "(Image.RenderTransform).(RotateTransform.Angle)")
                 ((RotateTransform)image.RenderTransform).Angle = animEndvalue;
 
             // remove the animation from the storyboard

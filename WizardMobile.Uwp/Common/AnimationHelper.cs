@@ -31,7 +31,7 @@ namespace WizardMobile.Uwp.Common
                 leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
-                Storyboard.SetTarget(leftPropAnimation, image);
+                Storyboard.SetTargetName(leftPropAnimation, image.Name);
                 Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
 
                 //TODO pause and restart storyboard before setting new props
@@ -48,8 +48,8 @@ namespace WizardMobile.Uwp.Common
                 topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 topPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
-                Storyboard.SetTarget(topPropAnimation, image);
-                Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");
+                Storyboard.SetTargetName(topPropAnimation, image.Name);
+                Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");                
 
                 //TODO pause and restart storyboard before setting new props
                 //topPropAnimation.Completed += (sender, eventArgs) => topPropAnimation.SetValue(Canvas.TopProperty, destination.Y);
@@ -69,7 +69,7 @@ namespace WizardMobile.Uwp.Common
                 rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
                 rotationAnimation.BeginTime = TimeSpan.FromSeconds(delay);                
 
-                Storyboard.SetTarget(rotationAnimation, image);
+                Storyboard.SetTargetName(rotationAnimation, image.Name);
                 Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
 
                 //rotationAnimation.Completed += (sender, eventArgs) => ((RotateTransform)image.RenderTransform).Angle = finalAngle;
@@ -87,7 +87,7 @@ namespace WizardMobile.Uwp.Common
                 Destination = destination,
                 Delay = animRequest.Delay,
                 Duration = animRequest.Duration,
-                Rotations = animRequest.Duration,
+                Rotations = animRequest.Rotations,
                 Image = image
             };
         }
