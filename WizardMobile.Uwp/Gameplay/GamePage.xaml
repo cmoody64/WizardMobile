@@ -11,9 +11,9 @@
         <Grid.Background>
             <ImageBrush ImageSource="../Assets/card_table_background.jpg" Stretch="Fill" />
         </Grid.Background>
-        <TextBlock HorizontalAlignment="Center" Text="" TextWrapping="Wrap" VerticalAlignment="Top" RenderTransformOrigin="0.523,-2.104" Margin="0,114,0,0" x:Name="game_message_box"/>
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,200,0,0" x:Name="game_message_box" Height="100" Width="300" FontSize="36"/>
         <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_creation_input" FontSize="36"/>
-        <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,189,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Height="811" Width="1500">
+        <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Canvas.Resources>
                 <Storyboard x:Name="game_canvas_storyboard" />
                 <BitmapImage x:Key="back_of_card" UriSource="../Assets/cards/back_of_card.png" />

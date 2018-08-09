@@ -23,9 +23,9 @@ namespace WizardMobile.Uwp.Gameplay
         {
             animationQueue = new List<DoubleAnimation>();
 
-            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(40, 50), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(60, 50), 0);
+            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(20, 0), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(30, 20), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0);
             Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0);
@@ -49,10 +49,6 @@ namespace WizardMobile.Uwp.Gameplay
         {
             Point position = CanvasPositionToPoint(canvasPositon);
             Image image = CreateCardImage(card, position);
-
-            //Canvas.SetLeft(image, position.X);
-            //Canvas.SetTop(image, position.Y);
-            //((RotateTransform)image.RenderTransform).Angle = orientationDegrees;
             game_canvas.Children.Add(image);
         }
 
@@ -139,10 +135,13 @@ namespace WizardMobile.Uwp.Gameplay
         private Image CreateCardImage(UniqueCard card, Point position, double angle = 0)
         {
             var bitmapImage = game_canvas.Resources[card.Name] as BitmapImage;
-            var image = new Image();
+            // setting the height scales the image and maintains aspect ratio
+            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
 
+            var image = new Image();
             image.Source = bitmapImage;
             image.Name = card.Id;
+
 
             Canvas.SetLeft(image, position.X);
             Canvas.SetTop(image, position.Y);

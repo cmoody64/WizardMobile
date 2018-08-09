@@ -82,13 +82,22 @@ namespace WizardMobile.Uwp.Gameplay
                 _cards.Remove(cardToTransfer);
                 OnAnimateCardRemoval();
 
+                // resolve rotations so that the animation terminates at the angle of the destination group
+                // rotations are rounded up so that the card is flush with the destination
+                double resolvedRotations = animationBehavior.Rotations;
+                if(this.OrientationDegress + animationBehavior.Rotations * 360 != destinationGroup.OrientationDegress)
+                {
+                    var difference = destinationGroup.OrientationDegress - (this.OrientationDegress + animationBehavior.Rotations * 360);
+                    resolvedRotations += difference;
+                }
+
                 var destinationPoint = destinationGroup.NextLocation;
                 var transferAnimRequest = new AnimationRequest()
                 {
                     Destination = destinationPoint,
                     Duration = animationBehavior.Duration,
                     Delay = animationBehavior.Delay,
-                    Rotations = animationBehavior.Rotations,
+                    Rotations = resolvedRotations,
                     ImageGuid = cardToTransfer.Id
                 };
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);
