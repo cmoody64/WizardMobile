@@ -23,9 +23,9 @@ namespace WizardMobile.Uwp.Gameplay
         {
             animationQueue = new List<DoubleAnimation>();
 
-            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(0, 0), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(20, 0), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(30, 20), 0);
+            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(40, 50), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(60, 50), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0);
             Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0);
@@ -47,8 +47,10 @@ namespace WizardMobile.Uwp.Gameplay
         /*************************** ICanvasFacade implementation *******************************/
         public void AddToCanvas(UniqueCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
-            Point position = CanvasPositionToPoint(canvasPositon);
-            Image image = CreateCardImage(card, position);
+            Image image = CreateCardImage(card);
+            Point position = CanvasPositionToPoint(canvasPositon, GetImageSourceSize(image));
+            SetCardImagePosition(image, position);
+            SetCardImageAngle(image, orientationDegrees);
             game_canvas.Children.Add(image);
         }
 
@@ -66,9 +68,9 @@ namespace WizardMobile.Uwp.Gameplay
 
         public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
-            Image animationTargetImage = FindName(animationRequest.ImageGuid) as Image;
-            Point destination = CanvasPositionToPoint(animationRequest.Destination);
-            var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, animationTargetImage, destination);
+            Image targetImage = FindName(animationRequest.ImageGuid) as Image;
+            Point destination = CanvasPositionToPoint(animationRequest.Destination, GetImageSourceSize(targetImage));
+            var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
 
             // make sure each animation is properly cleaned up by assigning the completed handler 
@@ -130,27 +132,6 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Begin();
         }
 
-        // TODO implement z index??
-
-        private Image CreateCardImage(UniqueCard card, Point position, double angle = 0)
-        {
-            var bitmapImage = game_canvas.Resources[card.Name] as BitmapImage;
-            // setting the height scales the image and maintains aspect ratio
-            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
-
-            var image = new Image();
-            image.Source = bitmapImage;
-            image.Name = card.Id;
-
-
-            Canvas.SetLeft(image, position.X);
-            Canvas.SetTop(image, position.Y);
-
-            image.RenderTransform = new RotateTransform { Angle = angle };
-            image.RenderTransformOrigin = new Point(0.5, 0.5);
-
-            return image;
-        }
 
         public event Action<string> PlayerCreationInputEntered;
         public event EventHandler AnimationsCompleted;
@@ -190,16 +171,69 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /************************************** helpers **********************************************/
-        private Point CanvasPositionToPoint(CanvasPosition pos)
+        // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)
+        // NOTE optionally takes into acount image size so that it seems like the image is centered on pos
+        private Point CanvasPositionToPoint(CanvasPosition pos, Size? imageSize = null)
         {
             double x = pos.NormalizedX * game_canvas.ActualWidth / CanvasPosition.NORMALIZED_WIDTH;
             double y = pos.NormalizedY * game_canvas.ActualHeight / CanvasPosition.NORMALIZED_HEIGHT;
+
+            // optionally shift x and y so that it seems like the point is centered around a given image
+            if(imageSize.HasValue)
+            {
+                x -= imageSize.Value.Width / 2;
+                y -= imageSize.Value.Height / 2;
+            }
+
             return new Point(x, y);
         }
 
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
         private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
         private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);
+
+
+        // TODO implement z index??
+        private Image SetupCardImage(UniqueCard card, Point position, double angle = 0)
+        {
+            var image = CreateCardImage(card);
+            SetCardImagePosition(image, position);
+            SetCardImageAngle(image, angle);
+
+            return image;
+        }
+
+        private Image CreateCardImage(UniqueCard card)
+        {
+            var bitmapImage = game_canvas.Resources[card.Name] as BitmapImage;
+
+            // scale down and maintain aspect ratio
+            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
+            bitmapImage.DecodePixelWidth = (int)(game_canvas.ActualWidth * .09);
+
+            var image = new Image();
+            image.Source = bitmapImage;
+            image.Name = card.Id;
+            return image;
+        }
+
+        private static void SetCardImagePosition(Image cardImage, Point position)
+        {
+            Canvas.SetLeft(cardImage, position.X);
+            Canvas.SetTop(cardImage, position.Y);
+        }
+
+        private static void SetCardImageAngle(Image cardImage, double angle)
+        {
+            cardImage.RenderTransform = new RotateTransform { Angle = angle };
+            cardImage.RenderTransformOrigin = new Point(0.5, 0.5);
+        }
+
+        private static Size GetImageSourceSize(Image image)
+        {
+            var bitmapSource = image.Source as BitmapImage;
+            return new Size(bitmapSource.DecodePixelWidth, bitmapSource.DecodePixelHeight);
+        }
 
     }
 }
