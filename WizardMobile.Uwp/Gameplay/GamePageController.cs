@@ -92,7 +92,17 @@ namespace WizardMobile.Uwp.Gameplay
                 );
             }
 
-            _componentProvider.AnimationsCompleted += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            _componentProvider.AnimationsCompleted += (sender, eventArgs) =>
+            {
+                // remove all but 1 card backs since they are stacked vertically
+                int cardsToRemove = shuffleCount * 2 - 2;
+                for (int i = 0; i < cardsToRemove; i++)
+                {
+                    _componentProvider.CenterCardGroup.Remove(BACK_OF_CARD_KEY);
+                }
+                // complete the task
+                taskCompletionSource.SetResult(true);
+            };
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
@@ -102,42 +112,42 @@ namespace WizardMobile.Uwp.Gameplay
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            //game_canvas.Children.Clear(); // clear out dummy cards from shuffle animation
+            var faceUpHand = players.Find(player => player is HumanPlayer).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+            for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
+            {
+                // iterate through all AI players and deal cards face  down
+                for (int j = 0; j < players.Count - 1; j++)
+                {
+                    _componentProvider.CenterCardGroup.Add(BACK_OF_CARD_KEY);
+                    CardGroup destinationGroup = null;
+                    switch(j)
+                    {
+                        case 0: destinationGroup = _componentProvider.Player2CardGroup; break;
+                        case 1: destinationGroup = _componentProvider.Player3CardGroup; break;
+                        case 2: destinationGroup = _componentProvider.Player4CardGroup; break;
+                    }
+                    _componentProvider.CenterCardGroup.Transfer(BACK_OF_CARD_KEY, destinationGroup, new AnimationBehavior
+                    {
+                        Duration = 0.3,
+                        Delay = 0.5 * i + .125 * j,
+                        Rotations = 3
+                    });
+                }
 
-            //var faceUpHand = players.Find(player => player.GetType() == typeof(HumanPlayer)).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
-            //for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
-            //{
-            //    // iterate through all AI players and deal cards face  down
-            //    for (int j = 0; j < players.Count - 1; j++)
-            //    {
-            //        Image aiPlayercard = GetCardImage(BACK_OF_CARD_KEY, CENTER_STACK_STARTING_POINT);
-            //        game_canvas.Children.Add(aiPlayercard);
-            //        game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-            //        {
-            //            Image = aiPlayercard,
-            //            Destination = CENTER_STACK_STARTING_POINT,
-            //            Duration = 0.2,
-            //            Delay = 0.5 * i + .125 * j,
-            //            Rotations = j == 1 || j == 3 ? 3.25 : 3 // extra quarter rotation for positions 1 and 3 so that they end up at a 90 deg. angle
-            //        }));
-            //    }
+                // deal Human players hand face up
+                var playerCardName = faceUpHand[i].ToString();
+                _componentProvider.CenterCardGroup.Add(playerCardName);
+                _componentProvider.CenterCardGroup.Transfer(BACK_OF_CARD_KEY, _componentProvider.Player1CardGroup, new AnimationBehavior
+                {
+                    Duration = 0.3,
+                    Delay = 0.5 * (i + 1),
+                    Rotations = 3
+                });
 
-            //    // deal Human players hand face up
-            //    Image humanPlayerCard = GetCardImage(faceUpHand[i].ToString(), CENTER_STACK_STARTING_POINT);
-            //    game_canvas.Children.Add(humanPlayerCard);
-            //    game_canvas_storyboard.Children.AddRange(AnimationHelper.ComposeImageAnimations(new ImageAnimationRequest
-            //    {
-            //        Image = humanPlayerCard,
-            //        Destination = CENTER_STACK_STARTING_POINT,
-            //        Duration = 0.2,
-            //        Delay = 0.5 * i + 1,
-            //        Rotations = 3
-            //    }));
+            }
 
-            //}
-
-            //game_canvas_storyboard.Begin();
-            //game_canvas_storyboard.Completed += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            _componentProvider.AnimationsCompleted += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
         }

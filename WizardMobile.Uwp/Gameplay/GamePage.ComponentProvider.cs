@@ -177,8 +177,6 @@ namespace WizardMobile.Uwp.Gameplay
             this.AnimationsCompleted(this, null);
         }
 
-
-
         /************************************** helpers **********************************************/
         // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)
         // NOTE optionally takes into acount image size so that it seems like the image is centered on pos

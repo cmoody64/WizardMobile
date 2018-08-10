@@ -150,7 +150,7 @@ namespace WizardMobile.Uwp.Gameplay
         {
         }
 
-        protected override CanvasPosition NextLocation => throw new NotImplementedException();
+        protected override CanvasPosition NextLocation => Origin;
 
         protected override void OnAnimateCardAddition() { }
         protected override void OnAnimateCardRemoval() { }
