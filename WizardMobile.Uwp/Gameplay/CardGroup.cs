@@ -85,10 +85,10 @@ namespace WizardMobile.Uwp.Gameplay
                 // resolve rotations so that the animation terminates at the angle of the destination group
                 // rotations are rounded up so that the card is flush with the destination
                 double resolvedRotations = animationBehavior.Rotations;
-                if(this.OrientationDegress + animationBehavior.Rotations * 360 != destinationGroup.OrientationDegress)
+                if((this.OrientationDegress + animationBehavior.Rotations * 360) % 360 != destinationGroup.OrientationDegress)
                 {
-                    var difference = destinationGroup.OrientationDegress - (this.OrientationDegress + animationBehavior.Rotations * 360);
-                    resolvedRotations += difference;
+                    var difference = destinationGroup.OrientationDegress - ((this.OrientationDegress + animationBehavior.Rotations * 360) % 360);
+                    resolvedRotations += difference / 360;
                 }
 
                 var destinationPoint = destinationGroup.NextLocation;

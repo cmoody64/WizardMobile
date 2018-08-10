@@ -159,22 +159,22 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<bool> DisplayRoundScores(GameContext gameContext)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(true);
         }
 
         public Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(true);
         }
 
         public Task<Card> PromptPlayerCardSelection(Player player)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new Card(CardValue.ACE, CardSuite.CLUBS));
         }
 
         public Task<int> PromptPlayerBid(Player player)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(1);
         }
 
         public Task<List<string>> PromptPlayerCreation()
