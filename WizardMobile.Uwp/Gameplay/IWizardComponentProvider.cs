@@ -13,9 +13,7 @@ namespace WizardMobile.Uwp.Gameplay
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
         void BeginAnimations();
-
-        // events
-        event EventHandler AnimationsCompleted;  
+        void QueueAnimationsCompletedHandler(Action action);
         event Action<string> PlayerCreationInputEntered; // event passes the string input to each handler
 
         // card groups 

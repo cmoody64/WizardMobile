@@ -45,6 +45,7 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Loaded += (sender, args) => _cardBitmapDecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
 
             _gamePageController = new GamePageController(this, this.Dispatcher);
+            _animationsCompletedHandlers = new Queue<Action>();
 
             // the size of a given card needs to only be fetched once and cached
             // all cards are the same size so the fetched size applies to all cards
@@ -143,7 +144,11 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         public event Action<string> PlayerCreationInputEntered;
-        public event EventHandler AnimationsCompleted;
+        public void QueueAnimationsCompletedHandler(Action action)
+        {
+            _animationsCompletedHandlers.Enqueue(action);
+        }
+        private Queue<Action> _animationsCompletedHandlers;
 
         public StackCardGroup CenterCardGroup { get; private set; }
         public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
@@ -174,7 +179,12 @@ namespace WizardMobile.Uwp.Gameplay
         {
             game_canvas_storyboard.Stop();
             game_canvas_storyboard.Children.Clear();
-            this.AnimationsCompleted(this, null);
+            // run all queued animations completed handlers
+            while (_animationsCompletedHandlers.Count > 0)
+            {
+                var handler = _animationsCompletedHandlers.Dequeue();
+                handler();
+            }              
         }
 
         /************************************** helpers **********************************************/

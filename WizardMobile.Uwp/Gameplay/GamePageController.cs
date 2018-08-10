@@ -92,7 +92,7 @@ namespace WizardMobile.Uwp.Gameplay
                 );
             }
 
-            _componentProvider.AnimationsCompleted += (sender, eventArgs) =>
+            _componentProvider.QueueAnimationsCompletedHandler(() =>
             {
                 // remove all but 1 card backs since they are stacked vertically
                 int cardsToRemove = shuffleCount * 2 - 2;
@@ -102,7 +102,7 @@ namespace WizardMobile.Uwp.Gameplay
                 }
                 // complete the task
                 taskCompletionSource.SetResult(true);
-            };
+            });
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
@@ -137,7 +137,7 @@ namespace WizardMobile.Uwp.Gameplay
                 // deal Human players hand face up
                 var playerCardName = faceUpHand[i].ToString();
                 _componentProvider.CenterCardGroup.Add(playerCardName);
-                _componentProvider.CenterCardGroup.Transfer(BACK_OF_CARD_KEY, _componentProvider.Player1CardGroup, new AnimationBehavior
+                _componentProvider.CenterCardGroup.Transfer(playerCardName, _componentProvider.Player1CardGroup, new AnimationBehavior
                 {
                     Duration = 0.3,
                     Delay = 0.5 * (i + 1),
@@ -146,7 +146,7 @@ namespace WizardMobile.Uwp.Gameplay
 
             }
 
-            _componentProvider.AnimationsCompleted += (sender, eventArgs) => taskCompletionSource.SetResult(true);
+            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
