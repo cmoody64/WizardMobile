@@ -12,6 +12,9 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using WizardMobile.Uwp.Common;
 using Windows.UI.Xaml.Media.Animation;
+using System.IO;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
 
 namespace WizardMobile.Uwp.Gameplay
 {
@@ -39,8 +42,14 @@ namespace WizardMobile.Uwp.Gameplay
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
+            game_canvas.Loaded += (sender, args) => _cardBitmapDecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
 
             _gamePageController = new GamePageController(this, this.Dispatcher);
+
+            // the size of a given card needs to only be fetched once and cached
+            // all cards are the same size so the fetched size applies to all cards
+            var imageSizeTask = GetImageSourceSize("back_of_card");
+            imageSizeTask.ContinueWith(sizeTask => this._cardBitmapSize = sizeTask.Result);            
         }
 
 
@@ -48,7 +57,7 @@ namespace WizardMobile.Uwp.Gameplay
         public void AddToCanvas(UniqueCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
             Image image = CreateCardImage(card);
-            Point position = CanvasPositionToPoint(canvasPositon, GetImageSourceSize(image));
+            Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
             game_canvas.Children.Add(image);
@@ -69,7 +78,7 @@ namespace WizardMobile.Uwp.Gameplay
         public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
             Image targetImage = FindName(animationRequest.ImageGuid) as Image;
-            Point destination = CanvasPositionToPoint(animationRequest.Destination, GetImageSourceSize(targetImage));
+            Point destination = CanvasPositionToPoint(animationRequest.Destination, _cardBitmapSize);
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
 
@@ -188,9 +197,9 @@ namespace WizardMobile.Uwp.Gameplay
             return new Point(x, y);
         }
 
-        private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
-        private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
-        private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);
+        // for performance reasons, this is determined once during initialization and cached
+        private Size _cardBitmapSize;
+        private int _cardBitmapDecodePixelHeight;
 
 
         // TODO implement z index??
@@ -209,7 +218,6 @@ namespace WizardMobile.Uwp.Gameplay
 
             // scale down and maintain aspect ratio
             bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
-            bitmapImage.DecodePixelWidth = (int)(game_canvas.ActualWidth * .09);
 
             var image = new Image();
             image.Source = bitmapImage;
@@ -229,10 +237,19 @@ namespace WizardMobile.Uwp.Gameplay
             cardImage.RenderTransformOrigin = new Point(0.5, 0.5);
         }
 
-        private static Size GetImageSourceSize(Image image)
+        private async Task<Size> GetImageSourceSize(string cardKey)
         {
-            var bitmapSource = image.Source as BitmapImage;
-            return new Size(bitmapSource.DecodePixelWidth, bitmapSource.DecodePixelHeight);
+            var bitmapSource = game_canvas.Resources[cardKey] as BitmapImage;
+            StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(bitmapSource.UriSource);
+            var properties = await file.Properties.GetImagePropertiesAsync();
+            var originalWidth = properties.Width;
+            var originalHeight = properties.Height;
+
+            double scaledHeight = _cardBitmapDecodePixelHeight;
+            double scaleFactor = scaledHeight / originalHeight;
+            double scaledWidth = scaleFactor * originalWidth;
+
+            return new Size(scaledWidth, scaledHeight);
         }
 
     }
