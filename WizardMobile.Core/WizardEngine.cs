@@ -27,11 +27,6 @@ namespace WizardMobile.Core
             await _frontend.DisplayStartGame();
             List<string> playerNames = await _frontend.PromptPlayerCreation();            
 
-            // add in ai players
-            playerNames.Add("wizbot1");
-            playerNames.Add("wizbot2");
-            playerNames.Add("wizbot3");
-
             _players = playerNames.Select<string, Player>((string name) =>
             {
                 if (name.Contains("bot"))
@@ -64,6 +59,13 @@ namespace WizardMobile.Core
                 : _players[(_players.IndexOf(_gameContext.PrevRound.Dealer) + 1) % _players.Count];
             _players.ForEach(player => curRound.Results[player] = 0);
 
+            int dealerIndex = _players.IndexOf(curRound.Dealer);
+            int firstDealIndex = (dealerIndex + 1) % _players.Count;
+            // create a player list that starts at the round dealer and wraps around
+            List<Player> playerDealOrder = _players
+                .GetRange(firstDealIndex, _players.Count - firstDealIndex)
+                .Concat(_players.GetRange(0, firstDealIndex)).ToList();
+            curRound.PlayerDealOrder = playerDealOrder.Select(player => player.Name).ToList();
 
             await _frontend.DisplayDeal(_gameContext, _players);
 

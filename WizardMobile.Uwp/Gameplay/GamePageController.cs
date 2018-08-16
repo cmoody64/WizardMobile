@@ -15,6 +15,7 @@ namespace WizardMobile.Uwp.Gameplay
         public GamePageController(IWizardComponentProvider componentProvider, CoreDispatcher uiDispatcher)
         {
             _componentProvider = componentProvider;
+            _playerCardGroups = new Dictionary<string, CardGroup>();
 
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
             // must be marshalled through the proxy frontend which implements multithreading protocol
@@ -27,6 +28,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         private IWizardComponentProvider _componentProvider;
         private WizardEngine _engine;
+        private Dictionary<string, CardGroup> _playerCardGroups; // maps player names to the corresponding hand cardGroup
 
         /*************** IWizardFrontend implementation ********************/
         public async Task<bool> DisplayStartGame()
@@ -95,7 +97,7 @@ namespace WizardMobile.Uwp.Gameplay
             _componentProvider.QueueAnimationsCompletedHandler(() =>
             {
                 // remove all but 1 card backs since they are stacked vertically
-                int cardsToRemove = shuffleCount * 2 - 2;
+                int cardsToRemove = shuffleCount * 2 - 1;
                 for (int i = 0; i < cardsToRemove; i++)
                 {
                     _componentProvider.CenterCardGroup.Remove(BACK_OF_CARD_KEY);
@@ -112,38 +114,25 @@ namespace WizardMobile.Uwp.Gameplay
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            var faceUpHand = players.Find(player => player is HumanPlayer).Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+            var humanPlayer = players.Find(player => player is HumanPlayer);
+            var faceUpHand = humanPlayer.Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
+            List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
             for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
             {
-                // iterate through all AI players and deal cards face  down
-                for (int j = 0; j < players.Count - 1; j++)
+                // iterate through all players: cards for AI players are dealt face down and cards for human players face
+                for(int j = 0; j < playerDealOrder.Count(); j++)
                 {
-                    _componentProvider.CenterCardGroup.Add(BACK_OF_CARD_KEY);
-                    CardGroup destinationGroup = null;
-                    switch(j)
-                    {
-                        case 0: destinationGroup = _componentProvider.Player2CardGroup; break;
-                        case 1: destinationGroup = _componentProvider.Player3CardGroup; break;
-                        case 2: destinationGroup = _componentProvider.Player4CardGroup; break;
-                    }
-                    _componentProvider.CenterCardGroup.Transfer(BACK_OF_CARD_KEY, destinationGroup, new AnimationBehavior
+                    string playerName = playerDealOrder[j];
+                    CardGroup destinationGroup = _playerCardGroups[playerName];
+                    string cardKey = playerName == humanPlayer.Name ? faceUpHand[i].ToString() : BACK_OF_CARD_KEY;
+                    _componentProvider.CenterCardGroup.Add(cardKey);
+                    _componentProvider.CenterCardGroup.Transfer(cardKey, destinationGroup, new AnimationBehavior
                     {
                         Duration = 0.3,
                         Delay = 0.5 * i + .125 * j,
                         Rotations = 3
                     });
                 }
-
-                // deal Human players hand face up
-                var playerCardName = faceUpHand[i].ToString();
-                _componentProvider.CenterCardGroup.Add(playerCardName);
-                _componentProvider.CenterCardGroup.Transfer(playerCardName, _componentProvider.Player1CardGroup, new AnimationBehavior
-                {
-                    Duration = 0.3,
-                    Delay = 0.5 * (i + 1),
-                    Rotations = 3
-                });
-
             }
 
             _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
@@ -185,7 +174,16 @@ namespace WizardMobile.Uwp.Gameplay
             TaskCompletionSource<List<string>> taskCompletionSource = new TaskCompletionSource<List<string>>();
             _componentProvider.PlayerCreationInputEntered += (string input) =>
             {
-                taskCompletionSource.SetResult(new List<string>() { input });
+                // input is the nanme of the user
+                // default bot players will be added too
+                List<string> playerNames = new List<string> { input, "wizbot1", "wizbot2", "wizbot3" };
+
+                _playerCardGroups[playerNames[0]] = _componentProvider.Player1CardGroup;
+                _playerCardGroups[playerNames[1]] = _componentProvider.Player2CardGroup;
+                _playerCardGroups[playerNames[2]] = _componentProvider.Player3CardGroup;
+                _playerCardGroups[playerNames[3]] = _componentProvider.Player4CardGroup;
+
+                taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
             };
 

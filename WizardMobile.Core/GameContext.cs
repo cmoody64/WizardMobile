@@ -35,6 +35,7 @@ namespace WizardMobile.Core
             Tricks = new List<TrickContext>();
             Bids = new Dictionary<Player, int>();
             Results = new Dictionary<Player, int>();
+            PlayerDealOrder = null;
         }
         public int RoundNum { get; }
         public List<TrickContext> Tricks { get; }
@@ -45,6 +46,7 @@ namespace WizardMobile.Core
         public Card TrumpCard { get; set; }
         public TrickContext CurTrick => Tricks.Last();
         public TrickContext PrevTrick => Tricks.Count > 1 ? Tricks[Tricks.Count - 2] : null;
+        public List<string> PlayerDealOrder { get; set; }  // player names arranged in the order they will be dealt cards (i.e. dealer last)      
     }
 
     // state that persists across a single trick
