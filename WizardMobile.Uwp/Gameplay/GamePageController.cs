@@ -65,9 +65,11 @@ namespace WizardMobile.Uwp.Gameplay
             return Task.FromResult(true);
         }
 
-        public Task<bool> DisplayPlayerBid(int bid, Player player)
+        public async Task<bool> DisplayPlayerBid(int bid, Player player)
         {
-            return Task.FromResult(true);
+            _componentProvider.SetMessageBoxText($"{player.Name} bids {bid}");
+            await Task.Delay(1000);
+            return true;
         }
 
         public Task<bool> DisplayShuffle()
