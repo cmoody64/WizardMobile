@@ -12,9 +12,11 @@ namespace WizardMobile.Uwp.Gameplay
     {
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
+        void SetHumanPlayerBidInputVisibility(bool isVisible);
         void BeginAnimations();
         void QueueAnimationsCompletedHandler(Action action);
-        event Action<string> PlayerCreationInputEntered; // event passes the string input to each handler
+        void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
+        void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
         // card groups 
         StackCardGroup CenterCardGroup { get; }

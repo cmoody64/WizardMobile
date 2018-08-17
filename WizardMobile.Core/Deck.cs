@@ -67,5 +67,7 @@ namespace WizardMobile.Core
                 deckComplement.Remove(card);
             return deckComplement;
         }
+
+        public static readonly int STARTING_CARD_COUNT = 60;
     }
 }

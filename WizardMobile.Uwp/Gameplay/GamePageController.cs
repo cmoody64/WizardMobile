@@ -97,6 +97,7 @@ namespace WizardMobile.Uwp.Gameplay
             _componentProvider.QueueAnimationsCompletedHandler(() =>
             {
                 // remove all but 1 card backs since they are stacked vertically
+                // the one remaining card is a dummy card that makes it look like a stack of face-down cards
                 int cardsToRemove = shuffleCount * 2 - 1;
                 for (int i = 0; i < cardsToRemove; i++)
                 {
@@ -135,6 +136,10 @@ namespace WizardMobile.Uwp.Gameplay
                 }
             }
 
+            // if the current round is the last round, remove the "dummy card" representing all extra cards in the deck
+            if (gameContext.CurRound.RoundNum == gameContext.MaxRoundCount)
+                _componentProvider.CenterCardGroup.Remove(BACK_OF_CARD_KEY);
+
             _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
             _componentProvider.BeginAnimations();
 
@@ -153,6 +158,15 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
         {
+            string bidResult = null;
+            if (totalBids > roundNum)
+                bidResult = "overbid";
+            else if (totalBids == roundNum)
+                bidResult = "matched bid";
+            else
+                bidResult = "underbid";
+            _componentProvider.SetMessageBoxText($"{totalBids} bids on {roundNum} tricks - {bidResult}");
+
             return Task.FromResult(true);
         }
 
@@ -163,7 +177,14 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<int> PromptPlayerBid(Player player)
         {
-            return Task.FromResult(1);
+            TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>();
+            _componentProvider.SetMessageBoxText($"${player.Name}: make your bid");
+            _componentProvider.SetHumanPlayerBidInputVisibility(true);
+            _componentProvider.OnPlayerBidInputEntered((int bid) =>
+            {
+                taskCompletionSource.SetResult(bid);
+            });
+            return taskCompletionSource.Task;
         }
 
         public Task<List<string>> PromptPlayerCreation()
@@ -172,7 +193,7 @@ namespace WizardMobile.Uwp.Gameplay
             _componentProvider.SetPlayerCreationInputVisibility(true);            
 
             TaskCompletionSource<List<string>> taskCompletionSource = new TaskCompletionSource<List<string>>();
-            _componentProvider.PlayerCreationInputEntered += (string input) =>
+            _componentProvider.OnPlayerCreationInputEntered((string input) =>
             {
                 // input is the nanme of the user
                 // default bot players will be added too
@@ -185,7 +206,7 @@ namespace WizardMobile.Uwp.Gameplay
 
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
-            };
+            });
 
             return taskCompletionSource.Task;
         }

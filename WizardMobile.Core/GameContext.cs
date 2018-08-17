@@ -23,6 +23,7 @@ namespace WizardMobile.Core
         public Dictionary<Player, int> PlayerScores { get; }
         public RoundContext CurRound => Rounds.Last();
         public RoundContext PrevRound => Rounds.Count > 1 ? Rounds[Rounds.Count - 2] : null;
+        public int MaxRoundCount => PlayerCount / Deck.STARTING_CARD_COUNT;
     }
 
     // state that persists across a single round

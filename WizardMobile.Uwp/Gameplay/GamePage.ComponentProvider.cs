@@ -41,6 +41,7 @@ namespace WizardMobile.Uwp.Gameplay
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
+            player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
             game_canvas.Loaded += (sender, args) => _cardBitmapDecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
 
@@ -135,6 +136,11 @@ namespace WizardMobile.Uwp.Gameplay
             player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        public void SetHumanPlayerBidInputVisibility(bool isVisible)
+        {
+            player_bid_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         public void BeginAnimations()
         {
             game_canvas_storyboard.Children.AddRange(animationQueue);
@@ -143,12 +149,20 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-        public event Action<string> PlayerCreationInputEntered;
+        public void OnPlayerCreationInputEntered(Action<string> playerCreationInputEnteredHandler)
+        {
+            _playerCreationInputEnteredHandler = playerCreationInputEnteredHandler;
+        }
+
+        public void OnPlayerBidInputEntered(Action<int> playerBidEnteredHandler)
+        {
+            _playerBidEnteredHandler = playerBidEnteredHandler;
+        }
+
         public void QueueAnimationsCompletedHandler(Action action)
         {
             _animationsCompletedHandlers.Enqueue(action);
         }
-        private Queue<Action> _animationsCompletedHandlers;
 
         public StackCardGroup CenterCardGroup { get; private set; }
         public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
@@ -163,6 +177,10 @@ namespace WizardMobile.Uwp.Gameplay
         public AdjacentCardGroup Player4CardGroup { get; private set; }
         public StackCardGroup Player4StagingCardGroup { get; private set; }
 
+        private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
+        private Action<int> _playerBidEnteredHandler = (int i) => {};
+        private Queue<Action> _animationsCompletedHandlers;
+
 
         /************************************** event handlers **********************************************/
         private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
@@ -170,7 +188,26 @@ namespace WizardMobile.Uwp.Gameplay
             var textInput = player_creation_input.Text;
             if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
             {
-                this.PlayerCreationInputEntered(textInput);
+                this._playerCreationInputEnteredHandler(textInput);
+            }
+        }
+
+        private void OnPlayerBidInputKeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            var textInput = player_creation_input.Text;
+            if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
+            {
+                if(int.TryParse(textInput, out int bid))
+                {
+                    player_bid_input.Visibility = Visibility.Collapsed;
+                    player_bid_error_message.Visibility = Visibility.Collapsed;
+                    this._playerBidEnteredHandler(bid);
+                }
+                else
+                {
+                    player_bid_error_message.Visibility = Visibility.Visible;
+                }
+                
             }
         }
 
@@ -259,6 +296,5 @@ namespace WizardMobile.Uwp.Gameplay
 
             return new Size(scaledWidth, scaledHeight);
         }
-
     }
 }

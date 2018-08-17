@@ -13,6 +13,9 @@
         </Grid.Background>
         <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,200,0,0" x:Name="game_message_box" Height="100" Width="300" FontSize="36"/>
         <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_creation_input" FontSize="36"/>
+        <TextBox PlaceholderText="Enter Bid" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_bid_input" FontSize="36"/>
+        <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" Canvas.Left="701" FontSize="25" Canvas.Top="526"
+                       Text="enter a number" TextWrapping="Wrap" RenderTransformOrigin="0.148,0.534" Visibility="Collapsed" Foreground="Red"/>
         <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Canvas.Resources>
                 <Storyboard x:Name="game_canvas_storyboard" />
@@ -69,6 +72,7 @@
                 <BitmapImage x:Key="jack_of_spades" UriSource="../Assets/cards/jack_of_spades.png" />
                 <BitmapImage x:Key="queen_of_spades" UriSource="../Assets/cards/queen_of_spades.png" />
                 <BitmapImage x:Key="king_of_spades" UriSource="../Assets/cards/king_of_spades.png" />
+                <BitmapImage x:Key="wizard" UriSource="../Assets/cards/wizard.png" />
             </Canvas.Resources>
         </Canvas>
     </Grid>

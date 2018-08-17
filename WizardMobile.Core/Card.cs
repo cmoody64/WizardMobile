@@ -61,7 +61,7 @@ namespace WizardMobile.Core
         {
             return Suite != CardSuite.SPECIAL
                 ? $"{Value.ToString().ToLower()}_of_{Suite.ToString().ToLower()}"
-                : Value.ToString();
+                : Value.ToString().ToLower();
         }
     }
 }
