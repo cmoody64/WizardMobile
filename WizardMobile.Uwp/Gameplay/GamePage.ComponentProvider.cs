@@ -74,7 +74,8 @@ namespace WizardMobile.Uwp.Gameplay
         public void ReplaceCardBitmap(UniqueCard cardToReplace, string newCardName)
         {
             Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
-            elementToReplace.Source = game_canvas.Resources[cardToReplace.Name] as BitmapImage;
+            var bitmapImage = RetrieveCardBitmap(cardToReplace.Name);
+            elementToReplace.Source = bitmapImage;
         }
 
         public void QueueAnimationRequest(AnimationRequest animationRequest)
@@ -259,15 +260,19 @@ namespace WizardMobile.Uwp.Gameplay
 
         private Image CreateCardImage(UniqueCard card)
         {
-            var bitmapImage = game_canvas.Resources[card.Name] as BitmapImage;
-
-            // scale down and maintain aspect ratio
-            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
-
+            var bitmapImage = RetrieveCardBitmap(card.Name);
             var image = new Image();
             image.Source = bitmapImage;
             image.Name = card.Id;
             return image;
+        }
+
+        private BitmapImage RetrieveCardBitmap(string bitmapKey)
+        {
+            var bitmapImage = game_canvas.Resources[bitmapKey] as BitmapImage;
+            // scale down and maintain aspect ratio
+            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
+            return bitmapImage;
         }
 
         private static void SetCardImagePosition(Image cardImage, Point position)
