@@ -29,15 +29,15 @@ namespace WizardMobile.Uwp.Gameplay
             CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
             LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(40, 50), 0);
             RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(60, 50), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0);
-            Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0);
-            Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0, true /*isFaceUp*/);
+            Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0, true /*isFaceUp*/);
+            Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0, true /*isFaceUp*/);
             Player2CardGroup = new AdjacentCardGroup(this, new CanvasPosition(10, 50), 90);
-            Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(20, 40), 90);
+            Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(20, 40), 90, true /*isFaceUp*/);
             Player3CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 10), 0);
-            Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(60, 20), 0);
+            Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(60, 20), 0, true /*isFaceUp*/);
             Player4CardGroup = new AdjacentCardGroup(this, new CanvasPosition(90, 50), 270);
-            Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(80, 60), 270);
+            Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(80, 60), 270, true /*isFaceUp*/);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -194,7 +194,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         private void OnPlayerBidInputKeyDown(object sender, KeyRoutedEventArgs e)
         {
-            var textInput = player_creation_input.Text;
+            var textInput = player_bid_input.Text;
             if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
             {
                 if(int.TryParse(textInput, out int bid))

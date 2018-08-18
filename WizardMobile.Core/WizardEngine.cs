@@ -70,7 +70,9 @@ namespace WizardMobile.Core
             await _frontend.DisplayDeal(_gameContext, _players);
 
             // bid on current round
-            _players.ForEach(async (player) => curRound.Bids[player] = await player.MakeBid(_gameContext));
+            foreach (var player in _players)
+                curRound.Bids[player] = await player.MakeBid(_gameContext);
+            //_players.ForEach(async (player) => curRound.Bids[player] = await player.MakeBid(_gameContext));
             int totalBids = curRound.Bids.Aggregate(0, (accumulator, bidPair) => accumulator + bidPair.Value);
             await _frontend.DisplayBidOutcome(roundNum, totalBids);
 
@@ -117,12 +119,12 @@ namespace WizardMobile.Core
                 .GetRange(leaderIndex, _players.Count - leaderIndex)
                 .Concat(_players.GetRange(0, leaderIndex)).ToList();
 
-            trickPlayerOrder.ForEach(async (player) =>
+            foreach(var player in trickPlayerOrder)
             {
                 var cardPlayed = await player.MakeTurn(_gameContext);
                 curTrick.CardsPlayed.Add(cardPlayed);
                 await _frontend.DisplayTurnTaken(cardPlayed, player);
-            });
+            }
 
             // find winner and save it to trick context
             var winningCard = CardUtils.CalcWinningCard(curTrick.CardsPlayed, curRound.TrumpSuite, curTrick.LeadingSuite);

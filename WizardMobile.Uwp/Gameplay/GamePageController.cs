@@ -62,7 +62,22 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
         {
-            return Task.FromResult(true);
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var sourceCardGroup = _playerCardGroups[player.Name];
+
+            if (!sourceCardGroup.IsFaceUp)
+                sourceCardGroup.Replace(BACK_OF_CARD_KEY, cardPlayed.ToString());
+
+            sourceCardGroup.Transfer
+            (
+                cardPlayed.ToString(),
+                _componentProvider.DiscardCardGroup,
+                new AnimationBehavior() { Duration = 0.3, Rotations = 3 }
+            );
+
+            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
+            _componentProvider.BeginAnimations();
+            return taskCompletionSource.Task;
         }
 
         public async Task<bool> DisplayPlayerBid(int bid, Player player)
@@ -158,7 +173,7 @@ namespace WizardMobile.Uwp.Gameplay
             return Task.FromResult(true);
         }
 
-        public Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
+        public async Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
         {
             string bidResult = null;
             if (totalBids > roundNum)
@@ -169,7 +184,8 @@ namespace WizardMobile.Uwp.Gameplay
                 bidResult = "underbid";
             _componentProvider.SetMessageBoxText($"{totalBids} bids on {roundNum} tricks - {bidResult}");
 
-            return Task.FromResult(true);
+            await Task.Delay(2000);
+            return true;
         }
 
         public Task<Card> PromptPlayerCardSelection(Player player)

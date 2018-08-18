@@ -17,16 +17,18 @@ namespace WizardMobile.Uwp.Gameplay
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress)
+        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
         {
             _canvasFacade = canvasFacade;
             _cards = new List<UniqueCard>();
             Origin = origin;
             OrientationDegress = orientationDegress;
+            IsFaceUp = isFaceUp;
         }
 
         public CanvasPosition Origin { get; }
         public double OrientationDegress { get; }
+        public bool IsFaceUp { get; }
 
         protected ICanvasFacade _canvasFacade;
         private List<UniqueCard> _cards;
@@ -122,8 +124,8 @@ namespace WizardMobile.Uwp.Gameplay
     // no addition / removal animations
     public class StackCardGroup : CardGroup
     {
-        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
-            : base(parent, origin, orientationDegress)
+        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
+            : base(parent, origin, orientationDegress, isFaceUp)
         { }
 
         protected override CanvasPosition NextLocation => Origin;
@@ -132,8 +134,8 @@ namespace WizardMobile.Uwp.Gameplay
     // cards are in a vertical line and cover up 90% of the card beneath them
     public class TaperedStackCardGroup : CardGroup
     {
-        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
-            : base(parent, origin, orientationDegress)
+        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
+            : base(parent, origin, orientationDegress, isFaceUp)
         {
         }
 
@@ -145,8 +147,8 @@ namespace WizardMobile.Uwp.Gameplay
 
     public class AdjacentCardGroup : CardGroup
     {
-        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees)
-            : base(parent, origin, orientationDegrees)
+        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees, bool isFaceUp = false)
+            : base(parent, origin, orientationDegrees, isFaceUp)
         {
         }
 
