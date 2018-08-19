@@ -125,7 +125,6 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-
         /*************************** IWizardComponentProvider implementation *******************************/
         public void SetMessageBoxText(string message)
         {
@@ -224,6 +223,7 @@ namespace WizardMobile.Uwp.Gameplay
                 handler();
             }              
         }
+
 
         /************************************** helpers **********************************************/
         // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)

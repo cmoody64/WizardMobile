@@ -112,6 +112,10 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
+        // queues a one shot event handler for each card
+        // the handler receives the card that was clicked
+        public void QueueClickHandlerForCards(Action<UniqueCard> handler) { }
+
         // added / transfered cards will be placed in this location
         // this determines the layout of a subclass
         protected abstract CanvasPosition NextLocation { get; }

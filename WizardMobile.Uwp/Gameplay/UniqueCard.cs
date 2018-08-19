@@ -16,5 +16,10 @@ namespace WizardMobile.Uwp.Gameplay
 
         public string Name { get; set; }
         public string Id { get; }
+
+        public Card ToEngineCard()
+        {
+
+        }
     }
 }
