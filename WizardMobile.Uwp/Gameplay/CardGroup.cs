@@ -35,7 +35,7 @@ namespace WizardMobile.Uwp.Gameplay
         {
             UniqueDisplayCard displayCard = new UniqueDisplayCard(card, isCardFaceUp);
             _displayCards.Add(displayCard);
-            _canvasFacade.AddToCanvas(displayCard, NextLocation, OrientationDegress);
+            _canvasFacade.AddCard(displayCard, NextLocation, OrientationDegress);
             OnAnimateCardAddition();
         }
 
@@ -52,12 +52,35 @@ namespace WizardMobile.Uwp.Gameplay
             if(cardToRemove != null)
             {
                 _displayCards.Remove(cardToRemove);
-                _canvasFacade.RemoveFromCanvas(cardToRemove);
+                _canvasFacade.RemoveCard(cardToRemove);
                 OnAnimateCardRemoval();
                 return true;
             }
             return false;
         }
+
+        // flips a card in place to either face up or face down
+        public bool Flip(Core.Card card)
+        {
+            UniqueDisplayCard cardToFlip = _displayCards.Find(displayCard => displayCard.DisplayKey == card.Name);
+            return FlipImpl(cardToFlip);
+        }
+
+        public void FlipAll()
+        {
+            _displayCards.ForEach(displayCard => FlipImpl(displayCard));
+        }
+
+        private bool FlipImpl(UniqueDisplayCard card)
+        {
+            if (card != null)
+            {
+                card.IsFaceUp = !card.IsFaceUp;
+                _canvasFacade.UpdateCard(card);
+            }
+            return false;
+        }
+
 
         // replaces the first card in _cards matching the toReplace param
         // if no match is found, a replacement cannot be done and false is returned

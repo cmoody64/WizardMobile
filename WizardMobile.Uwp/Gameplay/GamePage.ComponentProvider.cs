@@ -56,7 +56,7 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddToCanvas(UniqueDisplayCard card, CanvasPosition canvasPositon, double orientationDegrees)
+        public void AddCard(UniqueDisplayCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
             Image image = CreateCardImage(card);
             Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
@@ -65,16 +65,16 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Add(image);
         }
 
-        public void RemoveFromCanvas(UniqueDisplayCard card)
+        public void RemoveCard(UniqueDisplayCard card)
         {
             Image elementToRemove = this.FindName(card.Id) as Image;
             game_canvas.Children.Remove(elementToRemove);
         }
-         
-        public void ReplaceCardBitmap(UniqueDisplayCard cardToReplace, string newCardName)
+
+        void UpdateCard(UniqueDisplayCard cardToUpdate)
         {
-            Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
-            var bitmapImage = RetrieveCardBitmap(cardToReplace.DisplayKey);
+            Image elementToReplace = this.FindName(cardToUpdate.Id) as Image;
+            var bitmapImage = RetrieveCardBitmap(cardToUpdate.DisplayKey);
             elementToReplace.Source = bitmapImage;
         }
 

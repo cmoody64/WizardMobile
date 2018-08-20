@@ -65,12 +65,12 @@ namespace WizardMobile.Uwp.Gameplay
             var taskCompletionSource = new TaskCompletionSource<bool>();
             var sourceCardGroup = _playerCardGroups[player.Name];
 
-            if (!sourceCardGroup.IsFaceUp)
-                sourceCardGroup.Replace(BACK_OF_CARD_KEY, cardPlayed.Name);
+            if (player is AIPlayer)
+                sourceCardGroup.Flip(cardPlayed);
 
             sourceCardGroup.Transfer
             (
-                cardPlayed.Name,
+                cardPlayed,
                 _componentProvider.DiscardCardGroup,
                 new AnimationBehavior() { Duration = 0.3, Rotations = 3 }
             );
@@ -104,34 +104,18 @@ namespace WizardMobile.Uwp.Gameplay
                 (
                     leftCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                    new AnimationBehavior { Delay = 0.1 * i, Duration = 0.1 }
                 );
                 _componentProvider.RightCenterCardGroup.Transfer
                 (
                     rightCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                    new AnimationBehavior { Delay = 0.1 * i, Duration = 0.1 }
                 );
-            }
-            
-            const int shuffleCount = 5;
-            _componentProvider.LeftCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
-            _componentProvider.RightCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
-
-            for (int i = 0; i < shuffleCount; i++)
-            {
-
             }
 
             _componentProvider.QueueAnimationsCompletedHandler(() =>
             {
-                // remove all but 1 card backs since they are stacked vertically
-                // the one remaining card is a dummy card that makes it look like a stack of face-down cards
-                int cardsToRemove = shuffleCount * 2 - 1;
-                for (int i = 0; i < cardsToRemove; i++)
-                {
-                    _componentProvider.CenterCardGroup.Remove(BACK_OF_CARD_KEY);
-                }
                 // complete the task
                 taskCompletionSource.SetResult(true);
             });
@@ -144,8 +128,6 @@ namespace WizardMobile.Uwp.Gameplay
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            var humanPlayer = players.Find(player => player is HumanPlayer);
-            var faceUpHand = humanPlayer.Hand; // TODO this seems pretty hacky, better way to find human player at runtime?
             List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
             for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
             {
@@ -153,10 +135,9 @@ namespace WizardMobile.Uwp.Gameplay
                 for(int j = 0; j < playerDealOrder.Count(); j++)
                 {
                     string playerName = playerDealOrder[j];
+                    Card cardToTransfer = players.Find(player => player.Name == playerName).Hand[i];
                     CardGroup destinationGroup = _playerCardGroups[playerName];
-                    string cardKey = playerName == humanPlayer.Name ? faceUpHand[i].Name : BACK_OF_CARD_KEY;
-                    _componentProvider.CenterCardGroup.Add(cardKey);
-                    _componentProvider.CenterCardGroup.Transfer(cardKey, destinationGroup, new AnimationBehavior
+                    _componentProvider.CenterCardGroup.Transfer(cardToTransfer, destinationGroup, new AnimationBehavior
                     {
                         Duration = 0.3,
                         Delay = 0.5 * i + .125 * j,
@@ -165,11 +146,11 @@ namespace WizardMobile.Uwp.Gameplay
                 }
             }
 
-            // if the current round is the last round, remove the "dummy card" representing all extra cards in the deck
-            if (gameContext.CurRound.RoundNum == gameContext.MaxRoundCount)
-                _componentProvider.CenterCardGroup.Remove(BACK_OF_CARD_KEY);
-
-            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
+            _componentProvider.QueueAnimationsCompletedHandler(() =>
+            {
+                _componentProvider.Player1CardGroup.FlipAll();
+                taskCompletionSource.SetResult(true);
+            });
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
@@ -205,9 +186,16 @@ namespace WizardMobile.Uwp.Gameplay
             var taskCompletionSource = new TaskCompletionSource<Card>();
             var playerCardGroup = _playerCardGroups[player.Name];
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
-            playerCardGroup.QueueClickHandlerForCards(uniqueCard =>
+            playerCardGroup.QueueClickHandlerForCards(displayCard =>
             {
-                uniqueCard.
+                playerCardGroup.Transfer
+                (
+                    displayCard.CoreCard,
+                    _componentProvider.DiscardCardGroup,
+                    new AnimationBehavior { Duration = 0.1, Rotations = 0.3 }
+                );
+                _componentProvider.BeginAnimations();
+                taskCompletionSource.SetResult(displayCard.CoreCard);
             });
 
             return Task.FromResult(new Card(CardValue.ACE, CardSuite.CLUBS));
