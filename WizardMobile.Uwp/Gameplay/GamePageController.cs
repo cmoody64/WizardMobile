@@ -195,7 +195,7 @@ namespace WizardMobile.Uwp.Gameplay
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
             playerCardGroup.QueueClickHandlerForCards(uniqueCard =>
             {
-
+                uniqueCard.
             });
 
             return Task.FromResult(new Card(CardValue.ACE, CardSuite.CLUBS));
@@ -237,8 +237,6 @@ namespace WizardMobile.Uwp.Gameplay
             return taskCompletionSource.Task;
         }
 
-
-        private static readonly string BACK_OF_CARD_KEY = "back_of_card";
         private static readonly Point LEFT_STACK_STARTING_POINT = new Point(-300, 50);
         private static readonly Point RIGHT_STACK_STARTING_POINT = new Point(300, 50);
         private static readonly Point CENTER_STACK_STARTING_POINT = new Point(0, 50);

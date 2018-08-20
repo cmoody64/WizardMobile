@@ -56,7 +56,7 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddToCanvas(UniqueCard card, CanvasPosition canvasPositon, double orientationDegrees)
+        public void AddToCanvas(UniqueDisplayCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
             Image image = CreateCardImage(card);
             Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
@@ -65,16 +65,16 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Add(image);
         }
 
-        public void RemoveFromCanvas(UniqueCard card)
+        public void RemoveFromCanvas(UniqueDisplayCard card)
         {
             Image elementToRemove = this.FindName(card.Id) as Image;
             game_canvas.Children.Remove(elementToRemove);
         }
          
-        public void ReplaceCardBitmap(UniqueCard cardToReplace, string newCardName)
+        public void ReplaceCardBitmap(UniqueDisplayCard cardToReplace, string newCardName)
         {
             Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
-            var bitmapImage = RetrieveCardBitmap(cardToReplace.Name);
+            var bitmapImage = RetrieveCardBitmap(cardToReplace.DisplayKey);
             elementToReplace.Source = bitmapImage;
         }
 
@@ -249,7 +249,7 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         // TODO implement z index??
-        private Image SetupCardImage(UniqueCard card, Point position, double angle = 0)
+        private Image SetupCardImage(UniqueDisplayCard card, Point position, double angle = 0)
         {
             var image = CreateCardImage(card);
             SetCardImagePosition(image, position);
@@ -258,9 +258,9 @@ namespace WizardMobile.Uwp.Gameplay
             return image;
         }
 
-        private Image CreateCardImage(UniqueCard card)
+        private Image CreateCardImage(UniqueDisplayCard card)
         {
-            var bitmapImage = RetrieveCardBitmap(card.Name);
+            var bitmapImage = RetrieveCardBitmap(card.DisplayKey);
             var image = new Image();
             image.Source = bitmapImage;
             image.Name = card.Id;
