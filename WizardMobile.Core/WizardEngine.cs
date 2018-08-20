@@ -48,7 +48,7 @@ namespace WizardMobile.Core
 
             // shuffle, deal, and initialize round context
             _curDeck.Shuffle();
-            await _frontend.DisplayShuffle();
+            await _frontend.DisplayShuffle(_curDeck);
             DealDeck(roundNum);
             Card trumpCard = _curDeck.Cards.Count > 0 ? _curDeck.PopTop() : null;
 

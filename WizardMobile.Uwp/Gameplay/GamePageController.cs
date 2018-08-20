@@ -66,11 +66,11 @@ namespace WizardMobile.Uwp.Gameplay
             var sourceCardGroup = _playerCardGroups[player.Name];
 
             if (!sourceCardGroup.IsFaceUp)
-                sourceCardGroup.Replace(BACK_OF_CARD_KEY, cardPlayed.ToString());
+                sourceCardGroup.Replace(BACK_OF_CARD_KEY, cardPlayed.Name);
 
             sourceCardGroup.Transfer
             (
-                cardPlayed.ToString(),
+                cardPlayed.Name,
                 _componentProvider.DiscardCardGroup,
                 new AnimationBehavior() { Duration = 0.3, Rotations = 3 }
             );
@@ -87,28 +87,40 @@ namespace WizardMobile.Uwp.Gameplay
             return true;
         }
 
-        public Task<bool> DisplayShuffle()
+        public Task<bool> DisplayShuffle(IReadonlyDeck deckToShuffle)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
+            // add cards alternating to left and right center stacks
+            for(int i = 0; i < deckToShuffle.Cards.Count / 2; i++)
+            {
+                var leftCard = deckToShuffle.Cards[i];
+                var rightCard = deckToShuffle.Cards[i + 1];
+
+                _componentProvider.LeftCenterCardGroup.Add(leftCard);
+                _componentProvider.LeftCenterCardGroup.Add(rightCard);
+
+                _componentProvider.LeftCenterCardGroup.Transfer
+                (
+                    leftCard,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                );
+                _componentProvider.RightCenterCardGroup.Transfer
+                (
+                    rightCard,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
+                );
+            }
+            
             const int shuffleCount = 5;
             _componentProvider.LeftCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
             _componentProvider.RightCenterCardGroup.AddRange(Enumerable.Repeat(BACK_OF_CARD_KEY, shuffleCount));
 
             for (int i = 0; i < shuffleCount; i++)
             {
-                _componentProvider.LeftCenterCardGroup.Transfer
-                (
-                    BACK_OF_CARD_KEY,
-                    _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
-                );
-                _componentProvider.RightCenterCardGroup.Transfer
-                (
-                    BACK_OF_CARD_KEY,
-                    _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.2 * i, Duration = 0.2 }
-                );
+
             }
 
             _componentProvider.QueueAnimationsCompletedHandler(() =>
@@ -142,7 +154,7 @@ namespace WizardMobile.Uwp.Gameplay
                 {
                     string playerName = playerDealOrder[j];
                     CardGroup destinationGroup = _playerCardGroups[playerName];
-                    string cardKey = playerName == humanPlayer.Name ? faceUpHand[i].ToString() : BACK_OF_CARD_KEY;
+                    string cardKey = playerName == humanPlayer.Name ? faceUpHand[i].Name : BACK_OF_CARD_KEY;
                     _componentProvider.CenterCardGroup.Add(cardKey);
                     _componentProvider.CenterCardGroup.Transfer(cardKey, destinationGroup, new AnimationBehavior
                     {
