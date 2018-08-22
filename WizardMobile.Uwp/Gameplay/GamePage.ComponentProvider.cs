@@ -62,6 +62,9 @@ namespace WizardMobile.Uwp.Gameplay
             Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
+            image.PointerReleased += (sender, args) => CardClicked(card);
+            //image.PointerEntered += (sender, args) => CardPointerEntered(card);
+            //image.PointerExited += (sender, args) => CardPointerExited(card);
             game_canvas.Children.Add(image);
         }
 
@@ -71,7 +74,7 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Remove(elementToRemove);
         }
 
-        void UpdateCard(UniqueDisplayCard cardToUpdate)
+        public void UpdateCard(UniqueDisplayCard cardToUpdate)
         {
             Image elementToReplace = this.FindName(cardToUpdate.Id) as Image;
             var bitmapImage = RetrieveCardBitmap(cardToUpdate.DisplayKey);
@@ -123,6 +126,10 @@ namespace WizardMobile.Uwp.Gameplay
 
             game_canvas_storyboard.Resume();
         }
+
+        public event Action<UniqueDisplayCard> CardClicked;
+        public event Action<UniqueDisplayCard> CardPointerEntered;
+        public event Action<UniqueDisplayCard> CardPointerExited;
 
 
         /*************************** IWizardComponentProvider implementation *******************************/
@@ -249,14 +256,14 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         // TODO implement z index??
-        private Image SetupCardImage(UniqueDisplayCard card, Point position, double angle = 0)
-        {
-            var image = CreateCardImage(card);
-            SetCardImagePosition(image, position);
-            SetCardImageAngle(image, angle);
+        //private Image SetupCardImage(UniqueDisplayCard card, Point position, double angle = 0)
+        //{
+        //    var image = CreateCardImage(card);
+        //    SetCardImagePosition(image, position);
+        //    SetCardImageAngle(image, angle);
 
-            return image;
-        }
+        //    return image;
+        //}
 
         private Image CreateCardImage(UniqueDisplayCard card)
         {

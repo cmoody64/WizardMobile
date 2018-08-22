@@ -21,8 +21,12 @@ namespace WizardMobile.Uwp.Gameplay
         {
             _canvasFacade = canvasFacade;
             _displayCards = new List<UniqueDisplayCard>();
+            _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
             Origin = origin;
             OrientationDegress = orientationDegress;
+
+            // bind callbacks to handlers
+            _canvasFacade.CardClicked += OnCanvasCardClicked;
         }
 
         public CanvasPosition Origin { get; }
@@ -31,7 +35,7 @@ namespace WizardMobile.Uwp.Gameplay
         protected ICanvasFacade _canvasFacade;
         private List<UniqueDisplayCard> _displayCards;
 
-        public void Add(Core.Card card, bool isCardFaceUp = true)
+        public void Add(Core.Card card, bool isCardFaceUp = false)
         {
             UniqueDisplayCard displayCard = new UniqueDisplayCard(card, isCardFaceUp);
             _displayCards.Add(displayCard);
@@ -39,7 +43,7 @@ namespace WizardMobile.Uwp.Gameplay
             OnAnimateCardAddition();
         }
 
-        public void AddRange(IEnumerable<Core.Card> cards, bool isCardFaceUp = true)
+        public void AddRange(IEnumerable<Core.Card> cards, bool isCardFaceUp = false)
         {
             foreach (Core.Card card in cards)
                 Add(card);
@@ -48,8 +52,8 @@ namespace WizardMobile.Uwp.Gameplay
         // removes the first card in _cards matching the cardName param
         public bool Remove(Core.Card card)
         {
-            UniqueDisplayCard cardToRemove = _displayCards.FirstOrDefault(displayCard => displayCard.DisplayKey == card.Name);
-            if(cardToRemove != null)
+            UniqueDisplayCard cardToRemove = GetDisplayCardFromCoreCard(card);
+            if (cardToRemove != null)
             {
                 _displayCards.Remove(cardToRemove);
                 _canvasFacade.RemoveCard(cardToRemove);
@@ -62,7 +66,7 @@ namespace WizardMobile.Uwp.Gameplay
         // flips a card in place to either face up or face down
         public bool Flip(Core.Card card)
         {
-            UniqueDisplayCard cardToFlip = _displayCards.Find(displayCard => displayCard.DisplayKey == card.Name);
+            UniqueDisplayCard cardToFlip = GetDisplayCardFromCoreCard(card);
             return FlipImpl(cardToFlip);
         }
 
@@ -81,26 +85,11 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
-
-        // replaces the first card in _cards matching the toReplace param
-        // if no match is found, a replacement cannot be done and false is returned
-        //public bool Replace(Core.Card cardToReplace, Core.Card newCard)
-        //{
-        //    UniqueDisplayCard cardToUpdate = _displayCards.FirstOrDefault(displayCard => displayCard.DisplayKey == cardToReplace.Name);
-        //    if(cardToUpdate != null)
-        //    {
-        //        cardToUpdate.DisplayKey = newCard;
-        //        _canvasFacade.ReplaceCardBitmap(cardToUpdate, newCard);
-        //        return true;
-        //    }
-        //    return false;
-        //}
-
         // transfers the first card in _cards matching the cardName param
         public bool Transfer(Core.Card card, CardGroup destinationGroup, AnimationBehavior animationBehavior)
         {
-            UniqueDisplayCard cardToTransfer = _displayCards.FirstOrDefault(displayCard => displayCard.DisplayKey == card.Name);
-            if(cardToTransfer != null)
+            UniqueDisplayCard cardToTransfer = GetDisplayCardFromCoreCard(card);
+            if (cardToTransfer != null)
             {
                 _displayCards.Remove(cardToTransfer);
                 OnAnimateCardRemoval();
@@ -133,9 +122,29 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
-        // queues a one shot event handler for each card
-        // the handler receives the card that was clicked
-        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> handler) { }
+        // queue one shot handlers for when a card within a card group is clicked
+        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> cardClickedHandler)
+        {
+            _cardClickedHandlers.Enqueue(cardClickedHandler);
+        }
+        private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
+
+        private void OnCanvasCardClicked(UniqueDisplayCard displayCard)
+        {
+            if (_displayCards.Contains(displayCard))
+            {
+                while (_cardClickedHandlers.Count > 0)
+                {
+                    var handler = _cardClickedHandlers.Dequeue();
+                    handler(displayCard);
+                }
+            }
+        }
+
+        private UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
+        {
+            return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));
+        }
 
         // added / transfered cards will be placed in this location
         // this determines the layout of a subclass
@@ -144,6 +153,10 @@ namespace WizardMobile.Uwp.Gameplay
         protected virtual void OnAnimateCardAddition() { }
         protected virtual void OnAnimateCardRemoval() { }
     }
+
+
+
+
 
     // each card is directly on top of each other, only the top card is visible
     // no addition / removal animations

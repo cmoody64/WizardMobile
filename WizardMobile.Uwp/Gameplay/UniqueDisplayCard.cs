@@ -18,6 +18,7 @@ namespace WizardMobile.Uwp.Gameplay
         public Card CoreCard { get; }
         public bool IsFaceUp { get; set; }
         public string Id { get; }
+        public string Name => CoreCard.Name;
         public string DisplayKey => IsFaceUp ? CoreCard.Name : BACK_OF_CARD_KEY;
 
         private static readonly string BACK_OF_CARD_KEY = "back_of_card";

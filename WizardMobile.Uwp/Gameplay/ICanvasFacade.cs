@@ -17,5 +17,8 @@ namespace WizardMobile.Uwp.Gameplay
         void UpdateCard(UniqueDisplayCard cardToFlip);
         void QueueAnimationRequest(AnimationRequest animation);
         void QueueAnimationRequests(IEnumerable<AnimationRequest> animations);
+        event Action<UniqueDisplayCard> CardClicked; // fires when any card is clicked, passing the card to the handler
+        event Action<UniqueDisplayCard> CardPointerEntered;
+        event Action<UniqueDisplayCard> CardPointerExited;
     }
 }

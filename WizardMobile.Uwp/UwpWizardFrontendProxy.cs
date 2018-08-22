@@ -54,9 +54,9 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayPlayerBid(bid, player));
         }
 
-        public async Task<bool> DisplayShuffle()
+        public async Task<bool> DisplayShuffle(IReadonlyDeck deck)
         {
-            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayShuffle());
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayShuffle(deck));
         }
 
         public async Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)

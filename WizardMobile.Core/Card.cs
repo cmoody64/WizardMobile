@@ -65,5 +65,6 @@ namespace WizardMobile.Core
         }
 
         public string Name => ToString();
+        public string DisplayName => ToString().Replace('_', ' ');
     }
 }
