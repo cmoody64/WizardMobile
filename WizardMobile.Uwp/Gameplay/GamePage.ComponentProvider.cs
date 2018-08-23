@@ -50,7 +50,7 @@ namespace WizardMobile.Uwp.Gameplay
 
             // the size of a given card needs to only be fetched once and cached
             // all cards are the same size so the fetched size applies to all cards
-            var imageSizeTask = GetImageSourceSize("back_of_card");
+            var imageSizeTask = GetCardImageSize();
             imageSizeTask.ContinueWith(sizeTask => this._cardBitmapSize = sizeTask.Result);            
         }
 
@@ -254,17 +254,6 @@ namespace WizardMobile.Uwp.Gameplay
         private Size _cardBitmapSize;
         private int _cardBitmapDecodePixelHeight;
 
-
-        // TODO implement z index??
-        //private Image SetupCardImage(UniqueDisplayCard card, Point position, double angle = 0)
-        //{
-        //    var image = CreateCardImage(card);
-        //    SetCardImagePosition(image, position);
-        //    SetCardImageAngle(image, angle);
-
-        //    return image;
-        //}
-
         private Image CreateCardImage(UniqueDisplayCard card)
         {
             var bitmapImage = RetrieveCardBitmap(card.DisplayKey);
@@ -294,9 +283,17 @@ namespace WizardMobile.Uwp.Gameplay
             cardImage.RenderTransformOrigin = new Point(0.5, 0.5);
         }
 
-        private async Task<Size> GetImageSourceSize(string cardKey)
+        // since all card images are the same size, it is only necessary to read the size of a single image
+        // to know the default card image size
+        // NOTE this is not lazy loaded / cached because the screen size may change causing the image size to change
+        public async Task<Size> GetCardImageSize()
         {
-            var bitmapSource = game_canvas.Resources[cardKey] as BitmapImage;
+            return await GetImageSourceSize("back_of_card");
+        }
+
+        private async Task<Size> GetImageSourceSize(string imageResourceKey)
+        {
+            var bitmapSource = game_canvas.Resources[imageResourceKey] as BitmapImage;
             StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(bitmapSource.UriSource);
             var properties = await file.Properties.GetImagePropertiesAsync();
             var originalWidth = properties.Width;

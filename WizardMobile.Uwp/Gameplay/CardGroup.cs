@@ -25,6 +25,9 @@ namespace WizardMobile.Uwp.Gameplay
             Origin = origin;
             OrientationDegress = orientationDegress;
 
+            // async initialization from canvas facade
+            _canvasFacade.GetCardImageSize().ContinueWith(task => _cardImageSize = task.Result);
+
             // bind callbacks to handlers
             _canvasFacade.CardClicked += OnCanvasCardClicked;
         }
@@ -33,7 +36,8 @@ namespace WizardMobile.Uwp.Gameplay
         public double OrientationDegress { get; }
 
         protected ICanvasFacade _canvasFacade;
-        private List<UniqueDisplayCard> _displayCards;
+        protected List<UniqueDisplayCard> _displayCards;
+        protected Size _cardImageSize;
 
         public void Add(Core.Card card, bool isCardFaceUp = false)
         {
@@ -58,7 +62,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 _displayCards.Remove(cardToRemove);
                 _canvasFacade.RemoveCard(cardToRemove);
-                OnAnimateCardRemoval();
+                OnAnimateCardRemoval(cardToRemove);
                 return true;
             }
             return false;
@@ -103,7 +107,7 @@ namespace WizardMobile.Uwp.Gameplay
             if (cardToTransfer != null)
             {
                 _displayCards.Remove(cardToTransfer);
-                OnAnimateCardRemoval();
+                OnAnimateCardRemoval(cardToTransfer);
 
                 // resolve rotations so that the animation terminates at the angle of the destination group
                 // rotations are rounded up so that the card is flush with the destination
@@ -161,8 +165,8 @@ namespace WizardMobile.Uwp.Gameplay
         // this determines the layout of a subclass
         protected abstract CanvasPosition NextLocation { get; }
 
-        protected virtual void OnAnimateCardAddition() { }
-        protected virtual void OnAnimateCardRemoval() { }
+        protected virtual void OnAnimateCardAddition() { } // called after a card is added to _displayCards
+        protected virtual void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { } // called after a card is removed from _displayCards
     }
 
 
@@ -191,7 +195,7 @@ namespace WizardMobile.Uwp.Gameplay
         protected override CanvasPosition NextLocation => Origin;
 
         protected override void OnAnimateCardAddition() { }
-        protected override void OnAnimateCardRemoval() { }
+        protected override void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { }
     }
 
     public class AdjacentCardGroup : CardGroup
@@ -201,9 +205,39 @@ namespace WizardMobile.Uwp.Gameplay
         {
         }
 
-        protected override CanvasPosition NextLocation => Origin;
+        protected override CanvasPosition NextLocation => GeneratePositions(_displayCards.Count + 1, _cardImageSize, Origin).Last();
 
-        protected override void OnAnimateCardAddition() { }
-        protected override void OnAnimateCardRemoval() { }
+        protected override void OnAnimateCardAddition()
+        {
+            List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
+
+        }
+        protected override void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { }
+
+
+        private static List<CanvasPosition> GeneratePositions(int displayCount, Size imageSize, CanvasPosition origin)
+        {
+            if (displayCount <= 0)
+                return null;
+
+            double margin = imageSize.Width * 1.2 - imageSize.Width * .05 * displayCount;
+            List<CanvasPosition> positions = new List<CanvasPosition>();
+            double startingX;
+            if (displayCount % 2 == 0)
+                // nonzero even number of cards
+                startingX = origin.NormalizedX - ((displayCount / 2) - 1 / 2) * margin;
+            else
+                // nonzero odd number of cards
+                startingX = origin.NormalizedX - ((displayCount - 1) / 2) * margin;
+
+            for(int i = 0; i < displayCount; i++)
+            {
+                var x = startingX + margin * i;
+                var y = origin.NormalizedY;
+                positions.Add(new CanvasPosition(x, y));
+            }
+
+            return positions;
+        }
     }
 }
