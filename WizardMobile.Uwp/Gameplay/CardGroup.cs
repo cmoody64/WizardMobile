@@ -43,8 +43,8 @@ namespace WizardMobile.Uwp.Gameplay
         {
             UniqueDisplayCard displayCard = new UniqueDisplayCard(card, isCardFaceUp);
             _displayCards.Add(displayCard);
-            _canvasFacade.AddCard(displayCard, NextLocation, OrientationDegress);
-            OnAnimateCardAddition();
+            _canvasFacade.AddCard(displayCard, NextOpenPosition, OrientationDegress);
+            OnPreCardAddition();
         }
 
         public void AddRange(IEnumerable<Core.Card> cards, bool isCardFaceUp = false)
@@ -62,7 +62,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 _displayCards.Remove(cardToRemove);
                 _canvasFacade.RemoveCard(cardToRemove);
-                OnAnimateCardRemoval();
+                OnPostCardRemoval();
                 return true;
             }
             return false;
@@ -107,7 +107,7 @@ namespace WizardMobile.Uwp.Gameplay
             if (cardToTransfer != null)
             {
                 _displayCards.Remove(cardToTransfer);
-                OnAnimateCardRemoval();
+                OnPostCardRemoval();
 
                 // resolve rotations so that the animation terminates at the angle of the destination group
                 // rotations are rounded up so that the card is flush with the destination
@@ -118,7 +118,7 @@ namespace WizardMobile.Uwp.Gameplay
                     resolvedRotations += difference / 360;
                 }
 
-                var destinationPoint = destinationGroup.NextLocation;
+                var destinationPoint = destinationGroup.NextOpenPosition;
                 var transferAnimRequest = new AnimationRequest()
                 {
                     Destination = destinationPoint,
@@ -129,8 +129,8 @@ namespace WizardMobile.Uwp.Gameplay
                 };
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);
 
-                destinationGroup._displayCards.Add(cardToTransfer);
-                destinationGroup.OnAnimateCardAddition();
+                destinationGroup.OnPreCardAddition();
+                destinationGroup._displayCards.Add(cardToTransfer);                
 
                 return true;
             }
@@ -163,10 +163,10 @@ namespace WizardMobile.Uwp.Gameplay
 
         // added / transfered cards will be placed in this location
         // this determines the layout of a subclass
-        protected abstract CanvasPosition NextLocation { get; }
+        protected abstract CanvasPosition NextOpenPosition { get; }
 
-        protected virtual void OnAnimateCardAddition() { } // called after a card is added to _displayCards in the far right position
-        protected virtual void OnAnimateCardRemoval() { } // called after a card is removed from _displayCards
+        protected virtual void OnPreCardAddition() { } // called before a card is added to _displayCards in the far right position
+        protected virtual void OnPostCardRemoval() { } // called after a card is removed from _displayCards
     }
 
 
@@ -181,7 +181,7 @@ namespace WizardMobile.Uwp.Gameplay
             : base(parent, origin, orientationDegress)
         { }
 
-        protected override CanvasPosition NextLocation => Origin;
+        protected override CanvasPosition NextOpenPosition => Origin;
     }
 
     // cards are in a vertical line and cover up 90% of the card beneath them
@@ -192,10 +192,10 @@ namespace WizardMobile.Uwp.Gameplay
         {
         }
 
-        protected override CanvasPosition NextLocation => Origin;
+        protected override CanvasPosition NextOpenPosition => Origin;
 
-        protected override void OnAnimateCardAddition() { }
-        protected override void OnAnimateCardRemoval() { }
+        protected override void OnPreCardAddition() { }
+        protected override void OnPostCardRemoval() { }
     }
 
     public class AdjacentCardGroup : CardGroup
@@ -205,22 +205,24 @@ namespace WizardMobile.Uwp.Gameplay
         {
         }
 
-        protected override CanvasPosition NextLocation => GeneratePositions(_displayCards.Count + 1, _cardImageSize, Origin).Last();
+        protected override CanvasPosition NextOpenPosition => GeneratePositions(_displayCards.Count + 1, _cardImageSize, Origin).Last();
 
-        protected override void OnAnimateCardAddition()
+        protected override void OnPreCardAddition()
         {
-            //List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
-            //for(int i = 0; i < newPositions.Count; i++)
-            //{
-            //    _canvasFacade.QueueAnimationRequest(new AnimationRequest
-            //    {
-            //        Destination = newPositions[i],
-            //        Duration = 0.2,
-            //        ImageGuid = _displayCards[i].Id
-            //    });
-            //}
+            // because a card has not yet been added (this hook is PRE addition), generate the new positions based off of
+            // _displayCards having one more card than it currently has, but only animate for the cards currently in _displayCards
+            List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count+1, _cardImageSize, Origin);
+            for (int i = 0; i < newPositions.Count-1; i++)
+            {
+                _canvasFacade.QueueAnimationRequest(new AnimationRequest
+                {
+                    Destination = newPositions[i],
+                    Duration = 0.2,
+                    ImageGuid = _displayCards[i].Id
+                });
+            }
         }
-        protected override void OnAnimateCardRemoval()
+        protected override void OnPostCardRemoval()
         {
             //List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
             //for (int i = 0; i < newPositions.Count; i++)
