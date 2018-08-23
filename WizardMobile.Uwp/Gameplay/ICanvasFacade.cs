@@ -12,10 +12,10 @@ namespace WizardMobile.Uwp.Gameplay
 {
     public interface ICanvasFacade
     {
-        void AddCard(UniqueDisplayCard card, CanvasPosition position, double orientationDegrees);
+        void AddCard(UniqueDisplayCard card, NormalizedPosition position, double orientationDegrees);
         void RemoveCard(UniqueDisplayCard card);
         void UpdateCard(UniqueDisplayCard cardToFlip);
-        Task<Size> GetCardImageSize();
+        Task<NormalizedSize> GetNormalizedCardImageSize();
         void QueueAnimationRequest(AnimationRequest animation);
         void QueueAnimationRequests(IEnumerable<AnimationRequest> animations);
         event Action<UniqueDisplayCard> CardClicked; // fires when any card is clicked, passing the card to the handler

@@ -17,7 +17,7 @@ namespace WizardMobile.Uwp.Gameplay
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress)
+        public CardGroup(ICanvasFacade canvasFacade, NormalizedPosition origin, double orientationDegress)
         {
             _canvasFacade = canvasFacade;
             _displayCards = new List<UniqueDisplayCard>();
@@ -26,18 +26,18 @@ namespace WizardMobile.Uwp.Gameplay
             OrientationDegress = orientationDegress;
 
             // async initialization from canvas facade
-            _canvasFacade.GetCardImageSize().ContinueWith(task => _cardImageSize = task.Result);
+            _canvasFacade.GetNormalizedCardImageSize().ContinueWith(task => _cardImageSize = task.Result);
 
             // bind callbacks to handlers
             _canvasFacade.CardClicked += OnCanvasCardClicked;
         }
 
-        public CanvasPosition Origin { get; }
+        public NormalizedPosition Origin { get; }
         public double OrientationDegress { get; }
 
         protected ICanvasFacade _canvasFacade;
         protected List<UniqueDisplayCard> _displayCards;
-        protected Size _cardImageSize;
+        protected NormalizedSize _cardImageSize;
 
         public void Add(Core.Card card, bool isCardFaceUp = false)
         {
@@ -163,7 +163,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         // added / transfered cards will be placed in this location
         // this determines the layout of a subclass
-        protected abstract CanvasPosition NextOpenPosition { get; }
+        protected abstract NormalizedPosition NextOpenPosition { get; }
 
         protected virtual void OnPreCardAddition() { } // called before a card is added to _displayCards in the far right position
         protected virtual void OnPostCardRemoval() { } // called after a card is removed from _displayCards
@@ -177,22 +177,22 @@ namespace WizardMobile.Uwp.Gameplay
     // no addition / removal animations
     public class StackCardGroup : CardGroup
     {
-        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
+        public StackCardGroup(GamePage parent, NormalizedPosition origin, double orientationDegress)
             : base(parent, origin, orientationDegress)
         { }
 
-        protected override CanvasPosition NextOpenPosition => Origin;
+        protected override NormalizedPosition NextOpenPosition => Origin;
     }
 
     // cards are in a vertical line and cover up 90% of the card beneath them
     public class TaperedStackCardGroup : CardGroup
     {
-        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
+        public TaperedStackCardGroup(GamePage parent, NormalizedPosition origin, double orientationDegress)
             : base(parent, origin, orientationDegress)
         {
         }
 
-        protected override CanvasPosition NextOpenPosition => Origin;
+        protected override NormalizedPosition NextOpenPosition => Origin;
 
         protected override void OnPreCardAddition() { }
         protected override void OnPostCardRemoval() { }
@@ -200,18 +200,18 @@ namespace WizardMobile.Uwp.Gameplay
 
     public class AdjacentCardGroup : CardGroup
     {
-        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees)
+        public AdjacentCardGroup(GamePage parent, NormalizedPosition origin, double orientationDegrees)
             : base(parent, origin, orientationDegrees)
         {
         }
 
-        protected override CanvasPosition NextOpenPosition => GeneratePositions(_displayCards.Count + 1, _cardImageSize, Origin).Last();
+        protected override NormalizedPosition NextOpenPosition => GeneratePositions(_displayCards.Count + 1, _cardImageSize, Origin).Last();
 
         protected override void OnPreCardAddition()
         {
             // because a card has not yet been added (this hook is PRE addition), generate the new positions based off of
             // _displayCards having one more card than it currently has, but only animate for the cards currently in _displayCards
-            List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count+1, _cardImageSize, Origin);
+            List<NormalizedPosition> newPositions = GeneratePositions(_displayCards.Count+1, _cardImageSize, Origin);
             for (int i = 0; i < newPositions.Count-1; i++)
             {
                 _canvasFacade.QueueAnimationRequest(new AnimationRequest
@@ -237,13 +237,13 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
 
-        private static List<CanvasPosition> GeneratePositions(int displayCount, Size imageSize, CanvasPosition origin)
+        private static List<NormalizedPosition> GeneratePositions(int displayCount, NormalizedSize imageSize, NormalizedPosition origin)
         {
             if (displayCount <= 0)
                 return null;
 
-            double margin = imageSize.Width * 1.2 - imageSize.Width * .05 * displayCount;
-            List<CanvasPosition> positions = new List<CanvasPosition>();
+            double margin = imageSize.NormalizedWidth * 1.2 - imageSize.NormalizedWidth * .05 * displayCount;
+            List<NormalizedPosition> positions = new List<NormalizedPosition>();
             double startingX = origin.NormalizedX - ((displayCount - 1) / 2) * margin;
             //if (displayCount % 2 == 0)
             //    // nonzero even number of cards
@@ -256,7 +256,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 var x = startingX + margin * i;
                 var y = origin.NormalizedY;
-                positions.Add(new CanvasPosition(x, y));
+                positions.Add(new NormalizedPosition(x, y));
             }
 
             return positions;

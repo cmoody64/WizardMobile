@@ -26,18 +26,18 @@ namespace WizardMobile.Uwp.Gameplay
         {
             animationQueue = new List<DoubleAnimation>();
 
-            CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(40, 50), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(60, 50), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0);
-            Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0);
-            Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0);
-            Player2CardGroup = new AdjacentCardGroup(this, new CanvasPosition(10, 50), 90);
-            Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(20, 40), 90);
-            Player3CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 10), 0);
-            Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(60, 20), 0);
-            Player4CardGroup = new AdjacentCardGroup(this, new CanvasPosition(90, 50), 270);
-            Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(80, 60), 270);
+            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 50), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
+            Player1CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
+            Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
+            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), 90);
+            Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), 90);
+            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 10), 0);
+            Player3StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 20), 0);
+            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(90, 50), 270);
+            Player4StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(80, 60), 270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -56,10 +56,10 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddCard(UniqueDisplayCard card, CanvasPosition canvasPositon, double orientationDegrees)
+        public void AddCard(UniqueDisplayCard card, NormalizedPosition canvasPositon, double orientationDegrees)
         {
             Image image = CreateCardImage(card);
-            Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
+            Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
             image.PointerReleased += (sender, args) => CardClicked(card);
@@ -84,7 +84,7 @@ namespace WizardMobile.Uwp.Gameplay
         public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
             Image targetImage = FindName(animationRequest.ImageGuid) as Image;
-            Point destination = CanvasPositionToPoint(animationRequest.Destination, _cardBitmapSize);
+            Point destination = NormalizedPositionToPoint(animationRequest.Destination, _cardBitmapSize);
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
 
@@ -235,10 +235,10 @@ namespace WizardMobile.Uwp.Gameplay
         /************************************** helpers **********************************************/
         // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)
         // NOTE optionally takes into acount image size so that it seems like the image is centered on pos
-        private Point CanvasPositionToPoint(CanvasPosition pos, Size? imageSize = null)
+        private Point NormalizedPositionToPoint(NormalizedPosition pos, Size? imageSize = null)
         {
-            double x = pos.NormalizedX * game_canvas.ActualWidth / CanvasPosition.NORMALIZED_WIDTH;
-            double y = pos.NormalizedY * game_canvas.ActualHeight / CanvasPosition.NORMALIZED_HEIGHT;
+            double x = pos.NormalizedX * game_canvas.ActualWidth / CanvasNormalization.MAX_X;
+            double y = pos.NormalizedY * game_canvas.ActualHeight / CanvasNormalization.MAX_Y;
 
             // optionally shift x and y so that it seems like the point is centered around a given image
             if(imageSize.HasValue)
@@ -248,6 +248,13 @@ namespace WizardMobile.Uwp.Gameplay
             }
 
             return new Point(x, y);
+        }
+
+        private NormalizedSize SizeToNormalizedSize(Size size)
+        {
+            double width = (size.Width / game_canvas.ActualWidth) * CanvasNormalization.MAX_X;
+            double height = (size.Height / game_canvas.ActualHeight) * CanvasNormalization.MAX_Y;
+            return new NormalizedSize(width, height);
         }
 
         // for performance reasons, this is determined once during initialization and cached
@@ -283,10 +290,16 @@ namespace WizardMobile.Uwp.Gameplay
             cardImage.RenderTransformOrigin = new Point(0.5, 0.5);
         }
 
+        public async Task<NormalizedSize> GetNormalizedCardImageSize()
+        {
+            Size size = await GetCardImageSize();
+            return SizeToNormalizedSize(size);
+        }
+
         // since all card images are the same size, it is only necessary to read the size of a single image
         // to know the default card image size
         // NOTE this is not lazy loaded / cached because the screen size may change causing the image size to change
-        public async Task<Size> GetCardImageSize()
+        private async Task<Size> GetCardImageSize()
         {
             return await GetImageSourceSize("back_of_card");
         }
