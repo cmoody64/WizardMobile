@@ -46,11 +46,39 @@ namespace WizardMobile.Uwp.Gameplay
             return true;
         }
 
+        public async Task<bool> DisplayEndRound(int roundNum)
+        {
+            _componentProvider.SetMessageBoxText("Round Over");
+            _componentProvider.DiscardCardGroup.RemoveAll();
+            _componentProvider.RightCenterCardGroup.RemoveAll();
+            _componentProvider.CenterCardGroup.RemoveAll();
+            await Task.Delay(1000);
+            return true;
+        }
+
         public async Task<bool> DisplayStartTrick(int trickNum)
         {
             _componentProvider.SetMessageBoxText($"Trick {trickNum} Starting");
             await Task.Delay(1000);
             return true;
+        }
+
+        public Task<bool> DisplayTrumpCardSelected(Card trumpCard)
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
+            _componentProvider.CenterCardGroup.Transfer
+            (
+                trumpCard,
+                _componentProvider.RightCenterCardGroup,
+                new AnimationBehavior { Duration = 0.3 }
+            );
+            _componentProvider.QueueAnimationsCompletedHandler(() =>
+            {
+                _componentProvider.RightCenterCardGroup.Flip(trumpCard);
+                taskCompletionSource.SetResult(true);
+            });
+            _componentProvider.BeginAnimations();
+            return taskCompletionSource.Task;
         }
 
         public async Task<bool> DisplayTurnInProgress(Player player)

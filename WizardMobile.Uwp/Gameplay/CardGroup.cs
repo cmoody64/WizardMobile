@@ -49,7 +49,8 @@ namespace WizardMobile.Uwp.Gameplay
                 Add(card);
         }
 
-        // removes the first card in _cards matching the cardName param
+        // removes the first card in _cards matching the card param
+        // animates removal
         public bool Remove(Core.Card card)
         {
             UniqueDisplayCard cardToRemove = GetDisplayCardFromCoreCard(card);
@@ -61,6 +62,16 @@ namespace WizardMobile.Uwp.Gameplay
                 return true;
             }
             return false;
+        }
+
+        // removes all cards without animation
+        public void RemoveAll()
+        {
+            _displayCards.ForEach(displayCard =>
+            {
+                _canvasFacade.RemoveCard(displayCard);
+            });
+            _displayCards.Clear();
         }
 
         // flips a card in place to either face up or face down

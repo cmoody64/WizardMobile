@@ -23,7 +23,6 @@ namespace WizardMobile.Core
 
         private async void PlaySingleGame()
         {
-            _curDeck = new Deck();
             await _frontend.DisplayStartGame();
             List<string> playerNames = await _frontend.PromptPlayerCreation();            
 
@@ -37,13 +36,14 @@ namespace WizardMobile.Core
 
             _gameContext = new GameContext(_players);
 
-            int roundCount = _curDeck.Cards.Count / _players.Count;
+            int roundCount = Deck.STARTING_CARD_COUNT / _players.Count;
             for (int round = 1; round <= roundCount; round++)
                 await PlaySingleRound(round);
         }
 
         private async Task PlaySingleRound(int roundNum)
         {
+            _curDeck = new Deck(); // refresh the deck at the beginning of each round
             await _frontend.DisplayStartRound(roundNum);
 
             // shuffle, deal, and initialize round context
@@ -51,6 +51,7 @@ namespace WizardMobile.Core
             await _frontend.DisplayShuffle(_curDeck);
             DealDeck(roundNum);
             Card trumpCard = _curDeck.Cards.Count > 0 ? _curDeck.PopTop() : null;
+            await _frontend.DisplayTrumpCardSelected(trumpCard);
 
             _gameContext.Rounds.Add(new RoundContext(roundNum, trumpCard));
             var curRound = _gameContext.CurRound;
@@ -98,6 +99,7 @@ namespace WizardMobile.Core
             });
 
             await _frontend.DisplayRoundScores(_gameContext);
+            await _frontend.DisplayEndRound(roundNum);
         }
 
         // executes a single trick and stores state in a new TrickContext instance, as well
