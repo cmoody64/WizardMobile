@@ -244,13 +244,13 @@ namespace WizardMobile.Uwp.Gameplay
 
             double margin = imageSize.Width * 1.2 - imageSize.Width * .05 * displayCount;
             List<CanvasPosition> positions = new List<CanvasPosition>();
-            double startingX;
-            if (displayCount % 2 == 0)
-                // nonzero even number of cards
-                startingX = origin.NormalizedX - ((displayCount / 2) - 1 / 2) * margin;
-            else
-                // nonzero odd number of cards
-                startingX = origin.NormalizedX - ((displayCount - 1) / 2) * margin;
+            double startingX = origin.NormalizedX - ((displayCount - 1) / 2) * margin;
+            //if (displayCount % 2 == 0)
+            //    // nonzero even number of cards
+            //    startingX = origin.NormalizedX - ((displayCount - 1) / 2) * margin;
+            //else
+            //    // nonzero odd number of cards
+            //    startingX = origin.NormalizedX - ((displayCount - 2) / 2) * margin;
 
             for(int i = 0; i < displayCount; i++)
             {
