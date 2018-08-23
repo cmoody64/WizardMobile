@@ -17,71 +17,92 @@ namespace WizardMobile.Uwp.Gameplay
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
+        public CardGroup(ICanvasFacade canvasFacade, CanvasPosition origin, double orientationDegress)
         {
             _canvasFacade = canvasFacade;
-            _cards = new List<UniqueCard>();
+            _displayCards = new List<UniqueDisplayCard>();
+            _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
             Origin = origin;
             OrientationDegress = orientationDegress;
-            IsFaceUp = isFaceUp;
+
+            // bind callbacks to handlers
+            _canvasFacade.CardClicked += OnCanvasCardClicked;
         }
 
         public CanvasPosition Origin { get; }
         public double OrientationDegress { get; }
-        public bool IsFaceUp { get; }
 
         protected ICanvasFacade _canvasFacade;
-        private List<UniqueCard> _cards;
+        private List<UniqueDisplayCard> _displayCards;
 
-        public void Add(string cardName)
+        public void Add(Core.Card card, bool isCardFaceUp = false)
         {
-            UniqueCard card = new UniqueCard(cardName);
-            _cards.Add(card);
-            _canvasFacade.AddToCanvas(card, NextLocation, OrientationDegress);
+            UniqueDisplayCard displayCard = new UniqueDisplayCard(card, isCardFaceUp);
+            _displayCards.Add(displayCard);
+            _canvasFacade.AddCard(displayCard, NextLocation, OrientationDegress);
             OnAnimateCardAddition();
         }
 
-        public void AddRange(IEnumerable<string> cardNames)
+        public void AddRange(IEnumerable<Core.Card> cards, bool isCardFaceUp = false)
         {
-            foreach (string cardName in cardNames)
-                Add(cardName);
+            foreach (Core.Card card in cards)
+                Add(card);
         }
 
-        // removes the first card in _cards matching the cardName param
-        public bool Remove(string cardName)
+        // removes the first card in _cards matching the card param
+        // animates removal
+        public bool Remove(Core.Card card)
         {
-            UniqueCard cardToRemove = _cards.FirstOrDefault(card => card.Name == cardName);
-            if(cardToRemove != null)
+            UniqueDisplayCard cardToRemove = GetDisplayCardFromCoreCard(card);
+            if (cardToRemove != null)
             {
-                _cards.Remove(cardToRemove);
-                _canvasFacade.RemoveFromCanvas(cardToRemove);
+                _displayCards.Remove(cardToRemove);
+                _canvasFacade.RemoveCard(cardToRemove);
                 OnAnimateCardRemoval();
                 return true;
             }
             return false;
         }
 
-        // replaces the first card in _cards matching the toReplace param
-        // if no match is found, a replacement cannot be done and false is returned
-        public bool Replace(string cardToReplace, string newCard)
+        // removes all cards without animation
+        public void RemoveAll()
         {
-            UniqueCard cardToUpdate = _cards.FirstOrDefault(card => card.Name == cardToReplace);
-            if(cardToUpdate != null)
+            _displayCards.ForEach(displayCard =>
             {
-                cardToUpdate.Name = newCard;
-                _canvasFacade.ReplaceCardBitmap(cardToUpdate, newCard);
-                return true;
+                _canvasFacade.RemoveCard(displayCard);
+            });
+            _displayCards.Clear();
+        }
+
+        // flips a card in place to either face up or face down
+        public bool Flip(Core.Card card)
+        {
+            UniqueDisplayCard cardToFlip = GetDisplayCardFromCoreCard(card);
+            return FlipImpl(cardToFlip);
+        }
+
+        public void FlipAll()
+        {
+            _displayCards.ForEach(displayCard => FlipImpl(displayCard));
+        }
+
+        private bool FlipImpl(UniqueDisplayCard card)
+        {
+            if (card != null)
+            {
+                card.IsFaceUp = !card.IsFaceUp;
+                _canvasFacade.UpdateCard(card);
             }
             return false;
         }
 
         // transfers the first card in _cards matching the cardName param
-        public bool Transfer(string cardName, CardGroup destinationGroup, AnimationBehavior animationBehavior)
+        public bool Transfer(Core.Card card, CardGroup destinationGroup, AnimationBehavior animationBehavior)
         {
-            UniqueCard cardToTransfer = _cards.FirstOrDefault(card => card.Name == cardName);
-            if(cardToTransfer != null)
+            UniqueDisplayCard cardToTransfer = GetDisplayCardFromCoreCard(card);
+            if (cardToTransfer != null)
             {
-                _cards.Remove(cardToTransfer);
+                _displayCards.Remove(cardToTransfer);
                 OnAnimateCardRemoval();
 
                 // resolve rotations so that the animation terminates at the angle of the destination group
@@ -104,12 +125,36 @@ namespace WizardMobile.Uwp.Gameplay
                 };
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);
 
-                destinationGroup._cards.Add(cardToTransfer);
+                destinationGroup._displayCards.Add(cardToTransfer);
                 destinationGroup.OnAnimateCardAddition();
 
                 return true;
             }
             return false;
+        }
+
+        // queue one shot handlers for when a card within a card group is clicked
+        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> cardClickedHandler)
+        {
+            _cardClickedHandlers.Enqueue(cardClickedHandler);
+        }
+        private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
+
+        private void OnCanvasCardClicked(UniqueDisplayCard displayCard)
+        {
+            if (_displayCards.Contains(displayCard))
+            {
+                while (_cardClickedHandlers.Count > 0)
+                {
+                    var handler = _cardClickedHandlers.Dequeue();
+                    handler(displayCard);
+                }
+            }
+        }
+
+        private UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
+        {
+            return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));
         }
 
         // added / transfered cards will be placed in this location
@@ -120,12 +165,16 @@ namespace WizardMobile.Uwp.Gameplay
         protected virtual void OnAnimateCardRemoval() { }
     }
 
+
+
+
+
     // each card is directly on top of each other, only the top card is visible
     // no addition / removal animations
     public class StackCardGroup : CardGroup
     {
-        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
-            : base(parent, origin, orientationDegress, isFaceUp)
+        public StackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
+            : base(parent, origin, orientationDegress)
         { }
 
         protected override CanvasPosition NextLocation => Origin;
@@ -134,8 +183,8 @@ namespace WizardMobile.Uwp.Gameplay
     // cards are in a vertical line and cover up 90% of the card beneath them
     public class TaperedStackCardGroup : CardGroup
     {
-        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress, bool isFaceUp = false)
-            : base(parent, origin, orientationDegress, isFaceUp)
+        public TaperedStackCardGroup(GamePage parent, CanvasPosition origin, double orientationDegress)
+            : base(parent, origin, orientationDegress)
         {
         }
 
@@ -147,8 +196,8 @@ namespace WizardMobile.Uwp.Gameplay
 
     public class AdjacentCardGroup : CardGroup
     {
-        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees, bool isFaceUp = false)
-            : base(parent, origin, orientationDegrees, isFaceUp)
+        public AdjacentCardGroup(GamePage parent, CanvasPosition origin, double orientationDegrees)
+            : base(parent, origin, orientationDegrees)
         {
         }
 

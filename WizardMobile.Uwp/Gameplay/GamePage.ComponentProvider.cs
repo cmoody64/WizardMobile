@@ -29,15 +29,15 @@ namespace WizardMobile.Uwp.Gameplay
             CenterCardGroup = new StackCardGroup(this, new CanvasPosition(50, 50), 0);
             LeftCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(40, 50), 0);
             RightCenterCardGroup = new TaperedStackCardGroup(this, new CanvasPosition(60, 50), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0, true /*isFaceUp*/);
-            Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0, true /*isFaceUp*/);
-            Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0, true /*isFaceUp*/);
+            DiscardCardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 60), 0);
+            Player1CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 90), 0);
+            Player1StagingCardGroup = new StackCardGroup(this, new CanvasPosition(40, 80), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new CanvasPosition(10, 50), 90);
-            Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(20, 40), 90, true /*isFaceUp*/);
+            Player2StagingCardGroup = new StackCardGroup(this, new CanvasPosition(20, 40), 90);
             Player3CardGroup = new AdjacentCardGroup(this, new CanvasPosition(50, 10), 0);
-            Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(60, 20), 0, true /*isFaceUp*/);
+            Player3StagingCardGroup = new StackCardGroup(this, new CanvasPosition(60, 20), 0);
             Player4CardGroup = new AdjacentCardGroup(this, new CanvasPosition(90, 50), 270);
-            Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(80, 60), 270, true /*isFaceUp*/);
+            Player4StagingCardGroup = new StackCardGroup(this, new CanvasPosition(80, 60), 270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -56,25 +56,28 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddToCanvas(UniqueCard card, CanvasPosition canvasPositon, double orientationDegrees)
+        public void AddCard(UniqueDisplayCard card, CanvasPosition canvasPositon, double orientationDegrees)
         {
             Image image = CreateCardImage(card);
             Point position = CanvasPositionToPoint(canvasPositon, _cardBitmapSize);
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
+            image.PointerReleased += (sender, args) => CardClicked(card);
+            //image.PointerEntered += (sender, args) => CardPointerEntered(card);
+            //image.PointerExited += (sender, args) => CardPointerExited(card);
             game_canvas.Children.Add(image);
         }
 
-        public void RemoveFromCanvas(UniqueCard card)
+        public void RemoveCard(UniqueDisplayCard card)
         {
             Image elementToRemove = this.FindName(card.Id) as Image;
             game_canvas.Children.Remove(elementToRemove);
         }
-         
-        public void ReplaceCardBitmap(UniqueCard cardToReplace, string newCardName)
+
+        public void UpdateCard(UniqueDisplayCard cardToUpdate)
         {
-            Image elementToReplace = this.FindName(cardToReplace.Id) as Image;
-            var bitmapImage = RetrieveCardBitmap(cardToReplace.Name);
+            Image elementToReplace = this.FindName(cardToUpdate.Id) as Image;
+            var bitmapImage = RetrieveCardBitmap(cardToUpdate.DisplayKey);
             elementToReplace.Source = bitmapImage;
         }
 
@@ -124,6 +127,9 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas_storyboard.Resume();
         }
 
+        public event Action<UniqueDisplayCard> CardClicked;
+        public event Action<UniqueDisplayCard> CardPointerEntered;
+        public event Action<UniqueDisplayCard> CardPointerExited;
 
 
         /*************************** IWizardComponentProvider implementation *******************************/
@@ -225,6 +231,7 @@ namespace WizardMobile.Uwp.Gameplay
             }              
         }
 
+
         /************************************** helpers **********************************************/
         // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)
         // NOTE optionally takes into acount image size so that it seems like the image is centered on pos
@@ -249,18 +256,18 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         // TODO implement z index??
-        private Image SetupCardImage(UniqueCard card, Point position, double angle = 0)
-        {
-            var image = CreateCardImage(card);
-            SetCardImagePosition(image, position);
-            SetCardImageAngle(image, angle);
+        //private Image SetupCardImage(UniqueDisplayCard card, Point position, double angle = 0)
+        //{
+        //    var image = CreateCardImage(card);
+        //    SetCardImagePosition(image, position);
+        //    SetCardImageAngle(image, angle);
 
-            return image;
-        }
+        //    return image;
+        //}
 
-        private Image CreateCardImage(UniqueCard card)
+        private Image CreateCardImage(UniqueDisplayCard card)
         {
-            var bitmapImage = RetrieveCardBitmap(card.Name);
+            var bitmapImage = RetrieveCardBitmap(card.DisplayKey);
             var image = new Image();
             image.Source = bitmapImage;
             image.Name = card.Id;

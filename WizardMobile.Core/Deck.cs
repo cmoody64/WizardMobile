@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WizardMobile.Core
 {
-    public class Deck
+    public class Deck: IReadonlyDeck
     {
         // populates cards list with fixed Wizard deck
         public Deck()
@@ -69,5 +69,10 @@ namespace WizardMobile.Core
         }
 
         public static readonly int STARTING_CARD_COUNT = 60;
+    }
+
+    public interface IReadonlyDeck
+    {
+        IReadOnlyList<Card> Cards { get; }
     }
 }

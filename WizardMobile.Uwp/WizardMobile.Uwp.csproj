@@ -107,7 +107,7 @@
     </Compile>
     <Compile Include="Gameplay\GamePageController.cs" />
     <Compile Include="Gameplay\IWizardComponentProvider.cs" />
-    <Compile Include="Gameplay\UniqueCard.cs" />
+    <Compile Include="Gameplay\UniqueDisplayCard.cs" />
     <Compile Include="MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>

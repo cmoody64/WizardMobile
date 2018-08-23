@@ -14,7 +14,7 @@ namespace WizardMobile.Uwp.Gameplay
         void SetPlayerCreationInputVisibility(bool isVisible);
         void SetHumanPlayerBidInputVisibility(bool isVisible);
         void BeginAnimations();
-        void QueueAnimationsCompletedHandler(Action action);
+        void QueueAnimationsCompletedHandler(Action action);        
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 

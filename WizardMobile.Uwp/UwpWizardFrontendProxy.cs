@@ -34,9 +34,19 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartRound(roundNum));
         }
 
+        public async Task<bool> DisplayEndRound(int roundNum)
+        {
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayEndRound(roundNum));
+        }
+
         public async Task<bool> DisplayStartTrick(int trickNum)
         {
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartTrick(trickNum));
+        }
+
+        public async Task<bool> DisplayTrumpCardSelected(Card trumpCard)
+        {
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTrumpCardSelected(trumpCard));
         }
 
         public async Task<bool> DisplayTurnInProgress(Player player)
@@ -54,9 +64,9 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayPlayerBid(bid, player));
         }
 
-        public async Task<bool> DisplayShuffle()
+        public async Task<bool> DisplayShuffle(IReadonlyDeck deck)
         {
-            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayShuffle());
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayShuffle(deck));
         }
 
         public async Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)

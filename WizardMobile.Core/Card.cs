@@ -63,5 +63,8 @@ namespace WizardMobile.Core
                 ? $"{Value.ToString().ToLower()}_of_{Suite.ToString().ToLower()}"
                 : Value.ToString().ToLower();
         }
+
+        public string Name => ToString();
+        public string DisplayName => ToString().Replace('_', ' ');
     }
 }
