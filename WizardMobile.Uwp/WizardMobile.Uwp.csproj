@@ -141,7 +141,7 @@
     <Content Include="Assets\cards\jack_of_diamonds.png" />
     <Content Include="Assets\cards\jack_of_hearts.png" />
     <Content Include="Assets\cards\jack_of_spades.png" />
-    <Content Include="Assets\cards\jester_of_special.png" />
+    <Content Include="Assets\cards\jester.png" />
     <Content Include="Assets\cards\king_of_clubs.png" />
     <Content Include="Assets\cards\king_of_diamonds.png" />
     <Content Include="Assets\cards\king_of_hearts.png" />

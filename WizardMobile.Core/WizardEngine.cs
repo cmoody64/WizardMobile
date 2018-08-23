@@ -73,7 +73,7 @@ namespace WizardMobile.Core
             // bid on current round
             foreach (var player in _players)
                 curRound.Bids[player] = await player.MakeBid(_gameContext);
-            //_players.ForEach(async (player) => curRound.Bids[player] = await player.MakeBid(_gameContext));
+
             int totalBids = curRound.Bids.Aggregate(0, (accumulator, bidPair) => accumulator + bidPair.Value);
             await _frontend.DisplayBidOutcome(roundNum, totalBids);
 
