@@ -62,7 +62,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 _displayCards.Remove(cardToRemove);
                 _canvasFacade.RemoveCard(cardToRemove);
-                OnAnimateCardRemoval(cardToRemove);
+                OnAnimateCardRemoval();
                 return true;
             }
             return false;
@@ -107,7 +107,7 @@ namespace WizardMobile.Uwp.Gameplay
             if (cardToTransfer != null)
             {
                 _displayCards.Remove(cardToTransfer);
-                OnAnimateCardRemoval(cardToTransfer);
+                OnAnimateCardRemoval();
 
                 // resolve rotations so that the animation terminates at the angle of the destination group
                 // rotations are rounded up so that the card is flush with the destination
@@ -165,8 +165,8 @@ namespace WizardMobile.Uwp.Gameplay
         // this determines the layout of a subclass
         protected abstract CanvasPosition NextLocation { get; }
 
-        protected virtual void OnAnimateCardAddition() { } // called after a card is added to _displayCards
-        protected virtual void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { } // called after a card is removed from _displayCards
+        protected virtual void OnAnimateCardAddition() { } // called after a card is added to _displayCards in the far right position
+        protected virtual void OnAnimateCardRemoval() { } // called after a card is removed from _displayCards
     }
 
 
@@ -195,7 +195,7 @@ namespace WizardMobile.Uwp.Gameplay
         protected override CanvasPosition NextLocation => Origin;
 
         protected override void OnAnimateCardAddition() { }
-        protected override void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { }
+        protected override void OnAnimateCardRemoval() { }
     }
 
     public class AdjacentCardGroup : CardGroup
@@ -209,10 +209,30 @@ namespace WizardMobile.Uwp.Gameplay
 
         protected override void OnAnimateCardAddition()
         {
-            List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
-
+            //List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
+            //for(int i = 0; i < newPositions.Count; i++)
+            //{
+            //    _canvasFacade.QueueAnimationRequest(new AnimationRequest
+            //    {
+            //        Destination = newPositions[i],
+            //        Duration = 0.2,
+            //        ImageGuid = _displayCards[i].Id
+            //    });
+            //}
         }
-        protected override void OnAnimateCardRemoval(UniqueDisplayCard cardToRemove) { }
+        protected override void OnAnimateCardRemoval()
+        {
+            //List<CanvasPosition> newPositions = GeneratePositions(_displayCards.Count, _cardImageSize, Origin);
+            //for (int i = 0; i < newPositions.Count; i++)
+            //{
+            //    _canvasFacade.QueueAnimationRequest(new AnimationRequest
+            //    {
+            //        Destination = newPositions[i],
+            //        Duration = 0.2,
+            //        ImageGuid = _displayCards[i].Id
+            //    });
+            //}
+        }
 
 
         private static List<CanvasPosition> GeneratePositions(int displayCount, Size imageSize, CanvasPosition origin)

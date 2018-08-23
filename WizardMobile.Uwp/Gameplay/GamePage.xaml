@@ -72,6 +72,7 @@
                 <BitmapImage x:Key="jack_of_spades" UriSource="../Assets/cards/jack_of_spades.png" />
                 <BitmapImage x:Key="queen_of_spades" UriSource="../Assets/cards/queen_of_spades.png" />
                 <BitmapImage x:Key="king_of_spades" UriSource="../Assets/cards/king_of_spades.png" />
+                <BitmapImage x:Key="jester" UriSource="../Assets/cards/jester.png" />
                 <BitmapImage x:Key="wizard" UriSource="../Assets/cards/wizard.png" />
             </Canvas.Resources>
         </Canvas>
