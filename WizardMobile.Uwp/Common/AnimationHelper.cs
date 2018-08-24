@@ -109,7 +109,7 @@ namespace WizardMobile.Uwp.Common
     // also contains a higher-level CanvasPosition member describing the normalized position on an abstract canvas
     public class AnimationRequest: AnimationBehavior
     {
-        public CanvasPosition Destination { get; set; }
+        public NormalizedPosition Destination { get; set; }
         public string ImageGuid { get; set; }
     }
 

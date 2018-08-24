@@ -98,7 +98,7 @@
     <Compile Include="Common\AnimationHelper.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
     <Compile Include="Common\TimelineCollectionExtensions.cs" />
-    <Compile Include="Gameplay\CanvasPosition.cs" />
+    <Compile Include="Gameplay\CanvasNormalization.cs" />
     <Compile Include="Gameplay\ICanvasFacade.cs" />
     <Compile Include="Gameplay\CardGroup.cs" />
     <Compile Include="Gameplay\GamePage.ComponentProvider.cs" />
