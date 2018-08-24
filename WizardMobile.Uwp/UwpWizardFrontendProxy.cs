@@ -44,6 +44,11 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayStartTrick(trickNum));
         }
 
+        public async Task<bool> DisplayEndTrick(int trickNum)
+        {
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayEndTrick(trickNum));
+        }
+
         public async Task<bool> DisplayTrumpCardSelected(Card trumpCard)
         {
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTrumpCardSelected(trumpCard));

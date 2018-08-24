@@ -32,12 +32,12 @@ namespace WizardMobile.Uwp.Gameplay
             DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
             Player1CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
-            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), 90);
-            Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), 90);
-            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 10), 0);
-            Player3StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 20), 0);
-            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(90, 50), 270);
-            Player4StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(80, 60), 270);
+            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
+            Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), CardGroup.Orientation.DEGREES_90);
+            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 10), CardGroup.Orientation.DEGREES_180);
+            Player3StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 20), CardGroup.Orientation.DEGREES_180);
+            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(90, 50), CardGroup.Orientation.DEGREES_270);
+            Player4StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(80, 60), CardGroup.Orientation.DEGREES_270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -228,7 +228,7 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 var handler = _animationsCompletedHandlers.Dequeue();
                 handler();
-            }              
+            }            
         }
 
 

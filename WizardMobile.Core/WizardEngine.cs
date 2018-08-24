@@ -132,7 +132,8 @@ namespace WizardMobile.Core
             var winningCard = CardUtils.CalcWinningCard(curTrick.CardsPlayed, curRound.TrumpSuite, curTrick.LeadingSuite);
             var winningPlayer = trickPlayerOrder[curTrick.CardsPlayed.IndexOf(winningCard)];
             curTrick.Winner = winningPlayer;
-            await _frontend.DisplayTrickWinner(winningPlayer, winningCard);            
+            await _frontend.DisplayTrickWinner(winningPlayer, winningCard);
+            await _frontend.DisplayEndTrick(trickNum);
         }
 
         private void DealDeck(int roundNum)

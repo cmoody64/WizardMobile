@@ -49,7 +49,6 @@ namespace WizardMobile.Uwp.Gameplay
         public async Task<bool> DisplayEndRound(int roundNum)
         {
             _componentProvider.SetMessageBoxText("Round Over");
-            _componentProvider.DiscardCardGroup.RemoveAll();
             _componentProvider.RightCenterCardGroup.RemoveAll();
             _componentProvider.CenterCardGroup.RemoveAll();
             await Task.Delay(1000);
@@ -61,6 +60,12 @@ namespace WizardMobile.Uwp.Gameplay
             _componentProvider.SetMessageBoxText($"Trick {trickNum} Starting");
             await Task.Delay(1000);
             return true;
+        }
+
+        public Task<bool> DisplayEndTrick(int trickNum)
+        {
+            _componentProvider.DiscardCardGroup.RemoveAll();
+            return Task.FromResult(true);
         }
 
         public Task<bool> DisplayTrumpCardSelected(Card trumpCard)
@@ -152,33 +157,39 @@ namespace WizardMobile.Uwp.Gameplay
             return taskCompletionSource.Task;
         }
 
-        public Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
+        public async Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
-            List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
-            for (int i = 0; i < gameContext.CurRound.RoundNum; i++)
+            for (int dealStage = 0; dealStage < gameContext.CurRound.RoundNum; dealStage++)
             {
-                // iterate through all players: cards for AI players are dealt face down and cards for human players face
-                for(int j = 0; j < playerDealOrder.Count(); j++)
-                {
-                    string playerName = playerDealOrder[j];
-                    Card cardToTransfer = players.Find(player => player.Name == playerName).Hand[i];
-                    CardGroup destinationGroup = _playerCardGroups[playerName];
-                    _componentProvider.CenterCardGroup.Transfer(cardToTransfer, destinationGroup, new AnimationBehavior
-                    {
-                        Duration = 0.3,
-                        Delay = 0.5 * i + .125 * j,
-                        Rotations = 3
-                    });
-                }
+                await DisplaySingleDealStage(gameContext, players, dealStage);
             }
 
-            _componentProvider.QueueAnimationsCompletedHandler(() =>
+            _componentProvider.Player1CardGroup.FlipAll();
+
+            return true;
+        }
+
+        private Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+            List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
+            // iterate through all players: cards for AI players are dealt face down and cards for human players face
+            for (int i = 0; i < playerDealOrder.Count(); i++)
             {
-                _componentProvider.Player1CardGroup.FlipAll();
-                taskCompletionSource.SetResult(true);
-            });
+                string playerName = playerDealOrder[i];
+                Card cardToTransfer = players.Find(player => player.Name == playerName).Hand[stage];
+                CardGroup destinationGroup = _playerCardGroups[playerName];
+                _componentProvider.CenterCardGroup.Transfer(cardToTransfer, destinationGroup, new AnimationBehavior
+                {
+                    Duration = 0.3,
+                    Delay = .125 * i,
+                    Rotations = 3
+                });
+            }
+
+            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;
