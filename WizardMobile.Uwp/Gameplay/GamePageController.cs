@@ -173,7 +173,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         private Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
+            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
             // iterate through all players: cards for AI players are dealt face down and cards for human players face
             for (int i = 0; i < playerDealOrder.Count(); i++)
@@ -189,7 +189,7 @@ namespace WizardMobile.Uwp.Gameplay
                 });
             }
 
-            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
+            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true)); // set result asynchronously so that it doesn't block
             _componentProvider.BeginAnimations();
 
             return taskCompletionSource.Task;

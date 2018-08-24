@@ -150,6 +150,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         public void BeginAnimations()
         {
+            var x = game_canvas_storyboard.GetCurrentState();
             game_canvas_storyboard.Children.AddRange(animationQueue);
             animationQueue.Clear();
             game_canvas_storyboard.Begin();
@@ -221,6 +222,7 @@ namespace WizardMobile.Uwp.Gameplay
         // callback that ensures that the storyboard clears out itself after each animation group completes
         private void OnGameCanvasStoryboardCompleted(object sender, object eventArgs)
         {
+            var x = game_canvas_storyboard.GetCurrentState();            
             game_canvas_storyboard.Stop();
             game_canvas_storyboard.Children.Clear();
             // run all queued animations completed handlers
