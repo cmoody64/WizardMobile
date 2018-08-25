@@ -21,16 +21,12 @@ namespace WizardMobile.Uwp.Gameplay
         {
             _canvasFacade = canvasFacade;
             _displayCards = new List<UniqueDisplayCard>();
-            _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
             Origin = origin;
             _orientation = orientation;
             OrientationDegress = (double)orientation;
 
             // async initialization from canvas facade
             _canvasFacade.GetNormalizedCardImageSize().ContinueWith(task => _cardImageSize = task.Result);
-
-            // bind callbacks to handlers
-            _canvasFacade.CardClicked += OnCanvasCardClicked;
         }
 
         public NormalizedPosition Origin { get; }
@@ -139,25 +135,6 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
-        // queue one shot handlers for when a card within a card group is clicked
-        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> cardClickedHandler)
-        {
-            _cardClickedHandlers.Enqueue(cardClickedHandler);
-        }
-        private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
-
-        private void OnCanvasCardClicked(UniqueDisplayCard displayCard)
-        {
-            if (_displayCards.Contains(displayCard))
-            {
-                while (_cardClickedHandlers.Count > 0)
-                {
-                    var handler = _cardClickedHandlers.Dequeue();
-                    handler(displayCard);
-                }
-            }
-        }
-
         private UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
         {
             return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));
@@ -258,7 +235,7 @@ namespace WizardMobile.Uwp.Gameplay
 
             if(positionCount > 0)
             {
-                double margin = _cardImageSize.NormalizedWidth * 1.2 - _cardImageSize.NormalizedWidth * .05 * positionCount;
+                double margin = _cardImageSize.NormalizedWidth * 0.8 - _cardImageSize.NormalizedWidth * .03 * positionCount;
 
                 if(OrientationAxis == Axis.X)
                 {
@@ -285,5 +262,39 @@ namespace WizardMobile.Uwp.Gameplay
 
             return positions;
         }
+    }
+
+
+    // adjacent card group that is interactive on hove
+    public class InteractiveAdjacentCardGroup: AdjacentCardGroup
+    {
+        public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
+        : base(parent, origin, orientation)
+        {
+            _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
+
+            // bind callbacks to handlers
+            _canvasFacade.CardClicked += OnCanvasCardClicked;
+        }
+
+        // queue one shot handlers for when a card within a card group is clicked
+        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> cardClickedHandler)
+        {
+            _cardClickedHandlers.Enqueue(cardClickedHandler);
+        }
+        private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
+
+        private void OnCanvasCardClicked(UniqueDisplayCard displayCard)
+        {
+            if (_displayCards.Contains(displayCard))
+            {
+                while (_cardClickedHandlers.Count > 0)
+                {
+                    var handler = _cardClickedHandlers.Dequeue();
+                    handler(displayCard);
+                }
+            }
+        }
+
     }
 }

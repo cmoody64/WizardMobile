@@ -14,7 +14,7 @@ namespace WizardMobile.Uwp.Gameplay
     {
         void AddCard(UniqueDisplayCard card, NormalizedPosition position, double orientationDegrees);
         void RemoveCard(UniqueDisplayCard card);
-        void UpdateCard(UniqueDisplayCard cardToFlip);
+        void UpdateCard(UniqueDisplayCard cardToFlip, NormalizedPosition canvasPositon = null, double? orientationDegrees = null);
         Task<NormalizedSize> GetNormalizedCardImageSize();
         void QueueAnimationRequest(AnimationRequest animation);
         void QueueAnimationRequests(IEnumerable<AnimationRequest> animations);

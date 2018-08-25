@@ -223,10 +223,10 @@ namespace WizardMobile.Uwp.Gameplay
             return true;
         }
 
-        public Task<Card> PromptPlayerCardSelection(Player player)
+        public Task<Card> PromptPlayerCardSelection(HumanPlayer player)
         {
             var taskCompletionSource = new TaskCompletionSource<Card>();
-            var playerCardGroup = _playerCardGroups[player.Name];
+            var playerCardGroup = (InteractiveAdjacentCardGroup)_playerCardGroups[player.Name];
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
             playerCardGroup.QueueClickHandlerForCards(displayCard =>
             {
@@ -236,7 +236,7 @@ namespace WizardMobile.Uwp.Gameplay
             return taskCompletionSource.Task;
         }
 
-        public Task<int> PromptPlayerBid(Player player)
+        public Task<int> PromptPlayerBid(HumanPlayer player)
         {
             TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>();
             _componentProvider.SetMessageBoxText($"${player.Name}: make your bid");

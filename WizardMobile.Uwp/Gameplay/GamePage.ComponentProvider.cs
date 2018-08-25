@@ -30,7 +30,7 @@ namespace WizardMobile.Uwp.Gameplay
             LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
             RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
-            Player1CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
+            Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
             Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), CardGroup.Orientation.DEGREES_90);
@@ -62,9 +62,9 @@ namespace WizardMobile.Uwp.Gameplay
             Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
-            image.PointerReleased += (sender, args) => CardClicked(card);
-            //image.PointerEntered += (sender, args) => CardPointerEntered(card);
-            //image.PointerExited += (sender, args) => CardPointerExited(card);
+            image.PointerReleased += (sender, args) => FireCardClickedEvent(card);
+            image.PointerEntered += (sender, args) => FireCardPointerEnteredEvent(card);
+            image.PointerExited += (sender, args) => FireCardPointerExitedEvent(card);
             game_canvas.Children.Add(image);
         }
 
@@ -74,11 +74,33 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Remove(elementToRemove);
         }
 
-        public void UpdateCard(UniqueDisplayCard cardToUpdate)
+        public void UpdateCard(UniqueDisplayCard cardToUpdate, NormalizedPosition canvasPositon = null, double? orientationDegrees = null)
         {
-            Image elementToReplace = this.FindName(cardToUpdate.Id) as Image;
-            var bitmapImage = RetrieveCardBitmap(cardToUpdate.DisplayKey);
-            elementToReplace.Source = bitmapImage;
+            // check if the card bitmap needs an update
+            Image imageToUpdate = this.FindName(cardToUpdate.Id) as Image;
+            var originalBitmapFilepath = (imageToUpdate.Source as BitmapImage).UriSource.AbsolutePath;
+            // if the original element already contains the updated bitmap, no change is needed, otherwise, replace the bitmap
+            if(!originalBitmapFilepath.Contains(cardToUpdate.DisplayKey))
+            {
+                var bitmapImage = RetrieveCardBitmap(cardToUpdate.DisplayKey);
+                imageToUpdate.Source = bitmapImage;
+            }
+
+            // update the position if provided
+            if(canvasPositon != null)
+            {
+                // update position. if alrady equal, this is a noop
+                Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
+                SetCardImagePosition(imageToUpdate, position);
+            }
+
+            // update the orientnation if provided
+            if(orientationDegrees.HasValue)
+            {
+                // update the orientation. if already equal, this is a noop
+                SetCardImageAngle(imageToUpdate, orientationDegrees.Value);
+            }
+
         }
 
         public void QueueAnimationRequest(AnimationRequest animationRequest)
@@ -130,6 +152,9 @@ namespace WizardMobile.Uwp.Gameplay
         public event Action<UniqueDisplayCard> CardClicked;
         public event Action<UniqueDisplayCard> CardPointerEntered;
         public event Action<UniqueDisplayCard> CardPointerExited;
+        private void FireCardClickedEvent(UniqueDisplayCard card) => CardClicked?.Invoke(card);
+        private void FireCardPointerEnteredEvent(UniqueDisplayCard card) => CardPointerEntered?.Invoke(card);
+        private void FireCardPointerExitedEvent(UniqueDisplayCard card) => CardPointerExited?.Invoke(card);
 
 
         /*************************** IWizardComponentProvider implementation *******************************/
@@ -176,7 +201,7 @@ namespace WizardMobile.Uwp.Gameplay
         public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
         public TaperedStackCardGroup RightCenterCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
-        public AdjacentCardGroup Player1CardGroup { get; private set; }
+        public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player2CardGroup { get; private set; }
         public StackCardGroup Player2StagingCardGroup { get; private set; }
