@@ -226,7 +226,7 @@ namespace WizardMobile.Uwp.Gameplay
         public Task<Card> PromptPlayerCardSelection(HumanPlayer player)
         {
             var taskCompletionSource = new TaskCompletionSource<Card>();
-            var playerCardGroup = (InteractiveAdjacentCardGroup)_playerCardGroups[player.Name];
+            var playerCardGroup = (OnCanvasCardPointerExited)_playerCardGroups[player.Name];
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
             playerCardGroup.QueueClickHandlerForCards(displayCard =>
             {

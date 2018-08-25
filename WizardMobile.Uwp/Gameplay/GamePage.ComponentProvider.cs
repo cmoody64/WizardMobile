@@ -30,7 +30,7 @@ namespace WizardMobile.Uwp.Gameplay
             LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
             RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
-            Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
+            Player1CardGroup = new OnCanvasCardPointerExited(this, new NormalizedPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
             Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), CardGroup.Orientation.DEGREES_90);
@@ -201,7 +201,7 @@ namespace WizardMobile.Uwp.Gameplay
         public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
         public TaperedStackCardGroup RightCenterCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
-        public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
+        public OnCanvasCardPointerExited Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player2CardGroup { get; private set; }
         public StackCardGroup Player2StagingCardGroup { get; private set; }

@@ -196,7 +196,7 @@ namespace WizardMobile.Uwp.Gameplay
         }
 
         protected override NormalizedPosition NextOpenPosition => GeneratePositions(_displayCards.Count + 1).Last();
-        private Axis OrientationAxis => _orientation == Orientation.DEGREES_0 || _orientation == Orientation.DEGREES_180 ? Axis.X : Axis.Y;
+        protected Axis OrientationAxis => _orientation == Orientation.DEGREES_0 || _orientation == Orientation.DEGREES_180 ? Axis.X : Axis.Y;
 
         protected override void OnPreCardAddition()
         {
@@ -212,6 +212,7 @@ namespace WizardMobile.Uwp.Gameplay
                     ImageGuid = _displayCards[i].Id
                 });
             }
+            _curPositions = newPositions;
         }
 
         protected override void OnPostCardRemoval()
@@ -226,10 +227,12 @@ namespace WizardMobile.Uwp.Gameplay
                     ImageGuid = _displayCards[i].Id
                 });
             }
+            _curPositions = newPositions;
         }
 
+        protected List<NormalizedPosition> _curPositions;
 
-        private List<NormalizedPosition> GeneratePositions(int positionCount)
+        protected List<NormalizedPosition> GeneratePositions(int positionCount)
         {
             List<NormalizedPosition> positions = new List<NormalizedPosition>();
 
@@ -259,22 +262,23 @@ namespace WizardMobile.Uwp.Gameplay
                 }
 
             }
-
             return positions;
         }
     }
 
 
     // adjacent card group that is interactive on hove
-    public class InteractiveAdjacentCardGroup: AdjacentCardGroup
+    public class OnCanvasCardPointerExited: AdjacentCardGroup
     {
-        public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
+        public OnCanvasCardPointerExited(GamePage parent, NormalizedPosition origin, Orientation orientation)
         : base(parent, origin, orientation)
         {
             _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
 
             // bind callbacks to handlers
-            _canvasFacade.CardClicked += OnCanvasCardClicked;
+            _canvasFacade.CardClicked += OnCardClicked;
+            _canvasFacade.CardPointerEntered += OnCardPointerEntered;
+            _canvasFacade.CardPointerExited += OnCardPointerExited;
         }
 
         // queue one shot handlers for when a card within a card group is clicked
@@ -284,7 +288,7 @@ namespace WizardMobile.Uwp.Gameplay
         }
         private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
 
-        private void OnCanvasCardClicked(UniqueDisplayCard displayCard)
+        private void OnCardClicked(UniqueDisplayCard displayCard)
         {
             if (_displayCards.Contains(displayCard))
             {
@@ -293,6 +297,35 @@ namespace WizardMobile.Uwp.Gameplay
                     var handler = _cardClickedHandlers.Dequeue();
                     handler(displayCard);
                 }
+            }
+        }
+
+        private void OnCardPointerEntered(UniqueDisplayCard card)
+        {
+            if(_displayCards.Contains(card))
+            {
+                var curPosIndex = _displayCards.FindIndex(displayCard => displayCard.Equals(card));
+                var curPos = _curPositions[curPosIndex];
+
+                if (OrientationAxis == Axis.X)
+                {
+                    double offsetY = _orientation == Orientation.DEGREES_0 ? -3 : 3;
+                    _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX, curPos.NormalizedY + offsetY));
+                }
+                else
+                {
+                    double offsetX = _orientation == Orientation.DEGREES_90 ? 2 : 2;
+                    _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX + offsetX, curPos.NormalizedY));
+                }                    
+            }
+        }
+
+        private void OnCardPointerExited(UniqueDisplayCard card)
+        {
+            if (_displayCards.Contains(card))
+            {
+                var curPosIndex = _displayCards.FindIndex(displayCard => displayCard.Equals(card));
+                _canvasFacade.UpdateCard(card, _curPositions[curPosIndex]);
             }
         }
 

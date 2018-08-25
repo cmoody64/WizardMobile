@@ -23,7 +23,7 @@ namespace WizardMobile.Uwp.Gameplay
         TaperedStackCardGroup LeftCenterCardGroup { get; }
         TaperedStackCardGroup RightCenterCardGroup { get; }
         AdjacentCardGroup DiscardCardGroup { get; }
-        InteractiveAdjacentCardGroup Player1CardGroup { get; }
+        OnCanvasCardPointerExited Player1CardGroup { get; }
         StackCardGroup Player1StagingCardGroup { get; }
         AdjacentCardGroup Player2CardGroup { get; }
         StackCardGroup Player2StagingCardGroup { get; }
