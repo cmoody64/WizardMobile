@@ -125,25 +125,44 @@ namespace WizardMobile.Uwp.Gameplay
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             // add cards alternating to left and right center stacks
-            for(int i = 0; i < deckToShuffle.Cards.Count; i += 2)
+            for(int i = 0; i < deckToShuffle.Cards.Count; i += 4)
             {
                 var leftCard = deckToShuffle.Cards[i];
-                var rightCard = deckToShuffle.Cards[i + 1];
+                var leftCard2 = deckToShuffle.Cards[i + 1];
+
+                var rightCard = deckToShuffle.Cards[i + 2];
+                var rightCard2 = deckToShuffle.Cards[i + 3];
 
                 _componentProvider.LeftCenterCardGroup.Add(leftCard);
+                _componentProvider.LeftCenterCardGroup.Add(leftCard2);
                 _componentProvider.RightCenterCardGroup.Add(rightCard);
+                _componentProvider.RightCenterCardGroup.Add(rightCard2);
 
                 _componentProvider.LeftCenterCardGroup.Transfer
                 (
                     leftCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.05 * i, Duration = 0.05 }
+                    new AnimationBehavior { Delay = 0.025 * i, Duration = 0.05 }
                 );
+                _componentProvider.LeftCenterCardGroup.Transfer
+                (
+                    leftCard2,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.025 * i, Duration = 0.05 }
+                );
+
+
                 _componentProvider.RightCenterCardGroup.Transfer
                 (
                     rightCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.05 * i, Duration = 0.05 }
+                    new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.05 }
+                );
+                _componentProvider.RightCenterCardGroup.Transfer
+                (
+                    rightCard2,
+                    _componentProvider.CenterCardGroup,
+                    new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.05 }
                 );
             }
 
@@ -226,7 +245,7 @@ namespace WizardMobile.Uwp.Gameplay
         public Task<Card> PromptPlayerCardSelection(HumanPlayer player)
         {
             var taskCompletionSource = new TaskCompletionSource<Card>();
-            var playerCardGroup = (OnCanvasCardPointerExited)_playerCardGroups[player.Name];
+            var playerCardGroup = (InteractiveAdjacentCardGroup)_playerCardGroups[player.Name];
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
             playerCardGroup.QueueClickHandlerForCards(displayCard =>
             {
@@ -239,7 +258,7 @@ namespace WizardMobile.Uwp.Gameplay
         public Task<int> PromptPlayerBid(HumanPlayer player)
         {
             TaskCompletionSource<int> taskCompletionSource = new TaskCompletionSource<int>();
-            _componentProvider.SetMessageBoxText($"${player.Name}: make your bid");
+            _componentProvider.SetMessageBoxText($"{player.Name}: make your bid");
             _componentProvider.SetHumanPlayerBidInputVisibility(true);
             _componentProvider.OnPlayerBidInputEntered((int bid) =>
             {

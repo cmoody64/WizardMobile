@@ -26,11 +26,11 @@ namespace WizardMobile.Uwp.Gameplay
         {
             animationQueue = new List<DoubleAnimation>();
 
-            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 50), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
-            Player1CardGroup = new OnCanvasCardPointerExited(this, new NormalizedPosition(50, 90), 0);
+            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 45), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 45), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 45), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 65), 0);
+            Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
             Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), CardGroup.Orientation.DEGREES_90);
@@ -56,12 +56,15 @@ namespace WizardMobile.Uwp.Gameplay
 
 
         /*************************** ICanvasFacade implementation *******************************/
-        public void AddCard(UniqueDisplayCard card, NormalizedPosition canvasPositon, double orientationDegrees)
+        public void AddCard(UniqueDisplayCard card, NormalizedPosition canvasPositon, double orientationDegrees, int zIndex)
         {
             Image image = CreateCardImage(card);
             Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
+
             SetCardImagePosition(image, position);
             SetCardImageAngle(image, orientationDegrees);
+            Canvas.SetZIndex(image, zIndex);
+
             image.PointerReleased += (sender, args) => FireCardClickedEvent(card);
             image.PointerEntered += (sender, args) => FireCardPointerEnteredEvent(card);
             image.PointerExited += (sender, args) => FireCardPointerExitedEvent(card);
@@ -74,7 +77,7 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Remove(elementToRemove);
         }
 
-        public void UpdateCard(UniqueDisplayCard cardToUpdate, NormalizedPosition canvasPositon = null, double? orientationDegrees = null)
+        public void UpdateCard(UniqueDisplayCard cardToUpdate, NormalizedPosition canvasPositon = null, double? orientationDegrees = null, int? zIndex = null)
         {
             // check if the card bitmap needs an update
             Image imageToUpdate = this.FindName(cardToUpdate.Id) as Image;
@@ -99,6 +102,11 @@ namespace WizardMobile.Uwp.Gameplay
             {
                 // update the orientation. if already equal, this is a noop
                 SetCardImageAngle(imageToUpdate, orientationDegrees.Value);
+            }
+
+            if(zIndex.HasValue)
+            {
+                Canvas.SetZIndex(imageToUpdate, zIndex.Value);
             }
 
         }
@@ -201,7 +209,7 @@ namespace WizardMobile.Uwp.Gameplay
         public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
         public TaperedStackCardGroup RightCenterCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
-        public OnCanvasCardPointerExited Player1CardGroup { get; private set; }
+        public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player2CardGroup { get; private set; }
         public StackCardGroup Player2StagingCardGroup { get; private set; }

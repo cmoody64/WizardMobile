@@ -24,6 +24,7 @@ namespace WizardMobile.Uwp.Gameplay
             Origin = origin;
             _orientation = orientation;
             OrientationDegress = (double)orientation;
+            _curZIndex = 0;
 
             // async initialization from canvas facade
             _canvasFacade.GetNormalizedCardImageSize().ContinueWith(task => _cardImageSize = task.Result);
@@ -36,13 +37,14 @@ namespace WizardMobile.Uwp.Gameplay
         protected ICanvasFacade _canvasFacade;
         protected List<UniqueDisplayCard> _displayCards;
         protected NormalizedSize _cardImageSize;
+        protected int _curZIndex;
 
         public void Add(Core.Card card, bool isCardFaceUp = false)
         {
+            OnPreCardAddition();
             UniqueDisplayCard displayCard = new UniqueDisplayCard(card, isCardFaceUp);
             _displayCards.Add(displayCard);
-            _canvasFacade.AddCard(displayCard, NextOpenPosition, OrientationDegress);
-            OnPreCardAddition();
+            _canvasFacade.AddCard(displayCard, NextOpenPosition, OrientationDegress, _curZIndex);            
         }
 
         public void AddRange(IEnumerable<Core.Card> cards, bool isCardFaceUp = false)
@@ -128,7 +130,9 @@ namespace WizardMobile.Uwp.Gameplay
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);
 
                 destinationGroup.OnPreCardAddition();
-                destinationGroup._displayCards.Add(cardToTransfer);                
+                // finalize transfer by adding the card to the destination groups display cards and updating its zIndex to that of the destination group
+                destinationGroup._displayCards.Add(cardToTransfer);
+                _canvasFacade.UpdateCard(cardToTransfer, zIndex: destinationGroup._curZIndex);
 
                 return true;
             }
@@ -144,7 +148,11 @@ namespace WizardMobile.Uwp.Gameplay
         // this determines the layout of a subclass
         protected abstract NormalizedPosition NextOpenPosition { get; }
 
-        protected virtual void OnPreCardAddition() { } // called before a card is added to _displayCards in the far right position
+        // called before a card is added to _displayCards in the far right position
+        protected virtual void OnPreCardAddition()
+        {
+            _curZIndex++;
+        }
         protected virtual void OnPostCardRemoval() { } // called after a card is removed from _displayCards
 
         public enum Orientation
@@ -184,7 +192,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         protected override NormalizedPosition NextOpenPosition => Origin;
 
-        protected override void OnPreCardAddition() { }
+        protected override void OnPreCardAddition() { base.OnPreCardAddition(); }
         protected override void OnPostCardRemoval() { }
     }
 
@@ -200,6 +208,8 @@ namespace WizardMobile.Uwp.Gameplay
 
         protected override void OnPreCardAddition()
         {
+            base.OnPreCardAddition();
+
             // because a card has not yet been added (this hook is PRE addition), generate the new positions based off of
             // _displayCards having one more card than it currently has, but only animate for the cards currently in _displayCards
             List<NormalizedPosition> newPositions = GeneratePositions(_displayCards.Count+1);
@@ -268,9 +278,9 @@ namespace WizardMobile.Uwp.Gameplay
 
 
     // adjacent card group that is interactive on hove
-    public class OnCanvasCardPointerExited: AdjacentCardGroup
+    public class InteractiveAdjacentCardGroup: AdjacentCardGroup
     {
-        public OnCanvasCardPointerExited(GamePage parent, NormalizedPosition origin, Orientation orientation)
+        public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
         : base(parent, origin, orientation)
         {
             _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();

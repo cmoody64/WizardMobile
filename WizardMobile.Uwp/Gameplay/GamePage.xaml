@@ -11,7 +11,7 @@
         <Grid.Background>
             <ImageBrush ImageSource="../Assets/card_table_background.jpg" Stretch="Fill" />
         </Grid.Background>
-        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,200,0,0" x:Name="game_message_box" Height="100" Width="300" FontSize="36"/>
+        <TextBlock HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,200,0,0" x:Name="game_message_box" Height="100" Width="600" FontSize="36"/>
         <TextBox PlaceholderText="Enter Player Name" HorizontalAlignment="Center" Margin="0,468,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_creation_input" FontSize="36"/>
         <TextBox PlaceholderText="Enter Bid" HorizontalAlignment="Center" Margin="0,600,0,0" Text="" VerticalAlignment="Top" Visibility="Collapsed" x:Name="player_bid_input" FontSize="36"/>
         <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" Canvas.Left="701" FontSize="25" Canvas.Top="526"

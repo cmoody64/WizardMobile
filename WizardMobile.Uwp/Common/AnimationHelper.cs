@@ -31,6 +31,12 @@ namespace WizardMobile.Uwp.Common
                 leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
+                leftPropAnimation.EasingFunction = new ExponentialEase()
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Exponent = 4
+                };
+
                 Storyboard.SetTargetName(leftPropAnimation, image.Name);
                 Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
 
@@ -47,6 +53,12 @@ namespace WizardMobile.Uwp.Common
                 topPropAnimation.To = destination.Y;
                 topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 topPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
+
+                topPropAnimation.EasingFunction = new ExponentialEase()
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Exponent = 4
+                };
 
                 Storyboard.SetTargetName(topPropAnimation, image.Name);
                 Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");                
@@ -67,7 +79,13 @@ namespace WizardMobile.Uwp.Common
                 rotationAnimation.From = curAngle;
                 rotationAnimation.To = finalAngle;
                 rotationAnimation.Duration = TimeSpan.FromSeconds(duration);
-                rotationAnimation.BeginTime = TimeSpan.FromSeconds(delay);                
+                rotationAnimation.BeginTime = TimeSpan.FromSeconds(delay);
+
+                rotationAnimation.EasingFunction = new ExponentialEase()
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Exponent = 4
+                };
 
                 Storyboard.SetTargetName(rotationAnimation, image.Name);
                 Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
