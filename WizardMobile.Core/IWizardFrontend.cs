@@ -22,7 +22,7 @@ namespace WizardMobile.Core
         Task<bool> DisplayTrickWinner(Player winner, Card winningCard);
         Task<bool> DisplayRoundScores(GameContext gameContext);
         Task<bool> DisplayBidOutcome(int roundNum, int totalBids);
-        Task<Card> PromptPlayerCardSelection(HumanPlayer player);
+        Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards);
         Task<int> PromptPlayerBid(HumanPlayer player);
         Task<List<string>> PromptPlayerCreation();
     }

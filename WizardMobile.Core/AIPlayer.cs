@@ -70,8 +70,6 @@ namespace WizardMobile.Core
             var curTrick = curRound.CurTrick;
             var curRoundTricks = curRound.Tricks;
 
-            //var playableCards = CardUtils.GetPlayableCards(_hand, curTrick.LeadingSuite);
-
             List<Card> allKnownCards = _hand.Concat(curRoundTricks.Aggregate(new List<Card>(), (acc, trick) =>
             {
                 acc.AddRange(trick.CardsPlayed);

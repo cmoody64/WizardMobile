@@ -19,7 +19,8 @@ namespace WizardMobile.Core
 
         public async override Task<Card> MakeTurn(GameContext gameContext)
         {
-            var cardToPlay = await _frontend.PromptPlayerCardSelection(this);
+            var playableCards = CardUtils.GetPlayableCards(_hand, gameContext.CurRound.CurTrick.LeadingSuite);
+            var cardToPlay = await _frontend.PromptPlayerCardSelection(this, playableCards);
             _hand.Remove(cardToPlay);
             return cardToPlay;
         }

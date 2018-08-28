@@ -94,9 +94,9 @@ namespace WizardMobile.Uwp
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayBidOutcome(roundNum, totalBids));
         }
 
-        public async Task<Card> PromptPlayerCardSelection(HumanPlayer player)
+        public async Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards)
         {
-            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerCardSelection(player));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerCardSelection(player, playableCards));
         }
 
         public async Task<int> PromptPlayerBid(HumanPlayer player)

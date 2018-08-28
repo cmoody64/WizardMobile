@@ -224,7 +224,7 @@ namespace WizardMobile.Uwp.Gameplay
             return true;
         }
 
-        public Task<Card> PromptPlayerCardSelection(HumanPlayer player)
+        public Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards)
         {
             var taskCompletionSource = new TaskCompletionSource<Card>();
             var playerCardGroup = (InteractiveAdjacentCardGroup)_playerCardGroups[player.Name];
