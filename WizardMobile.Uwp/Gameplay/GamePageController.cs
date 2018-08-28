@@ -125,44 +125,26 @@ namespace WizardMobile.Uwp.Gameplay
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             // add cards alternating to left and right center stacks
-            for(int i = 0; i < deckToShuffle.Cards.Count; i += 4)
+            for (int i = 0; i < deckToShuffle.Cards.Count; i += 2)
             {
                 var leftCard = deckToShuffle.Cards[i];
-                var leftCard2 = deckToShuffle.Cards[i + 1];
-
-                var rightCard = deckToShuffle.Cards[i + 2];
-                var rightCard2 = deckToShuffle.Cards[i + 3];
+                var rightCard = deckToShuffle.Cards[i + 1];
 
                 _componentProvider.LeftCenterCardGroup.Add(leftCard);
-                _componentProvider.LeftCenterCardGroup.Add(leftCard2);
-                _componentProvider.RightCenterCardGroup.Add(rightCard);
-                _componentProvider.RightCenterCardGroup.Add(rightCard2);
+                _componentProvider.RightCenterCardGroup.Add(rightCard);                
 
                 _componentProvider.LeftCenterCardGroup.Transfer
                 (
                     leftCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.025 * i, Duration = 0.05 }
+                    new AnimationBehavior { Delay = 0.025 * i, Duration = 0.1 }
                 );
-                _componentProvider.LeftCenterCardGroup.Transfer
-                (
-                    leftCard2,
-                    _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.025 * i, Duration = 0.05 }
-                );
-
 
                 _componentProvider.RightCenterCardGroup.Transfer
                 (
                     rightCard,
                     _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.05 }
-                );
-                _componentProvider.RightCenterCardGroup.Transfer
-                (
-                    rightCard2,
-                    _componentProvider.CenterCardGroup,
-                    new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.05 }
+                    new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.1 }
                 );
             }
 
