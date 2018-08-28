@@ -29,7 +29,7 @@ namespace WizardMobile.Uwp.Common
                 leftPropAnimation.From = curLocation.X;
                 leftPropAnimation.To = destination.X;
                 leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
-                leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);              
+                leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
                 leftPropAnimation.EasingFunction = new ExponentialEase()
                 {

@@ -74,7 +74,6 @@ namespace WizardMobile.Uwp.Gameplay
         public void RemoveCard(UniqueDisplayCard card)
         {
             Image elementToRemove = this.FindName(card.Id) as Image;
-            UIElement x = elementToRemove;
             game_canvas.Children.Remove(elementToRemove);
         }
 
