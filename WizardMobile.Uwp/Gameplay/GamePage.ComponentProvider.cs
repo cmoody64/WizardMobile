@@ -77,7 +77,14 @@ namespace WizardMobile.Uwp.Gameplay
             game_canvas.Children.Remove(elementToRemove);
         }
 
-        public void UpdateCard(UniqueDisplayCard cardToUpdate, NormalizedPosition canvasPositon = null, double? orientationDegrees = null, int? zIndex = null)
+        public void UpdateCard
+        (
+            UniqueDisplayCard cardToUpdate,
+            NormalizedPosition canvasPositon = null,
+            double? orientationDegrees = null,
+            int? zIndex = null,
+            bool? dimmed = null
+        )
         {
             // check if the card bitmap needs an update
             Image imageToUpdate = this.FindName(cardToUpdate.Id) as Image;
@@ -107,6 +114,11 @@ namespace WizardMobile.Uwp.Gameplay
             if(zIndex.HasValue)
             {
                 Canvas.SetZIndex(imageToUpdate, zIndex.Value);
+            }
+
+            if(dimmed.HasValue)
+            {
+                imageToUpdate.Opacity = dimmed.Value ? 0.5 : 1.0;
             }
 
         }

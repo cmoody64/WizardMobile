@@ -12,9 +12,22 @@ namespace WizardMobile.Uwp.Gameplay
 {
     public interface ICanvasFacade
     {
-        void AddCard(UniqueDisplayCard card, NormalizedPosition position, double orientationDegrees, int zIndex);
+        void AddCard
+        (
+            UniqueDisplayCard card,
+            NormalizedPosition position,
+            double orientationDegrees,
+            int zIndex
+        );
+        void UpdateCard
+        (
+            UniqueDisplayCard cardToUpdate,
+            NormalizedPosition canvasPositon = null,
+            double? orientationDegrees = null,
+            int? zIndex = null,
+            bool? dimmed = null
+        );
         void RemoveCard(UniqueDisplayCard card);
-        void UpdateCard(UniqueDisplayCard cardToFlip, NormalizedPosition canvasPositon = null, double? orientationDegrees = null, int? zIndex = null);
         Task<NormalizedSize> GetNormalizedCardImageSize();
         void QueueAnimationRequest(AnimationRequest animation);
         void QueueAnimationRequests(IEnumerable<AnimationRequest> animations);
