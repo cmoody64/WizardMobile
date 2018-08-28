@@ -218,7 +218,7 @@ namespace WizardMobile.Uwp.Gameplay
                 _canvasFacade.QueueAnimationRequest(new AnimationRequest
                 {
                     Destination = newPositions[i],
-                    Duration = 0.2,
+                    Duration = 0.3,
                     ImageGuid = _displayCards[i].Id
                 });
             }
@@ -233,7 +233,7 @@ namespace WizardMobile.Uwp.Gameplay
                 _canvasFacade.QueueAnimationRequest(new AnimationRequest
                 {
                     Destination = newPositions[i],
-                    Duration = 0.2,
+                    Duration = 0.3,
                     ImageGuid = _displayCards[i].Id
                 });
             }

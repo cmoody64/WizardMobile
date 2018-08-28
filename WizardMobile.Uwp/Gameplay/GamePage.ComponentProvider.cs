@@ -74,6 +74,7 @@ namespace WizardMobile.Uwp.Gameplay
         public void RemoveCard(UniqueDisplayCard card)
         {
             Image elementToRemove = this.FindName(card.Id) as Image;
+            UIElement x = elementToRemove;
             game_canvas.Children.Remove(elementToRemove);
         }
 
@@ -117,9 +118,6 @@ namespace WizardMobile.Uwp.Gameplay
             Point destination = NormalizedPositionToPoint(animationRequest.Destination, _cardBitmapSize);
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
-
-            // make sure each animation is properly cleaned up by assigning the completed handler 
-            animations.ForEach(animation => animation.Completed += OnAnimationCompleted);
             
             animationQueue.AddRange(animations);
         }
@@ -129,19 +127,15 @@ namespace WizardMobile.Uwp.Gameplay
             foreach (var animation in animations)
                 QueueAnimationRequest(animation);
         }
-
         private List<DoubleAnimation> animationQueue;
-        private void OnAnimationCompleted(object sender, object args)
+
+        private void ApplyAnimationEndValue(DoubleAnimation animation)
         {
-            
-            var animation = sender as DoubleAnimation;
             var imageName = Storyboard.GetTargetName(animation);
             var targetProperty = Storyboard.GetTargetProperty(animation);
 
-            var image = FindName(imageName) as Image;            
+            var image = FindName(imageName) as Image;
             var animEndvalue = animation.To ?? 0.0;
-
-            game_canvas_storyboard.Pause();
 
             // set the end property of the animation to the end property of the image
             if (targetProperty == "(Canvas.Top)")
@@ -150,11 +144,6 @@ namespace WizardMobile.Uwp.Gameplay
                 Canvas.SetLeft(image, animEndvalue);
             else if (targetProperty == "(Image.RenderTransform).(RotateTransform.Angle)")
                 ((RotateTransform)image.RenderTransform).Angle = animEndvalue;
-
-            // remove the animation from the storyboard
-            game_canvas_storyboard.Children.Remove(animation);
-
-            game_canvas_storyboard.Resume();
         }
 
         public event Action<UniqueDisplayCard> CardClicked;
@@ -257,6 +246,10 @@ namespace WizardMobile.Uwp.Gameplay
         {
             var x = game_canvas_storyboard.GetCurrentState();            
             game_canvas_storyboard.Stop();
+
+            foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
+                ApplyAnimationEndValue(anim);
+
             game_canvas_storyboard.Children.Clear();
             // run all queued animations completed handlers
             while (_animationsCompletedHandlers.Count > 0)

@@ -125,7 +125,7 @@ namespace WizardMobile.Uwp.Gameplay
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
 
             // add cards alternating to left and right center stacks
-            for(int i = 0; i < deckToShuffle.Cards.Count; i += 4)
+            for (int i = 0; i < deckToShuffle.Cards.Count; i += 4)
             {
                 var leftCard = deckToShuffle.Cards[i];
                 var leftCard2 = deckToShuffle.Cards[i + 1];
