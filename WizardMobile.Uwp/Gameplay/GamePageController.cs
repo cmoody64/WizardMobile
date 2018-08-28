@@ -226,15 +226,11 @@ namespace WizardMobile.Uwp.Gameplay
 
         public Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards)
         {
-            var taskCompletionSource = new TaskCompletionSource<Card>();
+            var tcs = new TaskCompletionSource<Card>();
             var playerCardGroup = (InteractiveAdjacentCardGroup)_playerCardGroups[player.Name];
             _componentProvider.SetMessageBoxText($"{player.Name}, choose your card");
-            playerCardGroup.QueueClickHandlerForCards(displayCard =>
-            {
-                taskCompletionSource.SetResult(displayCard.CoreCard);
-            });
-
-            return taskCompletionSource.Task;
+            playerCardGroup.StartInteractiveSession(playableCards, displayCard => tcs.SetResult(displayCard.CoreCard));
+            return tcs.Task;
         }
 
         public Task<int> PromptPlayerBid(HumanPlayer player)

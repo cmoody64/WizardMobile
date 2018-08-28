@@ -139,7 +139,7 @@ namespace WizardMobile.Uwp.Gameplay
             return false;
         }
 
-        private UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
+        protected UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
         {
             return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));
         }
@@ -283,7 +283,7 @@ namespace WizardMobile.Uwp.Gameplay
         public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
         : base(parent, origin, orientation)
         {
-            _cardClickedHandlers = new Queue<Action<UniqueDisplayCard>>();
+            EndInteractiveSession();
 
             // bind callbacks to handlers
             _canvasFacade.CardClicked += OnCardClicked;
@@ -291,28 +291,54 @@ namespace WizardMobile.Uwp.Gameplay
             _canvasFacade.CardPointerExited += OnCardPointerExited;
         }
 
-        // queue one shot handlers for when a card within a card group is clicked
-        public void QueueClickHandlerForCards(Action<UniqueDisplayCard> cardClickedHandler)
-        {
-            _cardClickedHandlers.Enqueue(cardClickedHandler);
-        }
-        private Queue<Action<UniqueDisplayCard>> _cardClickedHandlers;
+        private bool _isInInteractiveState;
+        private IReadOnlyList<UniqueDisplayCard> _curInteractiveCards;
+        private Action<UniqueDisplayCard> _curCardClickedHandler;
 
-        private void OnCardClicked(UniqueDisplayCard displayCard)
+        public void StartInteractiveSession(IReadOnlyList<Core.Card> interactiveCards, Action<UniqueDisplayCard> cardClickedHandler)
         {
-            if (_displayCards.Contains(displayCard))
+            if (_isInInteractiveState)
+                throw new InvalidOperationException("attempted to start interactive card group session while session was already in progress");
+
+            List<UniqueDisplayCard> interactiveDisplayCards = new List<UniqueDisplayCard>();
+            foreach (Core.Card card in interactiveCards)
+                interactiveDisplayCards.Add(GetDisplayCardFromCoreCard(card));
+
+            _isInInteractiveState = true;
+            _curCardClickedHandler = cardClickedHandler;
+            _curInteractiveCards = interactiveDisplayCards;
+
+            // dim cards that are non-interactive as a hint to the user
+            IEnumerable<UniqueDisplayCard> nonInteractiveCards = _displayCards.Where(displayCard => !_curInteractiveCards.Contains(displayCard));
+            foreach (UniqueDisplayCard nonInteractiveCard in nonInteractiveCards)
+                _canvasFacade.UpdateCard(nonInteractiveCard, dimmed: true);
+
+        }
+
+        private void EndInteractiveSession()
+        {
+            // un-dim cards that are non-interactive which were dimmed at the beginning of an interactive session
+            IEnumerable<UniqueDisplayCard> nonInteractiveCards = _displayCards.Where(displayCard => !_curInteractiveCards.Contains(displayCard));
+            foreach (UniqueDisplayCard nonInteractiveCard in nonInteractiveCards)
+                _canvasFacade.UpdateCard(nonInteractiveCard, dimmed: false);
+
+            _isInInteractiveState = false;
+            _curInteractiveCards = null;
+            _curCardClickedHandler = null;
+        }
+
+        private void OnCardClicked(UniqueDisplayCard clickedCard)
+        {
+            if (_isInInteractiveState && _curInteractiveCards.Contains(clickedCard))
             {
-                while (_cardClickedHandlers.Count > 0)
-                {
-                    var handler = _cardClickedHandlers.Dequeue();
-                    handler(displayCard);
-                }
+                _curCardClickedHandler(clickedCard);
+                EndInteractiveSession();
             }
         }
 
         private void OnCardPointerEntered(UniqueDisplayCard card)
         {
-            if(_displayCards.Contains(card))
+            if(_isInInteractiveState && _curInteractiveCards.Contains(card))
             {
                 var curPosIndex = _displayCards.FindIndex(displayCard => displayCard.Equals(card));
                 var curPos = _curPositions[curPosIndex];
@@ -332,7 +358,7 @@ namespace WizardMobile.Uwp.Gameplay
 
         private void OnCardPointerExited(UniqueDisplayCard card)
         {
-            if (_displayCards.Contains(card))
+            if (_isInInteractiveState && _curInteractiveCards.Contains(card))
             {
                 var curPosIndex = _displayCards.FindIndex(displayCard => displayCard.Equals(card));
                 _canvasFacade.UpdateCard(card, _curPositions[curPosIndex]);
