@@ -65,6 +65,7 @@ namespace WizardMobile.Core
         public int TrickNum { get; set; }
         public List<Card> CardsPlayed { get; }
         public CardSuite? LeadingSuite => CardsPlayed.Count > 0 ? CardsPlayed[0].Suite : (CardSuite?)null;
-        public Player Winner;
+        public Player Winner { get; set; }
+        public Card WinningCard { get; set; }
     }
 }

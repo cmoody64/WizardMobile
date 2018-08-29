@@ -25,9 +25,7 @@ namespace WizardMobile.Uwp.GamePage
         {
             game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
             game_canvas.Loaded += (sender, args) => _cardBitmapDecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
-            game_canvas.SizeChanged += OnCanvasSizeChange;
-
-            _normalizedCanvasPositionRegistry = new Dictionary<UIElement, Tuple<NormalizedPosition, Size?>>();            
+            game_canvas.SizeChanged += OnCanvasSizeChange;                       
         }
 
         /*************************** ICanvasFacade implementation *******************************/
@@ -206,7 +204,7 @@ namespace WizardMobile.Uwp.GamePage
             RegisterElementCanvasPosition(element, position, boundingRectSize);
         }
 
-        private Dictionary<UIElement, Tuple<NormalizedPosition, Size?>> _normalizedCanvasPositionRegistry;
+        private Dictionary<UIElement, Tuple<NormalizedPosition, Size?>> _normalizedCanvasPositionRegistry = new Dictionary<UIElement, Tuple<NormalizedPosition, Size?>>();
         private void RegisterElementCanvasPosition(UIElement el, NormalizedPosition pos, Size? size)
         {
             _normalizedCanvasPositionRegistry[el] = new Tuple<NormalizedPosition, Size?>(pos, size);

@@ -13,6 +13,9 @@ namespace WizardMobile.Uwp.GamePage
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
         void SetHumanPlayerBidInputVisibility(bool isVisible);
+        void SetAllPersonasVisibility(bool isVisible); // Persona refers to the element grouping of player name, status, and avatar
+        void SetPlayerName(PlayerOrdinal player, string name);
+        void SetPlayerStatus(PlayerOrdinal player, string status); // status referred to round score vs bids (e.g. "2/4")
         void BeginAnimations();
         void QueueAnimationsCompletedHandler(Action action);        
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
@@ -31,6 +34,14 @@ namespace WizardMobile.Uwp.GamePage
         StackCardGroup Player3StagingCardGroup { get; }
         AdjacentCardGroup Player4CardGroup { get; }
         StackCardGroup Player4StagingCardGroup { get; }
+    }
 
+    // player positions for which components are provided for
+    public enum PlayerOrdinal
+    {
+        PLAYER1,
+        PLAYER2,
+        PLAYER3,
+        PLAYER4
     }
 }

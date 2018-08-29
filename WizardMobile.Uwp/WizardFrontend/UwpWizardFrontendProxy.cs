@@ -79,9 +79,9 @@ namespace WizardMobile.Uwp.WizardFrontend
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayDeal(gameContext, players));
         }
 
-        public async Task<bool> DisplayTrickWinner(Player winner, Card winningCard)
+        public async Task<bool> DisplayTrickWinner(RoundContext roundContext)
         {
-            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTrickWinner(winner, winningCard));
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.DisplayTrickWinner(roundContext));
         }
 
         public async Task<bool> DisplayRoundScores(GameContext gameContext)

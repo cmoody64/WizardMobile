@@ -19,7 +19,7 @@ namespace WizardMobile.Core
         Task<bool> DisplayPlayerBid(int bid, Player player);
         Task<bool> DisplayShuffle(IReadonlyDeck startingDeck);
         Task<bool> DisplayDeal(GameContext gameContext, List<Player> players);
-        Task<bool> DisplayTrickWinner(Player winner, Card winningCard);
+        Task<bool> DisplayTrickWinner(RoundContext curRound);
         Task<bool> DisplayRoundScores(GameContext gameContext);
         Task<bool> DisplayBidOutcome(int roundNum, int totalBids);
         Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards);

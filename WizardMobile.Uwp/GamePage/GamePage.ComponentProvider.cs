@@ -26,11 +26,13 @@ namespace WizardMobile.Uwp.GamePage
         private void InitializeWizardComponentProvider()
         {
             animationQueue = new List<DoubleAnimation>();
+            _gamePageController = new GamePageController(this, this.Dispatcher);
+            _animationsCompletedHandlers = new Queue<Action>();
 
-            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 45), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 45), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 45), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 65), 0);
+            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 43), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 43), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 43), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 62), 0);
             Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
@@ -44,13 +46,24 @@ namespace WizardMobile.Uwp.GamePage
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
 
-            _gamePageController = new GamePageController(this, this.Dispatcher);
-            _animationsCompletedHandlers = new Queue<Action>();
-
             // the size of a given card needs to only be fetched once and cached
             // all cards are the same size so the fetched size applies to all cards
             var imageSizeTask = GetCardImageSize();
             imageSizeTask.ContinueWith(sizeTask => this._cardBitmapSize = sizeTask.Result);
+
+            // set position of UI elements using method that binds them to a responsive canvas position
+            SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
+            SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(50, 60));
+            SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(50, 62));
+
+            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -17));
+            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -14));
+            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 3));
+            SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 6));
+            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 11));
+            SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 14));
+            SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -5));
+            SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -2));
 
         }
         
@@ -63,28 +76,29 @@ namespace WizardMobile.Uwp.GamePage
 
         public void SetPlayerCreationInputVisibility(bool isVisible)
         {
-            if (isVisible)
-            {
-                SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
-                player_creation_input.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                player_creation_input.Visibility = Visibility.Collapsed;
-            }
+            player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public void SetHumanPlayerBidInputVisibility(bool isVisible)
         {
-            if (isVisible)
-            {
-                SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(50, 60));
-                player_bid_input.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                player_bid_input.Visibility = Visibility.Collapsed;
-            }
+            player_bid_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public void SetPlayerName(PlayerOrdinal player, string name) => PlayerEnumToNameElement(player).Text = name;
+
+        public void SetPlayerStatus(PlayerOrdinal player, string status) => PlayerEnumToStatusElement(player).Text = status;
+
+        public void SetAllPersonasVisibility(bool isVisible)
+        {
+            var visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            player1_name.Visibility = visibility;
+            player1_status.Visibility = visibility;
+            player2_name.Visibility = visibility;
+            player2_status.Visibility = visibility;
+            player3_name.Visibility = visibility;
+            player3_status.Visibility = visibility;
+            player4_name.Visibility = visibility;
+            player4_status.Visibility = visibility;
         }
 
         public void BeginAnimations()
@@ -170,10 +184,8 @@ namespace WizardMobile.Uwp.GamePage
                 }
                 else
                 {
-                    player_bid_error_message.Visibility = Visibility.Visible;
-                    SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(50, 62));
-                }
-                
+                    player_bid_error_message.Visibility = Visibility.Visible;                    
+                }                
             }
         }
 
@@ -202,6 +214,37 @@ namespace WizardMobile.Uwp.GamePage
             double scaledWidth = scaleFactor * originalWidth;
 
             return new Size(scaledWidth, scaledHeight);
+        }
+
+
+        // ***************************************** Helpers ********************************************/
+        private static NormalizedPosition GetRelativeNormalizedPosition(NormalizedPosition relativeTo, double xOffset, double yOffset)
+        {
+            return new NormalizedPosition(relativeTo.NormalizedX + xOffset, relativeTo.NormalizedY + yOffset);
+        }
+
+        private TextBlock PlayerEnumToNameElement(PlayerOrdinal player)
+        {
+            switch(player)
+            {
+                case PlayerOrdinal.PLAYER1: return player1_name;
+                case PlayerOrdinal.PLAYER2: return player2_name;
+                case PlayerOrdinal.PLAYER3: return player3_name;
+                case PlayerOrdinal.PLAYER4: return player4_name;
+                default: throw new ArgumentOutOfRangeException($"PlayerEnum value out of range");
+            }
+        }
+
+        private TextBlock PlayerEnumToStatusElement(PlayerOrdinal player)
+        {
+            switch (player)
+            {
+                case PlayerOrdinal.PLAYER1: return player1_status;
+                case PlayerOrdinal.PLAYER2: return player2_status;
+                case PlayerOrdinal.PLAYER3: return player3_status;
+                case PlayerOrdinal.PLAYER4: return player4_status;
+                default: throw new ArgumentOutOfRangeException($"PlayerEnum value out of range");
+            }
         }
     }
 }

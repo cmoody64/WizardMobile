@@ -17,6 +17,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         {
             _componentProvider = componentProvider;
             _playerCardGroups = new Dictionary<string, CardGroup>();
+            _playerOrdinals = new Dictionary<string, PlayerOrdinal>();
 
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
             // must be marshalled through the proxy frontend which implements multithreading protocol
@@ -30,19 +31,21 @@ namespace WizardMobile.Uwp.WizardFrontend
         private IWizardComponentProvider _componentProvider;
         private WizardEngine _engine;
         private Dictionary<string, CardGroup> _playerCardGroups; // maps player names to the corresponding hand cardGroup
+        private Dictionary<string, PlayerOrdinal> _playerOrdinals; // maps player names to PlayerOrdinals used in the componentProvider
 
         /*************** IWizardFrontend implementation ********************/
         public async Task<bool> DisplayStartGame()
         {
             _componentProvider.SetMessageBoxText("Game Starting");
-            await Task.Delay(2000);
+            _componentProvider.SetAllPersonasVisibility(true);
+            await Task.Delay(2000);            
             return true;
 
         }
 
         public async Task<bool> DisplayStartRound(int roundNum)
         {
-            _componentProvider.SetMessageBoxText($"Round {roundNum} Starting");
+            _componentProvider.SetMessageBoxText($"Round {roundNum} Starting");      
             await Task.Delay(1000);
             return true;
         }
@@ -52,6 +55,13 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.SetMessageBoxText("Round Over");
             _componentProvider.RightCenterCardGroup.RemoveAll();
             _componentProvider.CenterCardGroup.RemoveAll();
+
+            // clear all player statuses
+            _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER1, "");
+            _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER2, "");
+            _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER3, "");
+            _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER4, "");
+
             await Task.Delay(1000);
             return true;
         }
@@ -65,6 +75,7 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         public Task<bool> DisplayEndTrick(int trickNum)
         {
+            // clean up trick and bid statuses
             _componentProvider.DiscardCardGroup.RemoveAll();
             return Task.FromResult(true);
         }
@@ -117,6 +128,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         public async Task<bool> DisplayPlayerBid(int bid, Player player)
         {
             _componentProvider.SetMessageBoxText($"{player.Name} bids {bid}");
+            _componentProvider.SetPlayerStatus(_playerOrdinals[player.Name], $"0 / {bid}");
             await Task.Delay(1000);
             return true;
         }
@@ -198,9 +210,17 @@ namespace WizardMobile.Uwp.WizardFrontend
             return taskCompletionSource.Task;
         }
 
-        public async Task<bool> DisplayTrickWinner(Player winner, Card winningCard)
+        public async Task<bool> DisplayTrickWinner(RoundContext curRound)
         {
-            _componentProvider.SetMessageBoxText($"{winner.Name} won with a {winningCard.DisplayName}");
+            var curTrick = curRound.CurTrick;
+            var winner = curTrick.Winner;
+            _componentProvider.SetMessageBoxText($"{winner.Name} won with a {curTrick.WinningCard.DisplayName}");
+            
+            var bid = curRound.Bids[winner];
+            // note: technically the round is not over, so the results in the current round are from the prev trick => 1 is added
+            var tricksTaken = curRound.Results[winner] + 1;
+            _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
+
             await Task.Delay(1000);
             return true;
         }
@@ -241,6 +261,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.SetHumanPlayerBidInputVisibility(true);
             _componentProvider.OnPlayerBidInputEntered((int bid) =>
             {
+                _componentProvider.SetPlayerStatus(_playerOrdinals[player.Name], $"0/{bid}");
                 taskCompletionSource.SetResult(bid);
             });
             return taskCompletionSource.Task;
@@ -258,6 +279,20 @@ namespace WizardMobile.Uwp.WizardFrontend
                 // default bot players will be added too
                 List<string> playerNames = new List<string> { input, "wizbot1", "wizbot2", "wizbot3" };
 
+                // set names to frontend name elements
+                _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER1, playerNames[0]);
+                _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER2, playerNames[1]);
+                _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER3, playerNames[2]);
+                _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER4, playerNames[3]);
+
+
+                // cache new names in name: playerOrdinal dictionary
+                _playerOrdinals[playerNames[0]] = PlayerOrdinal.PLAYER1;
+                _playerOrdinals[playerNames[1]] = PlayerOrdinal.PLAYER2;
+                _playerOrdinals[playerNames[2]] = PlayerOrdinal.PLAYER3;
+                _playerOrdinals[playerNames[3]] = PlayerOrdinal.PLAYER4;
+
+                // cache new names in name: cardGroup dictionary
                 _playerCardGroups[playerNames[0]] = _componentProvider.Player1CardGroup;
                 _playerCardGroups[playerNames[1]] = _componentProvider.Player2CardGroup;
                 _playerCardGroups[playerNames[2]] = _componentProvider.Player3CardGroup;
