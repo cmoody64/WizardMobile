@@ -63,12 +63,28 @@ namespace WizardMobile.Uwp.GamePage
 
         public void SetPlayerCreationInputVisibility(bool isVisible)
         {
-            player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            if (isVisible)
+            {
+                SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
+                player_creation_input.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                player_creation_input.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void SetHumanPlayerBidInputVisibility(bool isVisible)
         {
-            player_bid_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            if (isVisible)
+            {
+                SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(50, 60));
+                player_bid_input.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                player_bid_input.Visibility = Visibility.Collapsed;
+            }
         }
 
         public void BeginAnimations()
@@ -155,6 +171,7 @@ namespace WizardMobile.Uwp.GamePage
                 else
                 {
                     player_bid_error_message.Visibility = Visibility.Visible;
+                    SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(50, 62));
                 }
                 
             }
