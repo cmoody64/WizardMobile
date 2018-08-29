@@ -36,6 +36,17 @@ namespace WizardMobile.Uwp.Gameplay
 
         public double NormalizedX { get; }
         public double NormalizedY { get; }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as NormalizedPosition;
+            return other?.NormalizedX == NormalizedX && other?.NormalizedY == NormalizedY;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     public class NormalizedSize
@@ -59,5 +70,17 @@ namespace WizardMobile.Uwp.Gameplay
 
         public double NormalizedWidth { get; }
         public double NormalizedHeight { get; }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as NormalizedSize;
+            return other?.NormalizedWidth == NormalizedWidth
+                && other?.NormalizedHeight == NormalizedHeight;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 }

@@ -39,6 +39,8 @@ namespace WizardMobile.Uwp.Gameplay
             Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(90, 50), CardGroup.Orientation.DEGREES_270);
             Player4StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(80, 60), CardGroup.Orientation.DEGREES_270);
 
+            _normalizedCanvasPositionRegistry = new List<Tuple<UIElement, NormalizedPosition, Size?>>();
+
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
@@ -59,9 +61,8 @@ namespace WizardMobile.Uwp.Gameplay
         public void AddCard(UniqueDisplayCard card, NormalizedPosition canvasPositon, double orientationDegrees, int zIndex)
         {
             Image image = CreateCardImage(card);
-            Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
 
-            SetCardImagePosition(image, position);
+            SetUiElementNormalizedPosition(image, canvasPositon, _cardBitmapSize);
             SetCardImageAngle(image, orientationDegrees);
             Canvas.SetZIndex(image, zIndex);
 
@@ -100,8 +101,7 @@ namespace WizardMobile.Uwp.Gameplay
             if(canvasPositon != null)
             {
                 // update position. if alrady equal, this is a noop
-                Point position = NormalizedPositionToPoint(canvasPositon, _cardBitmapSize);
-                SetCardImagePosition(imageToUpdate, position);
+                SetUiElementNormalizedPosition(imageToUpdate, canvasPositon, _cardBitmapSize);
             }
 
             // update the orientnation if provided
@@ -126,7 +126,7 @@ namespace WizardMobile.Uwp.Gameplay
         public void QueueAnimationRequest(AnimationRequest animationRequest)
         {
             Image targetImage = FindName(animationRequest.ImageGuid) as Image;
-            Point destination = NormalizedPositionToPoint(animationRequest.Destination, _cardBitmapSize);
+            Point destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
             
@@ -274,22 +274,22 @@ namespace WizardMobile.Uwp.Gameplay
         /************************************** helpers **********************************************/
         // translates a high level normalized canvas position (0 -> 100) to actual canvas position (0 -> actual dimension)
         // NOTE optionally takes into acount image size so that it seems like the image is centered on pos
-        private Point NormalizedPositionToPoint(NormalizedPosition pos, Size? imageSize = null)
+        private Point DenormalizePosition(NormalizedPosition pos, Size? boundingRectSize = null)
         {
             double x = pos.NormalizedX * game_canvas.ActualWidth / CanvasNormalization.MAX_X;
             double y = pos.NormalizedY * game_canvas.ActualHeight / CanvasNormalization.MAX_Y;
 
             // optionally shift x and y so that it seems like the point is centered around a given image
-            if(imageSize.HasValue)
+            if(boundingRectSize.HasValue)
             {
-                x -= imageSize.Value.Width / 2;
-                y -= imageSize.Value.Height / 2;
+                x -= boundingRectSize.Value.Width / 2;
+                y -= boundingRectSize.Value.Height / 2;
             }
 
             return new Point(x, y);
         }
 
-        private NormalizedSize SizeToNormalizedSize(Size size)
+        private NormalizedSize NormalizeSize(Size size)
         {
             double width = (size.Width / game_canvas.ActualWidth) * CanvasNormalization.MAX_X;
             double height = (size.Height / game_canvas.ActualHeight) * CanvasNormalization.MAX_Y;
@@ -317,10 +317,28 @@ namespace WizardMobile.Uwp.Gameplay
             return bitmapImage;
         }
 
-        private static void SetCardImagePosition(Image cardImage, Point position)
+        private void SetUiElementNormalizedPosition(UIElement element, NormalizedPosition position, Size? boundingRectSize = null)
         {
-            Canvas.SetLeft(cardImage, position.X);
-            Canvas.SetTop(cardImage, position.Y);
+            var denormalizedPosition = DenormalizePosition(position, boundingRectSize);
+            Canvas.SetLeft(element, denormalizedPosition.X);
+            Canvas.SetTop(element, denormalizedPosition.Y);
+            RegisterCanvasPosition(element, position, boundingRectSize);
+        }
+
+        private Dictionary<UIElement, Tuple<NormalizedPosition, Size?>> _normalizedCanvasPositionRegistry;
+        private void RegisterCanvasPosition(UIElement el, NormalizedPosition pos, Size? size)
+        {
+            _normalizedCanvasPositionRegistry.Add
+            (
+                new Tuple<UIElement, NormalizedPosition, Size?>(el, pos, size)
+            );
+        }
+        private bool UnregisterCanvasPosition(UIElement el, NormalizedPosition pos, Size? size)
+        {
+            return _normalizedCanvasPositionRegistry.Remove
+            (
+                new Tuple<UIElement, NormalizedPosition, Size?>(el, pos, size)
+            );
         }
 
         private static void SetCardImageAngle(Image cardImage, double angle)
@@ -332,7 +350,7 @@ namespace WizardMobile.Uwp.Gameplay
         public async Task<NormalizedSize> GetNormalizedCardImageSize()
         {
             Size size = await GetCardImageSize();
-            return SizeToNormalizedSize(size);
+            return NormalizeSize(size);
         }
 
         // since all card images are the same size, it is only necessary to read the size of a single image
