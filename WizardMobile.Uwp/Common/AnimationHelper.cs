@@ -4,7 +4,7 @@ using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
-using WizardMobile.Uwp.Gameplay;
+using WizardMobile.Uwp.GamePage;
 
 namespace WizardMobile.Uwp.Common
 {
