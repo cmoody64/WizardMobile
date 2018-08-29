@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 
-namespace WizardMobile.Uwp.Gameplay
+namespace WizardMobile.Uwp.GamePage
 {
     public interface IWizardComponentProvider
     {

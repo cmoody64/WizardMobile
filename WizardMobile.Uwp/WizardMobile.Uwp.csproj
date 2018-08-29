@@ -98,21 +98,22 @@
     <Compile Include="Common\AnimationHelper.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
     <Compile Include="Common\TimelineCollectionExtensions.cs" />
-    <Compile Include="Gameplay\CanvasNormalization.cs" />
-    <Compile Include="Gameplay\ICanvasFacade.cs" />
-    <Compile Include="Gameplay\CardGroup.cs" />
-    <Compile Include="Gameplay\GamePage.ComponentProvider.cs" />
-    <Compile Include="Gameplay\GamePage.xaml.cs">
+    <Compile Include="GamePage\CanvasNormalization.cs" />
+    <Compile Include="GamePage\GamePage.CanvasFacade.cs" />
+    <Compile Include="GamePage\ICanvasFacade.cs" />
+    <Compile Include="GamePage\CardGroup.cs" />
+    <Compile Include="GamePage\GamePage.ComponentProvider.cs" />
+    <Compile Include="GamePage\GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Gameplay\GamePageController.cs" />
-    <Compile Include="Gameplay\IWizardComponentProvider.cs" />
-    <Compile Include="Gameplay\UniqueDisplayCard.cs" />
+    <Compile Include="WizardFrontend\GamePageController.cs" />
+    <Compile Include="GamePage\IWizardComponentProvider.cs" />
+    <Compile Include="GamePage\UniqueDisplayCard.cs" />
     <Compile Include="MainMenuPage.xaml.cs">
       <DependentUpon>MainMenuPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UwpWizardFrontendProxy.cs" />
+    <Compile Include="WizardFrontend\UwpWizardFrontendProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -190,7 +191,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Gameplay\GamePage.xaml">
+    <Page Include="GamePage\GamePage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -210,6 +211,7 @@
       <Name>WizardMobile.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

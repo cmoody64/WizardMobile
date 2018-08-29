@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WizardMobile.Core;
 
-namespace WizardMobile.Uwp.Gameplay
+namespace WizardMobile.Uwp.GamePage
 {
     public class UniqueDisplayCard
     {
