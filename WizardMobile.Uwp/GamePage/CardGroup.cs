@@ -106,37 +106,47 @@ namespace WizardMobile.Uwp.GamePage
             UniqueDisplayCard cardToTransfer = GetDisplayCardFromCoreCard(card);
             if (cardToTransfer != null)
             {
-                _displayCards.Remove(cardToTransfer);
-                OnPostCardRemoval();
-
-                // resolve rotations so that the animation terminates at the angle of the destination group
-                // rotations are rounded up so that the card is flush with the destination
-                double resolvedRotations = animationBehavior.Rotations;
-                if((this.OrientationDegress + animationBehavior.Rotations * 360) % 360 != destinationGroup.OrientationDegress)
-                {
-                    var difference = destinationGroup.OrientationDegress - ((this.OrientationDegress + animationBehavior.Rotations * 360) % 360);
-                    resolvedRotations += difference / 360;
-                }
-
-                var destinationPoint = destinationGroup.NextOpenPosition;
-                var transferAnimRequest = new AnimationRequest()
-                {
-                    Destination = destinationPoint,
-                    Duration = animationBehavior.Duration,
-                    Delay = animationBehavior.Delay,
-                    Rotations = resolvedRotations,
-                    ImageGuid = cardToTransfer.Id
-                };
-                _canvasFacade.QueueAnimationRequest(transferAnimRequest);
-
-                destinationGroup.OnPreCardAddition();
-                // finalize transfer by adding the card to the destination groups display cards and updating its zIndex to that of the destination group
-                destinationGroup._displayCards.Add(cardToTransfer);
-                _canvasFacade.UpdateCard(cardToTransfer, zIndex: destinationGroup._curZIndex);
-
+                TransferImpl(cardToTransfer, destinationGroup, animationBehavior);
                 return true;
             }
             return false;
+        }
+
+        private void TransferImpl(UniqueDisplayCard cardToTransfer, CardGroup destinationGroup, AnimationBehavior animationBehavior)
+        {
+            _displayCards.Remove(cardToTransfer);
+            OnPostCardRemoval();
+
+            // resolve rotations so that the animation terminates at the angle of the destination group
+            // rotations are rounded up so that the card is flush with the destination
+            double resolvedRotations = animationBehavior.Rotations;
+            if ((this.OrientationDegress + animationBehavior.Rotations * 360) % 360 != destinationGroup.OrientationDegress)
+            {
+                var difference = destinationGroup.OrientationDegress - ((this.OrientationDegress + animationBehavior.Rotations * 360) % 360);
+                resolvedRotations += difference / 360;
+            }
+
+            var destinationPoint = destinationGroup.NextOpenPosition;
+            var transferAnimRequest = new AnimationRequest()
+            {
+                Destination = destinationPoint,
+                Duration = animationBehavior.Duration,
+                Delay = animationBehavior.Delay,
+                Rotations = resolvedRotations,
+                ImageGuid = cardToTransfer.Id
+            };
+            _canvasFacade.QueueAnimationRequest(transferAnimRequest);
+
+            destinationGroup.OnPreCardAddition();
+            // finalize transfer by adding the card to the destination groups display cards and updating its zIndex to that of the destination group
+            destinationGroup._displayCards.Add(cardToTransfer);
+            _canvasFacade.UpdateCard(cardToTransfer, zIndex: destinationGroup._curZIndex);
+        }
+
+        public void TransferAll(CardGroup destinationGroup, AnimationBehavior animationBehavior)
+        {
+            while (_displayCards.Count > 0)
+                TransferImpl(_displayCards[0], destinationGroup, animationBehavior);
         }
 
         protected UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
@@ -345,7 +355,7 @@ namespace WizardMobile.Uwp.GamePage
 
                 if (OrientationAxis == Axis.X)
                 {
-                    double offsetY = _orientation == Orientation.DEGREES_0 ? -1.5 : 1.5 ;
+                    double offsetY = _orientation == Orientation.DEGREES_0 ? -2 : 2 ;
                     _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX, curPos.NormalizedY + offsetY));
                 }
                 else
