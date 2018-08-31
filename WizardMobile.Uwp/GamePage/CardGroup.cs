@@ -345,12 +345,12 @@ namespace WizardMobile.Uwp.GamePage
 
                 if (OrientationAxis == Axis.X)
                 {
-                    double offsetY = _orientation == Orientation.DEGREES_0 ? -3 : 3;
+                    double offsetY = _orientation == Orientation.DEGREES_0 ? -1.5 : 1.5 ;
                     _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX, curPos.NormalizedY + offsetY));
                 }
                 else
                 {
-                    double offsetX = _orientation == Orientation.DEGREES_90 ? 2 : 2;
+                    double offsetX = _orientation == Orientation.DEGREES_90 ? 1 : 1;
                     _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX + offsetX, curPos.NormalizedY));
                 }                    
             }
