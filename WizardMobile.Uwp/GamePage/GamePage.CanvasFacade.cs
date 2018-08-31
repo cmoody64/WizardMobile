@@ -190,7 +190,7 @@ namespace WizardMobile.Uwp.GamePage
         {
             var bitmapImage = game_canvas.Resources[bitmapKey] as BitmapImage;
             // scale down and maintain aspect ratio
-            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
+            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * .20);
             return bitmapImage;
         }
 

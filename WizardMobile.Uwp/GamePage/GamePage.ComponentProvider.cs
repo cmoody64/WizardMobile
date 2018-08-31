@@ -29,18 +29,14 @@ namespace WizardMobile.Uwp.GamePage
             _gamePageController = new GamePageController(this, this.Dispatcher);
             _animationsCompletedHandlers = new Queue<Action>();
 
-            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 43), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 43), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 43), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 62), 0);
+            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 40), 0);
+            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 40), 0);
+            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 40), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
             Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
-            Player1StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 80), 0);
-            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(10, 50), CardGroup.Orientation.DEGREES_90);
-            Player2StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(20, 40), CardGroup.Orientation.DEGREES_90);
-            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 10), CardGroup.Orientation.DEGREES_180);
-            Player3StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 20), CardGroup.Orientation.DEGREES_180);
-            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(90, 50), CardGroup.Orientation.DEGREES_270);
-            Player4StagingCardGroup = new StackCardGroup(this, new NormalizedPosition(80, 60), CardGroup.Orientation.DEGREES_270);
+            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(4, 50), CardGroup.Orientation.DEGREES_90);
+            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 3), CardGroup.Orientation.DEGREES_180);
+            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), CardGroup.Orientation.DEGREES_270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -56,15 +52,15 @@ namespace WizardMobile.Uwp.GamePage
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(50, 60));
             SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(50, 62));
 
-            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -17));
-            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -14));
-            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 3));
+            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -19));
+            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -15));
+            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 2));
             SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 6));
-            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 11));
+            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 10));
             SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 14));
-            SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -5));
+            SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -6));
             SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -2));
-
+            SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterCardGroup.Origin, 0, -17));
         }
         
 
