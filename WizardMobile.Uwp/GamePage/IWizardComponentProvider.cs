@@ -22,14 +22,16 @@ namespace WizardMobile.Uwp.GamePage
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
         // card groups 
-        StackCardGroup CenterCardGroup { get; }
-        TaperedStackCardGroup LeftCenterCardGroup { get; }
-        TaperedStackCardGroup RightCenterCardGroup { get; }
+        StackCardGroup CenterShuffleCardGroup { get; }
+        TaperedStackCardGroup LeftShuffleCardGroup { get; }
+        TaperedStackCardGroup RightShuffleCardGroup { get; }
         AdjacentCardGroup DiscardCardGroup { get; }
         InteractiveAdjacentCardGroup Player1CardGroup { get; }
         AdjacentCardGroup Player2CardGroup { get; }
         AdjacentCardGroup Player3CardGroup { get; }
         AdjacentCardGroup Player4CardGroup { get; }
+        StackCardGroup DeckCardGroup { get; }
+        StackCardGroup TrumpCardGroup { get; }
     }
 
     // player positions for which components are provided for

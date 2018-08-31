@@ -29,14 +29,16 @@ namespace WizardMobile.Uwp.GamePage
             _gamePageController = new GamePageController(this, this.Dispatcher);
             _animationsCompletedHandlers = new Queue<Action>();
 
-            CenterCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 40), 0);
-            LeftCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 40), 0);
-            RightCenterCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 40), 0);
-            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 60), 0);
+            CenterShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 50), 0);
+            LeftShuffleCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
+            RightShuffleCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
+            DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(62, 50), 0);
             Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(4, 50), CardGroup.Orientation.DEGREES_90);
             Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 3), CardGroup.Orientation.DEGREES_180);
             Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), CardGroup.Orientation.DEGREES_270);
+            DeckCardGroup = new StackCardGroup(this, new NormalizedPosition(29, 50), 0);
+            TrumpCardGroup = new StackCardGroup(this, new NormalizedPosition(37, 50), 0);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -49,18 +51,18 @@ namespace WizardMobile.Uwp.GamePage
 
             // set position of UI elements using method that binds them to a responsive canvas position
             SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
-            SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(50, 60));
-            SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(50, 62));
+            SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
+            SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(62, 58));
 
-            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -19));
-            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -15));
-            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 2));
-            SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 6));
-            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 10));
-            SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 14));
+            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -20));
+            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -16));
+            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 0));
+            SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 4));
+            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 12));
+            SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 16));
             SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -6));
             SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -2));
-            SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterCardGroup.Origin, 0, -17));
+            SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterShuffleCardGroup.Origin, 0, -17));
         }
         
 
@@ -121,9 +123,9 @@ namespace WizardMobile.Uwp.GamePage
             _animationsCompletedHandlers.Enqueue(action);
         }
 
-        public StackCardGroup CenterCardGroup { get; private set; }
-        public TaperedStackCardGroup LeftCenterCardGroup { get; private set; }
-        public TaperedStackCardGroup RightCenterCardGroup { get; private set; }
+        public StackCardGroup CenterShuffleCardGroup { get; private set; }
+        public TaperedStackCardGroup LeftShuffleCardGroup { get; private set; }
+        public TaperedStackCardGroup RightShuffleCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
         public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
@@ -133,6 +135,8 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup Player3StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player4CardGroup { get; private set; }
         public StackCardGroup Player4StagingCardGroup { get; private set; }
+        public StackCardGroup DeckCardGroup { get; private set; }
+        public StackCardGroup TrumpCardGroup { get; private set; }
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
@@ -174,6 +178,7 @@ namespace WizardMobile.Uwp.GamePage
             {
                 if(int.TryParse(textInput, out int bid))
                 {
+                    player_bid_input.Text = "";
                     player_bid_input.Visibility = Visibility.Collapsed;
                     player_bid_error_message.Visibility = Visibility.Collapsed;
                     this._playerBidEnteredHandler(bid);

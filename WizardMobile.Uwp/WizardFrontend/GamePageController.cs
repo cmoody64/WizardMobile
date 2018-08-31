@@ -53,8 +53,8 @@ namespace WizardMobile.Uwp.WizardFrontend
         public async Task<bool> DisplayEndRound(int roundNum)
         {
             _componentProvider.SetMessageBoxText("Round Over");
-            _componentProvider.RightCenterCardGroup.RemoveAll();
-            _componentProvider.CenterCardGroup.RemoveAll();
+            _componentProvider.DeckCardGroup.RemoveAll();
+            _componentProvider.TrumpCardGroup.RemoveAll();
 
             // clear all player statuses
             _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER1, "");
@@ -83,16 +83,16 @@ namespace WizardMobile.Uwp.WizardFrontend
         public Task<bool> DisplayTrumpCardSelected(Card trumpCard)
         {
             TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
-            _componentProvider.CenterCardGroup.Transfer
+            _componentProvider.CenterShuffleCardGroup.Transfer
             (
                 trumpCard,
-                _componentProvider.RightCenterCardGroup,
+                _componentProvider.RightShuffleCardGroup,
                 new AnimationBehavior { Duration = 0.3 }
             );
             _componentProvider.QueueAnimationsCompletedHandler(() =>
-            {
-                _componentProvider.RightCenterCardGroup.Flip(trumpCard);
-                taskCompletionSource.SetResult(true);
+            {                
+                _componentProvider.RightShuffleCardGroup.Flip(trumpCard);
+                taskCompletionSource.SetResult(true);              
             });
             _componentProvider.BeginAnimations();
             return taskCompletionSource.Task;
@@ -143,20 +143,20 @@ namespace WizardMobile.Uwp.WizardFrontend
                 var leftCard = deckToShuffle.Cards[i];
                 var rightCard = deckToShuffle.Cards[i + 1];
 
-                _componentProvider.LeftCenterCardGroup.Add(leftCard);
-                _componentProvider.RightCenterCardGroup.Add(rightCard);                
+                _componentProvider.LeftShuffleCardGroup.Add(leftCard);
+                _componentProvider.RightShuffleCardGroup.Add(rightCard);                
 
-                _componentProvider.LeftCenterCardGroup.Transfer
+                _componentProvider.LeftShuffleCardGroup.Transfer
                 (
                     leftCard,
-                    _componentProvider.CenterCardGroup,
+                    _componentProvider.CenterShuffleCardGroup,
                     new AnimationBehavior { Delay = 0.025 * i, Duration = 0.1 }
                 );
 
-                _componentProvider.RightCenterCardGroup.Transfer
+                _componentProvider.RightShuffleCardGroup.Transfer
                 (
                     rightCard,
-                    _componentProvider.CenterCardGroup,
+                    _componentProvider.CenterShuffleCardGroup,
                     new AnimationBehavior { Delay = 0.025 * i + .0125, Duration = 0.1 }
                 );
             }
@@ -181,8 +181,21 @@ namespace WizardMobile.Uwp.WizardFrontend
             }
 
             _componentProvider.Player1CardGroup.FlipAll();
+            await DisplayShiftDeckPostShuffle();
 
             return true;
+        }
+
+        private Task<bool> DisplayShiftDeckPostShuffle()
+        {
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _componentProvider.CenterShuffleCardGroup.TransferAll(_componentProvider.DeckCardGroup, new AnimationBehavior { Duration = 0.3 });
+            _componentProvider.RightShuffleCardGroup.TransferAll(_componentProvider.TrumpCardGroup, new AnimationBehavior { Duration = 0.3 });
+
+            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
+            _componentProvider.BeginAnimations();
+            return taskCompletionSource.Task;
         }
 
         private Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
@@ -196,7 +209,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 string playerName = playerDealOrder[i];
                 Card cardToTransfer = players.Find(player => player.Name == playerName).Hand[stage];
                 CardGroup destinationGroup = _playerCardGroups[playerName];
-                _componentProvider.CenterCardGroup.Transfer(cardToTransfer, destinationGroup, new AnimationBehavior
+                _componentProvider.CenterShuffleCardGroup.Transfer(cardToTransfer, destinationGroup, new AnimationBehavior
                 {
                     Duration = 0.3,
                     Delay = .125 * i,
