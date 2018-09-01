@@ -19,19 +19,22 @@ namespace WizardMobile.Uwp.GamePage
         // normalizes x and y so that they are inside of the canvas range (0->100)
         public NormalizedPosition(double x, double y)
         {
-            if (x > CanvasNormalization.MAX_X)
-                NormalizedX = CanvasNormalization.MAX_X;
-            else if (x < 0)
-                NormalizedX = 0;
-            else
-                NormalizedX = x;
+            //if (x > CanvasNormalization.MAX_X)
+            //    NormalizedX = CanvasNormalization.MAX_X;
+            //else if (x < 0)
+            //    NormalizedX = 0;
+            //else
+            //    NormalizedX = x;
 
-            if (y > CanvasNormalization.MAX_Y)
-                NormalizedY = CanvasNormalization.MAX_Y;
-            else if (y < 0)
-                NormalizedY = 0;
-            else
-                NormalizedY = y;
+            //if (y > CanvasNormalization.MAX_Y)
+            //    NormalizedY = CanvasNormalization.MAX_Y;
+            //else if (y < 0)
+            //    NormalizedY = 0;
+            //else
+            //    NormalizedY = y;
+
+            NormalizedX = x;
+            NormalizedY = y;
         }
 
         public double NormalizedX { get; }
@@ -53,19 +56,21 @@ namespace WizardMobile.Uwp.GamePage
     {
         public NormalizedSize(double width, double height)
         {
-            if (width > CanvasNormalization.MAX_X)
-                NormalizedWidth = CanvasNormalization.MAX_X;
-            else if (width < 0)
-                NormalizedWidth = 0;
-            else
-                NormalizedWidth = width;
+            //if (width > CanvasNormalization.MAX_X)
+            //    NormalizedWidth = CanvasNormalization.MAX_X;
+            //else if (width < 0)
+            //    NormalizedWidth = 0;
+            //else
+            //    NormalizedWidth = width;
 
-            if (height > CanvasNormalization.MAX_Y)
-                NormalizedHeight = CanvasNormalization.MAX_Y;
-            else if (height < 0)
-                NormalizedHeight = 0;
-            else
-                NormalizedHeight = height;
+            //if (height > CanvasNormalization.MAX_Y)
+            //    NormalizedHeight = CanvasNormalization.MAX_Y;
+            //else if (height < 0)
+            //    NormalizedHeight = 0;
+            //else
+            //    NormalizedHeight = height;
+            NormalizedWidth = width;
+            NormalizedHeight = height;
         }
 
         public double NormalizedWidth { get; }

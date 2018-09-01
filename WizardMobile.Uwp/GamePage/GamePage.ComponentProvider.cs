@@ -39,6 +39,11 @@ namespace WizardMobile.Uwp.GamePage
             Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), CardGroup.Orientation.DEGREES_270);
             DeckCardGroup = new StackCardGroup(this, new NormalizedPosition(29, 50), 0);
             TrumpCardGroup = new StackCardGroup(this, new NormalizedPosition(37, 50), 0);
+            CollapsedDiscardCardGroup = new TaperedStackCardGroup(this, GetRelativeNormalizedPosition(DiscardCardGroup.Origin, 0, 0), 0);
+            OffScreenPlayer1CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 0, 0), 0);
+            OffScreenPlayer2CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_90);
+            OffScreenPlayer3CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_180);
+            OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -127,6 +132,7 @@ namespace WizardMobile.Uwp.GamePage
         public TaperedStackCardGroup LeftShuffleCardGroup { get; private set; }
         public TaperedStackCardGroup RightShuffleCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
+        public TaperedStackCardGroup CollapsedDiscardCardGroup { get; private set; }
         public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player2CardGroup { get; private set; }
@@ -137,6 +143,10 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup Player4StagingCardGroup { get; private set; }
         public StackCardGroup DeckCardGroup { get; private set; }
         public StackCardGroup TrumpCardGroup { get; private set; }
+        public StackCardGroup OffScreenPlayer1CardGroup { get; private set; }
+        public StackCardGroup OffScreenPlayer2CardGroup { get; private set; }
+        public StackCardGroup OffScreenPlayer3CardGroup { get; private set; }
+        public StackCardGroup OffScreenPlayer4CardGroup { get; private set; }
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};

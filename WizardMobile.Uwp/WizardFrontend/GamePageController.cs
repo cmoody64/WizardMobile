@@ -74,8 +74,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         }
 
         public Task<bool> DisplayEndTrick(int trickNum)
-        {
-            // clean up trick and bid statuses
+        { 
             _componentProvider.DiscardCardGroup.RemoveAll();
             return Task.FromResult(true);
         }
@@ -233,6 +232,17 @@ namespace WizardMobile.Uwp.WizardFrontend
             // note: technically the round is not over, so the results in the current round are from the prev trick => 1 is added
             var tricksTaken = curRound.Results[winner] + 1;
             _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
+
+            // display cards grouping together (with winning card on top) and then going to winner
+            foreach(var card in curTrick.CardsPlayed)
+            {
+                //var duration = card == curTrick.WinningCard ? 0.25 : 0.2;
+                //_componentProvider.DiscardCardGroup.Transfer
+                //(
+                //    card,
+                //    _
+                //);
+            }
 
             await Task.Delay(1000);
             return true;

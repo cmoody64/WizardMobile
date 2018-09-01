@@ -26,12 +26,17 @@ namespace WizardMobile.Uwp.GamePage
         TaperedStackCardGroup LeftShuffleCardGroup { get; }
         TaperedStackCardGroup RightShuffleCardGroup { get; }
         AdjacentCardGroup DiscardCardGroup { get; }
+        TaperedStackCardGroup CollapsedDiscardCardGroup { get; }
         InteractiveAdjacentCardGroup Player1CardGroup { get; }
         AdjacentCardGroup Player2CardGroup { get; }
         AdjacentCardGroup Player3CardGroup { get; }
         AdjacentCardGroup Player4CardGroup { get; }
         StackCardGroup DeckCardGroup { get; }
         StackCardGroup TrumpCardGroup { get; }
+        StackCardGroup OffScreenPlayer1CardGroup { get; }
+        StackCardGroup OffScreenPlayer2CardGroup { get; }
+        StackCardGroup OffScreenPlayer3CardGroup { get; }
+        StackCardGroup OffScreenPlayer4CardGroup { get; }
     }
 
     // player positions for which components are provided for
