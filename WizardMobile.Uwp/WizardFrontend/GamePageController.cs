@@ -218,22 +218,6 @@ namespace WizardMobile.Uwp.WizardFrontend
             var tricksTaken = curRound.Results[winner] + 1;
             _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
 
-            // display cards grouping together (with winning card on top) and then going to winner
-            //var endOfTrickTransferOrder = curTrick
-            //    .CardsPlayed.Where(card => !card.Equals(curTrick.WinningCard))
-            //    .Concat(new[] { curTrick.WinningCard })
-            //    .ToList();
-            //for(int i = 0; i < endOfTrickTransferOrder.Count; i++)
-            //{
-            //    var card = endOfTrickTransferOrder[i];
-            //    _componentProvider.DiscardCardGroup.Transfer
-            //    (
-            //        card,
-            //        _componentProvider.CollapsedDiscardCardGroup,
-            //        new AnimationBehavior { Duration = .3, Delay = i * .3 }
-            //    );
-            //    await _componentProvider.RunQueuedAnimations();
-            //}
             _componentProvider.DiscardCardGroup.TransferAll
             (
                 _componentProvider.CollapsedDiscardCardGroup,
