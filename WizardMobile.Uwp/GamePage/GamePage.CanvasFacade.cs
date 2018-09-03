@@ -23,7 +23,6 @@ namespace WizardMobile.Uwp.GamePage
     {
         public void InitializeCanvasFacade()
         {
-            game_canvas_storyboard.Completed += this.OnGameCanvasStoryboardCompleted;
             game_canvas.Loaded += (sender, args) => _cardBitmapDecodePixelHeight = (int)(game_canvas.ActualHeight * .2);
             game_canvas.SizeChanged += OnCanvasSizeChange;                       
         }

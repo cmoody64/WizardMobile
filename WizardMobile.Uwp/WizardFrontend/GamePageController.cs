@@ -17,6 +17,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         {
             _componentProvider = componentProvider;
             _playerCardGroups = new Dictionary<string, CardGroup>();
+            _offScreenPlayerCardGroups = new Dictionary<string, CardGroup>();
             _playerOrdinals = new Dictionary<string, PlayerOrdinal>();
 
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
@@ -31,6 +32,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         private IWizardComponentProvider _componentProvider;
         private WizardEngine _engine;
         private Dictionary<string, CardGroup> _playerCardGroups; // maps player names to the corresponding hand cardGroup
+        private Dictionary<string, CardGroup> _offScreenPlayerCardGroups;
         private Dictionary<string, PlayerOrdinal> _playerOrdinals; // maps player names to PlayerOrdinals used in the componentProvider
 
         /*************** IWizardFrontend implementation ********************/
@@ -55,6 +57,10 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.SetMessageBoxText("Round Over");
             _componentProvider.DeckCardGroup.RemoveAll();
             _componentProvider.TrumpCardGroup.RemoveAll();
+            _componentProvider.OffScreenPlayer1CardGroup.RemoveAll();
+            _componentProvider.OffScreenPlayer2CardGroup.RemoveAll();
+            _componentProvider.OffScreenPlayer3CardGroup.RemoveAll();
+            _componentProvider.OffScreenPlayer4CardGroup.RemoveAll();
 
             // clear all player statuses
             _componentProvider.SetPlayerStatus(PlayerOrdinal.PLAYER1, "");
@@ -79,22 +85,18 @@ namespace WizardMobile.Uwp.WizardFrontend
             return Task.FromResult(true);
         }
 
-        public Task<bool> DisplayTrumpCardSelected(Card trumpCard)
+        public async Task<bool> DisplayTrumpCardSelected(Card trumpCard)
         {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
             _componentProvider.CenterShuffleCardGroup.Transfer
             (
                 trumpCard,
                 _componentProvider.RightShuffleCardGroup,
                 new AnimationBehavior { Duration = 0.3 }
             );
-            _componentProvider.QueueAnimationsCompletedHandler(() =>
-            {                
-                _componentProvider.RightShuffleCardGroup.Flip(trumpCard);
-                taskCompletionSource.SetResult(true);              
-            });
-            _componentProvider.BeginAnimations();
-            return taskCompletionSource.Task;
+
+            await _componentProvider.RunQueuedAnimations();
+            _componentProvider.RightShuffleCardGroup.Flip(trumpCard);
+            return true;
         }
 
         public async Task<bool> DisplayTurnInProgress(Player player)
@@ -104,9 +106,8 @@ namespace WizardMobile.Uwp.WizardFrontend
             return true;
         }
 
-        public Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
+        public async Task<bool> DisplayTurnTaken(Card cardPlayed, Player player)
         {
-            var taskCompletionSource = new TaskCompletionSource<bool>();
             var sourceCardGroup = _playerCardGroups[player.Name];
 
             if (player is AIPlayer)
@@ -119,9 +120,8 @@ namespace WizardMobile.Uwp.WizardFrontend
                 new AnimationBehavior() { Duration = 0.3, Rotations = 3 }
             );
 
-            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
-            _componentProvider.BeginAnimations();
-            return taskCompletionSource.Task;
+            await _componentProvider.RunQueuedAnimations();
+            return true;
         }
 
         public async Task<bool> DisplayPlayerBid(int bid, Player player)
@@ -132,10 +132,8 @@ namespace WizardMobile.Uwp.WizardFrontend
             return true;
         }
 
-        public Task<bool> DisplayShuffle(IReadonlyDeck deckToShuffle)
+        public async Task<bool> DisplayShuffle(IReadonlyDeck deckToShuffle)
         {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
-
             // add cards alternating to left and right center stacks
             for (int i = 0; i < deckToShuffle.Cards.Count; i += 2)
             {
@@ -143,7 +141,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 var rightCard = deckToShuffle.Cards[i + 1];
 
                 _componentProvider.LeftShuffleCardGroup.Add(leftCard);
-                _componentProvider.RightShuffleCardGroup.Add(rightCard);                
+                _componentProvider.RightShuffleCardGroup.Add(rightCard);
 
                 _componentProvider.LeftShuffleCardGroup.Transfer
                 (
@@ -160,20 +158,13 @@ namespace WizardMobile.Uwp.WizardFrontend
                 );
             }
 
-            _componentProvider.QueueAnimationsCompletedHandler(() =>
-            {
-                // complete the task
-                taskCompletionSource.SetResult(true);
-            });
-            _componentProvider.BeginAnimations();
+            await _componentProvider.RunQueuedAnimations();
 
-            return taskCompletionSource.Task;
+            return true;
         }
 
         public async Task<bool> DisplayDeal(GameContext gameContext, List<Player> players)
         {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>();
-
             for (int dealStage = 0; dealStage < gameContext.CurRound.RoundNum; dealStage++)
             {
                 await DisplaySingleDealStage(gameContext, players, dealStage);
@@ -185,23 +176,18 @@ namespace WizardMobile.Uwp.WizardFrontend
             return true;
         }
 
-        private Task<bool> DisplayShiftDeckPostShuffle()
+        private async Task<bool> DisplayShiftDeckPostShuffle()
         {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
             _componentProvider.CenterShuffleCardGroup.TransferAll(_componentProvider.DeckCardGroup, new AnimationBehavior { Duration = 0.3 });
             _componentProvider.RightShuffleCardGroup.TransferAll(_componentProvider.TrumpCardGroup, new AnimationBehavior { Duration = 0.3 });
-
-            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true));
-            _componentProvider.BeginAnimations();
-            return taskCompletionSource.Task;
+            await _componentProvider.RunQueuedAnimations();
+            return true;
         }
 
-        private Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
+        private async Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
         {
-            // complete task asynchronously so that it doesn't block
-            var taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
+
             // iterate through all players: cards for AI players are dealt face down and cards for human players face
             for (int i = 0; i < playerDealOrder.Count(); i++)
             {
@@ -216,10 +202,9 @@ namespace WizardMobile.Uwp.WizardFrontend
                 });
             }
 
-            _componentProvider.QueueAnimationsCompletedHandler(() => taskCompletionSource.SetResult(true)); 
-            _componentProvider.BeginAnimations();
+            await _componentProvider.RunQueuedAnimations();
 
-            return taskCompletionSource.Task;
+            return true;
         }
 
         public async Task<bool> DisplayTrickWinner(RoundContext curRound)
@@ -234,17 +219,36 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
 
             // display cards grouping together (with winning card on top) and then going to winner
-            foreach(var card in curTrick.CardsPlayed)
-            {
-                //var duration = card == curTrick.WinningCard ? 0.25 : 0.2;
-                //_componentProvider.DiscardCardGroup.Transfer
-                //(
-                //    card,
-                //    _
-                //);
-            }
+            //var endOfTrickTransferOrder = curTrick
+            //    .CardsPlayed.Where(card => !card.Equals(curTrick.WinningCard))
+            //    .Concat(new[] { curTrick.WinningCard })
+            //    .ToList();
+            //for(int i = 0; i < endOfTrickTransferOrder.Count; i++)
+            //{
+            //    var card = endOfTrickTransferOrder[i];
+            //    _componentProvider.DiscardCardGroup.Transfer
+            //    (
+            //        card,
+            //        _componentProvider.CollapsedDiscardCardGroup,
+            //        new AnimationBehavior { Duration = .3, Delay = i * .3 }
+            //    );
+            //    await _componentProvider.RunQueuedAnimations();
+            //}
+            _componentProvider.DiscardCardGroup.TransferAll
+            (
+                _componentProvider.CollapsedDiscardCardGroup,
+                new AnimationBehavior() { Duration = 0.2 }
+            );
+            await _componentProvider.RunQueuedAnimations();
 
-            await Task.Delay(1000);
+            var winningCardGroup = _offScreenPlayerCardGroups[curTrick.Winner.Name];
+            _componentProvider.CollapsedDiscardCardGroup.TransferAll
+            (
+                winningCardGroup,
+                new AnimationBehavior() { Duration = 0.75, Rotations = 2 }
+            );
+            await _componentProvider.RunQueuedAnimations();
+
             return true;
         }
 
@@ -320,6 +324,12 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _playerCardGroups[playerNames[1]] = _componentProvider.Player2CardGroup;
                 _playerCardGroups[playerNames[2]] = _componentProvider.Player3CardGroup;
                 _playerCardGroups[playerNames[3]] = _componentProvider.Player4CardGroup;
+
+                // cache new names in name: offScreenCardGroup dictionary
+                _offScreenPlayerCardGroups[playerNames[0]] = _componentProvider.OffScreenPlayer1CardGroup;
+                _offScreenPlayerCardGroups[playerNames[1]] = _componentProvider.OffScreenPlayer2CardGroup;
+                _offScreenPlayerCardGroups[playerNames[2]] = _componentProvider.OffScreenPlayer3CardGroup;
+                _offScreenPlayerCardGroups[playerNames[3]] = _componentProvider.OffScreenPlayer4CardGroup;
 
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
