@@ -30,8 +30,8 @@ namespace WizardMobile.Uwp.GamePage
             _animationsCompletedHandlers = new Queue<Action>();
 
             CenterShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 50), 0);
-            LeftShuffleCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(40, 50), 0);
-            RightShuffleCardGroup = new TaperedStackCardGroup(this, new NormalizedPosition(60, 50), 0);
+            LeftShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 50), 0);
+            RightShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 50), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(62, 50), 0);
             Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
             Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(4, 50), CardGroup.Orientation.DEGREES_90);
@@ -39,15 +39,16 @@ namespace WizardMobile.Uwp.GamePage
             Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), CardGroup.Orientation.DEGREES_270);
             DeckCardGroup = new StackCardGroup(this, new NormalizedPosition(29, 50), 0);
             TrumpCardGroup = new StackCardGroup(this, new NormalizedPosition(37, 50), 0);
-            CollapsedDiscardCardGroup = new TaperedStackCardGroup(this, GetRelativeNormalizedPosition(DiscardCardGroup.Origin, 0, 0), 0);
-            OffScreenPlayer1CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 0, 0), 0);
-            OffScreenPlayer2CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_90);
-            OffScreenPlayer3CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_180);
-            OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 0, 0), CardGroup.Orientation.DEGREES_270);
+            CollapsedDiscardCardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(DiscardCardGroup.Origin, 0, 0), 0);
+            OffScreenPlayer1CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 0, 20), 0);
+            OffScreenPlayer2CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, -20, 0), CardGroup.Orientation.DEGREES_90);
+            OffScreenPlayer3CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 0, -20), CardGroup.Orientation.DEGREES_180);
+            OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 20, 0), CardGroup.Orientation.DEGREES_270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
+            game_canvas_storyboard.Completed += OnAnimationsCompleted;
 
             // the size of a given card needs to only be fetched once and cached
             // all cards are the same size so the fetched size applies to all cards
@@ -104,13 +105,47 @@ namespace WizardMobile.Uwp.GamePage
             player4_status.Visibility = visibility;
         }
 
-        public void BeginAnimations()
+        public Task<bool> RunQueuedAnimations()
         {
-            var x = game_canvas_storyboard.GetCurrentState();
+            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
             game_canvas_storyboard.Children.AddRange(animationQueue);
             animationQueue.Clear();
+
+            QueueAnimationsCompletedHandler(() =>
+            {
+                game_canvas_storyboard.Stop();
+
+                foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
+                    ApplyAnimationEndValue(anim);
+
+                game_canvas_storyboard.Children.Clear();
+
+                taskCompletionSource.SetResult(true);
+            });
+
             game_canvas_storyboard.Begin();
+            return taskCompletionSource.Task;
         }
+
+        private void QueueAnimationsCompletedHandler(Action handler) => _animationsCompletedHandlers.Enqueue(handler);
+        private Queue<Action> _animationsCompletedHandlers;
+        private void OnAnimationsCompleted(object sender, object eventArgs)
+        {
+            game_canvas_storyboard.Stop();
+
+            foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
+                ApplyAnimationEndValue(anim);
+
+            game_canvas_storyboard.Children.Clear();
+            // run all queued animations completed handlers
+            while (_animationsCompletedHandlers.Count > 0)
+            {
+                var handler = _animationsCompletedHandlers.Dequeue();
+                handler();
+            }
+        }
+        
 
 
         public void OnPlayerCreationInputEntered(Action<string> playerCreationInputEnteredHandler)
@@ -123,16 +158,12 @@ namespace WizardMobile.Uwp.GamePage
             _playerBidEnteredHandler = playerBidEnteredHandler;
         }
 
-        public void QueueAnimationsCompletedHandler(Action action)
-        {
-            _animationsCompletedHandlers.Enqueue(action);
-        }
 
         public StackCardGroup CenterShuffleCardGroup { get; private set; }
-        public TaperedStackCardGroup LeftShuffleCardGroup { get; private set; }
-        public TaperedStackCardGroup RightShuffleCardGroup { get; private set; }
+        public StackCardGroup LeftShuffleCardGroup { get; private set; }
+        public StackCardGroup RightShuffleCardGroup { get; private set; }
         public AdjacentCardGroup DiscardCardGroup { get; private set; }
-        public TaperedStackCardGroup CollapsedDiscardCardGroup { get; private set; }
+        public StackCardGroup CollapsedDiscardCardGroup { get; private set; }
         public InteractiveAdjacentCardGroup Player1CardGroup { get; private set; }
         public StackCardGroup Player1StagingCardGroup { get; private set; }
         public AdjacentCardGroup Player2CardGroup { get; private set; }
@@ -150,26 +181,6 @@ namespace WizardMobile.Uwp.GamePage
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
-        private Queue<Action> _animationsCompletedHandlers;
-
-        // callback that ensures that the storyboard clears out itself after each animation group completes
-        private void OnGameCanvasStoryboardCompleted(object sender, object eventArgs)
-        {
-            var x = game_canvas_storyboard.GetCurrentState();
-            game_canvas_storyboard.Stop();
-
-            foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
-                ApplyAnimationEndValue(anim);
-
-            game_canvas_storyboard.Children.Clear();
-            // run all queued animations completed handlers
-            while (_animationsCompletedHandlers.Count > 0)
-            {
-                var handler = _animationsCompletedHandlers.Dequeue();
-                handler();
-            }
-        }
-
 
         /************************************** event handlers **********************************************/
         private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
