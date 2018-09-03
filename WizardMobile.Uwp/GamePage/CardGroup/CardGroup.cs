@@ -186,8 +186,6 @@ namespace WizardMobile.Uwp.GamePage
         // this determines the layout of a subclass
         protected abstract List<Tuple<NormalizedPosition, int /*zIndex*/>> NextOpenPositions(int numPositions);
         
-        //protected virtual void OnPreSingleCardAddition() => _curZIndex++; 
-        //protected virtual void OnPostSingleCardRemoval() { } 
         protected virtual void OnPreCardsAddition(List<UniqueDisplayCard> cardsToBeAdded) { } // called before cards are added to _displayCards
         protected virtual void OnPostCardsRemoval() { } // called after cards are removed from _displayCards
 
