@@ -177,6 +177,35 @@ namespace WizardMobile.Uwp.GamePage
             destinationGroup._displayCards.AddRange(cardsToTransfer);
         }
 
+        // sets the given card to have the highest z Index in the card group, thus displaying it on top of any other card it may overlap with
+        // returns true if successfully found and updated, false otherwise
+        public bool BringToFront(Core.Card card)
+        {
+            var displayCardIndex = _displayCards.FindIndex(displayCard => displayCard.CoreCard == card);
+            if(displayCardIndex != -1)
+            {
+                // bring to front switches the current card with the last card in displayCards and updates the zIndex accordingly (left to right)
+                // if the current card is already at the end of the list, it already has the highest zIndex - otherwise, reorder the cards
+                if(displayCardIndex < _displayCards.Count - 1)
+                {
+                    var temp = _displayCards.Last();
+                    _displayCards[_displayCards.Count - 1] = _displayCards[displayCardIndex];
+                    _displayCards[displayCardIndex] = temp;
+
+                    // iterate through all cards and assign them sequential zIndex values except for the passed in card, which is assigned the
+                    // highest zIndex of _curZIndex
+                    int zCount = 0;
+                    for (int i = 0; i < _displayCards.Count; i++)
+                    {
+                        int curZIndex = i == displayCardIndex ? _curZIndex : zCount++;
+                        _canvasFacade.UpdateCard(_displayCards[i], zIndex: zCount);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
         protected UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
         {
             return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));

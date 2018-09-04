@@ -218,6 +218,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             var tricksTaken = curRound.Results[winner] + 1;
             _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
 
+            _componentProvider.DiscardCardGroup.BringToFront(curTrick.WinningCard);
             _componentProvider.DiscardCardGroup.TransferAll
             (
                 _componentProvider.CollapsedDiscardCardGroup,
