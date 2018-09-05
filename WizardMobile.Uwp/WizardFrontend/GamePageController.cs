@@ -39,7 +39,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         public async Task<bool> DisplayStartGame()
         {
             _componentProvider.SetMessageBoxText("Game Starting");
-            _componentProvider.SetAllPersonasVisibility(true);
+            _componentProvider.SetAllPersonasVisibility(false);
             await Task.Delay(2000);            
             return true;
 
@@ -318,6 +318,7 @@ namespace WizardMobile.Uwp.WizardFrontend
 
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
+                _componentProvider.SetAllPersonasVisibility(true);
             });
 
             return taskCompletionSource.Task;

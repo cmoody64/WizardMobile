@@ -16,6 +16,7 @@ using System.IO;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using WizardMobile.Uwp.WizardFrontend;
+using Windows.System;
 
 namespace WizardMobile.Uwp.GamePage
 {
@@ -50,11 +51,6 @@ namespace WizardMobile.Uwp.GamePage
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
             game_canvas_storyboard.Completed += OnAnimationsCompleted;
 
-            // the size of a given card needs to only be fetched once and cached
-            // all cards are the same size so the fetched size applies to all cards
-            var imageSizeTask = GetCardImageSize();
-            imageSizeTask.ContinueWith(sizeTask => this._cardBitmapSize = sizeTask.Result);
-
             // set position of UI elements using method that binds them to a responsive canvas position
             SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
@@ -69,6 +65,15 @@ namespace WizardMobile.Uwp.GamePage
             SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -6));
             SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -2));
             SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterShuffleCardGroup.Origin, 0, -17));
+
+            SetUiElementNormalizedCanvasPosition(player2_avatar, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 5, -3));
+            SetUiElementNormalizedCanvasPosition(player3_avatar, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -5, -9));
+            SetUiElementNormalizedCanvasPosition(player4_avatar, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -18, -9));
+            DoAsyncInitialization().ContinueWith(task =>
+            {                
+                SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -8, -23));
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+
         }
         
 
@@ -88,21 +93,26 @@ namespace WizardMobile.Uwp.GamePage
             player_bid_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public void SetPlayerName(PlayerOrdinal player, string name) => PlayerEnumToNameElement(player).Text = name;
+        public void SetPlayerName(PlayerOrdinal player, string name) => PlayerEnumToPersonaElements(player).Name.Text = name;
 
-        public void SetPlayerStatus(PlayerOrdinal player, string status) => PlayerEnumToStatusElement(player).Text = status;
+        public void SetPlayerStatus(PlayerOrdinal player, string status) => PlayerEnumToPersonaElements(player).Status.Text = status;
 
         public void SetAllPersonasVisibility(bool isVisible)
         {
             var visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+
             player1_name.Visibility = visibility;
             player1_status.Visibility = visibility;
+            player1_avatar.Visibility = visibility;
             player2_name.Visibility = visibility;
             player2_status.Visibility = visibility;
+            player2_avatar.Visibility = visibility;
             player3_name.Visibility = visibility;
             player3_status.Visibility = visibility;
+            player3_avatar.Visibility = visibility;
             player4_name.Visibility = visibility;
             player4_status.Visibility = visibility;
+            player4_avatar.Visibility = visibility;
         }
 
         public Task<bool> RunQueuedAnimations()
@@ -145,8 +155,6 @@ namespace WizardMobile.Uwp.GamePage
                 handler();
             }
         }
-        
-
 
         public void OnPlayerCreationInputEntered(Action<string> playerCreationInputEnteredHandler)
         {
@@ -178,6 +186,13 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup OffScreenPlayer2CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer3CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer4CardGroup { get; private set; }
+
+        private string _userAccountName;
+        private string _userFirstName;
+        private string _userLastName;
+        // for performance reasons, this is determined once during initialization and cached
+        private Size _cardBitmapSize;
+        private int _cardBitmapDecodePixelHeight;
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
@@ -211,9 +226,64 @@ namespace WizardMobile.Uwp.GamePage
             }
         }
 
-        // for performance reasons, this is determined once during initialization and cached
-        private Size _cardBitmapSize;
-        private int _cardBitmapDecodePixelHeight;
+
+        // ***************************************** Helpers ********************************************/
+        private async Task<bool> DoAsyncInitialization()
+        {
+            _cardBitmapSize = await GetCardImageSize();
+
+            var userInfo = await FetchUserInfo();
+            player1_avatar.ProfilePicture = userInfo.AvatarSource;
+            player1_avatar.Initials = userInfo.Initials;
+            _userFirstName = userInfo.FirstName;
+            _userLastName = userInfo.LastName;
+            _userAccountName = userInfo.AccountName;
+
+            return true;
+        }
+
+        private static NormalizedPosition GetRelativeNormalizedPosition(NormalizedPosition relativeTo, double xOffset, double yOffset)
+        {
+            return new NormalizedPosition(relativeTo.NormalizedX + xOffset, relativeTo.NormalizedY + yOffset);
+        }
+
+        private PersonaElements PlayerEnumToPersonaElements(PlayerOrdinal player)
+        {
+            switch (player)
+            {
+                case PlayerOrdinal.PLAYER1: return new PersonaElements { Name = player1_name, Status = player1_status, Avatar = player1_avatar };
+                case PlayerOrdinal.PLAYER2: return new PersonaElements { Name = player2_name, Status = player2_status, Avatar = player2_avatar };
+                case PlayerOrdinal.PLAYER3: return new PersonaElements { Name = player3_name, Status = player3_status, Avatar = player3_avatar };
+                case PlayerOrdinal.PLAYER4: return new PersonaElements { Name = player4_name, Status = player4_status, Avatar = player4_avatar };
+                default: throw new ArgumentOutOfRangeException("PlayerEnum value out of range");
+            }
+        }
+
+        private async Task<UserInfo> FetchUserInfo()
+        {
+            IReadOnlyList<User> users = await User.FindAllAsync();
+
+            var currentUser = users.Where(p => p.AuthenticationStatus == UserAuthenticationStatus.LocallyAuthenticated &&
+                                        p.Type == UserType.LocalUser).FirstOrDefault();
+
+            var firstName = (string)await currentUser.GetPropertyAsync(KnownUserProperties.FirstName);
+            var lastName = (string)await currentUser.GetPropertyAsync(KnownUserProperties.LastName);
+            var accountName = (string)await currentUser.GetPropertyAsync(KnownUserProperties.AccountName);
+
+            var imageRef = await currentUser.GetPictureAsync(UserPictureSize.Size64x64);
+            var imageRefWithContentType = await imageRef.OpenReadAsync();
+            var imageStream = imageRefWithContentType.CloneStream();
+            var imageBitmap = new BitmapImage();
+            await imageBitmap.SetSourceAsync(imageStream);
+
+            return new UserInfo
+            {
+                AvatarSource = imageBitmap,
+                FirstName = firstName,
+                LastName = lastName,
+                AccountName = accountName
+            };
+        }
 
         // since all card images are the same size, it is only necessary to read the size of a single image
         // to know the default card image size
@@ -238,35 +308,11 @@ namespace WizardMobile.Uwp.GamePage
             return new Size(scaledWidth, scaledHeight);
         }
 
-
-        // ***************************************** Helpers ********************************************/
-        private static NormalizedPosition GetRelativeNormalizedPosition(NormalizedPosition relativeTo, double xOffset, double yOffset)
+        private class PersonaElements
         {
-            return new NormalizedPosition(relativeTo.NormalizedX + xOffset, relativeTo.NormalizedY + yOffset);
-        }
-
-        private TextBlock PlayerEnumToNameElement(PlayerOrdinal player)
-        {
-            switch(player)
-            {
-                case PlayerOrdinal.PLAYER1: return player1_name;
-                case PlayerOrdinal.PLAYER2: return player2_name;
-                case PlayerOrdinal.PLAYER3: return player3_name;
-                case PlayerOrdinal.PLAYER4: return player4_name;
-                default: throw new ArgumentOutOfRangeException($"PlayerEnum value out of range");
-            }
-        }
-
-        private TextBlock PlayerEnumToStatusElement(PlayerOrdinal player)
-        {
-            switch (player)
-            {
-                case PlayerOrdinal.PLAYER1: return player1_status;
-                case PlayerOrdinal.PLAYER2: return player2_status;
-                case PlayerOrdinal.PLAYER3: return player3_status;
-                case PlayerOrdinal.PLAYER4: return player4_status;
-                default: throw new ArgumentOutOfRangeException($"PlayerEnum value out of range");
-            }
+            public TextBlock Name { get; set; }
+            public TextBlock Status { get; set; }
+            public PersonPicture Avatar { get; set; }
         }
     }
 }

@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 using WizardMobile.Core;
 using WizardMobile.Uwp.Common;
 
@@ -20,6 +21,11 @@ namespace WizardMobile.Uwp.GamePage
             this.InitializeComponent();
             this.InitializeWizardComponentProvider();
             this.InitializeCanvasFacade();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
         }
     }
 }

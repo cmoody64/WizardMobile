@@ -17,13 +17,17 @@
             <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" FontSize="25" Text="enter a number" Visibility="Collapsed" Foreground="Red"/>
             <TextBlock x:Name="player1_name"  FontSize="26" />
             <TextBlock x:Name="player1_status"  FontSize="22" />
+            <PersonPicture x:Name="player1_avatar" />
             <TextBlock x:Name="player2_name" FontSize="26" />
             <TextBlock x:Name="player2_status" FontSize="22" />
+            <PersonPicture x:Name="player2_avatar" />
             <TextBlock x:Name="player3_name" FontSize="26" />
             <TextBlock x:Name="player3_status" FontSize="22" />
+            <PersonPicture x:Name="player3_avatar" />
             <TextBlock x:Name="player4_name" FontSize="26" />
             <TextBlock x:Name="player4_status" FontSize="22" />
             <TextBlock x:Name="game_message_box" FontSize="34"/>
+            <PersonPicture x:Name="player4_avatar" />
             <Canvas.Resources>
                 <Storyboard x:Name="game_canvas_storyboard" />
                 <BitmapImage x:Key="back_of_card" UriSource="../Assets/cards/back_of_card.png" />
