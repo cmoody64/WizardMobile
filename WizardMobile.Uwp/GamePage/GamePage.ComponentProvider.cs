@@ -56,22 +56,22 @@ namespace WizardMobile.Uwp.GamePage
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(62, 58));
 
-            SetUiElementNormalizedCanvasPosition(player1_name, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -20));
-            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -16));
-            SetUiElementNormalizedCanvasPosition(player2_name, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 0));
-            SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, 4));
-            SetUiElementNormalizedCanvasPosition(player3_name, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 12));
-            SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 16));
-            SetUiElementNormalizedCanvasPosition(player4_name, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -6));
-            SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -2));
+            SetUiElementNormalizedCanvasPosition(player1_name_container, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -20));
+            SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -15.5));
+            SetUiElementNormalizedCanvasPosition(player2_name_container, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 10, 0));
+            SetUiElementNormalizedCanvasPosition(player2_status, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 10, 4.5));
+            SetUiElementNormalizedCanvasPosition(player3_name_container, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 15));
+            SetUiElementNormalizedCanvasPosition(player3_status, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -2, 19.5));
+            SetUiElementNormalizedCanvasPosition(player4_name_container, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -6));
+            SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -1.5));
             SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterShuffleCardGroup.Origin, 0, -17));
 
-            SetUiElementNormalizedCanvasPosition(player2_avatar, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 5, -3));
-            SetUiElementNormalizedCanvasPosition(player3_avatar, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -5, -9));
-            SetUiElementNormalizedCanvasPosition(player4_avatar, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -18, -9));
+            SetUiElementNormalizedCanvasPosition(player2_avatar, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, -3));
+            SetUiElementNormalizedCanvasPosition(player3_avatar, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -4, 12));
+            SetUiElementNormalizedCanvasPosition(player4_avatar, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -17, -9));
             DoAsyncInitialization().ContinueWith(task =>
             {                
-                SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -8, -23));
+                SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -7, -23));
             }, TaskScheduler.FromCurrentSynchronizationContext());
 
         }
