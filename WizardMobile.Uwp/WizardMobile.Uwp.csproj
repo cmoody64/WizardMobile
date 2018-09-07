@@ -181,6 +181,7 @@
     <Content Include="Assets\cards\two_of_spades.png" />
     <Content Include="Assets\cards\wizard.png" />
     <Content Include="Assets\card_table_background.jpg" />
+    <Content Include="Assets\robot.PNG" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

@@ -20,27 +20,58 @@
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player1_status"  FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray"/>
-            <PersonPicture x:Name="player1_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player1_avatar" MaxHeight="42" MaxWidth="42" />
 
             <Border x:Name="player2_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player2_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player2_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player2_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player2_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
 
             <Border x:Name="player3_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player3_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player3_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player3_avatar" MaxHeight="45" MaxWidth="45" />
-            
+            <PersonPicture x:Name="player3_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
+
             <Border x:Name="player4_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player4_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player4_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player4_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player4_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
 
             <TextBlock x:Name="game_message_box" FontSize="34"/>
+
+            <Grid x:Name="scoreboard" Visibility="Collapsed" Canvas.Left="50" Canvas.Top="30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="Scores" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" />
+
+                <Grid Background="SlateGray" Grid.Row="1" Opacity="0.8" CornerRadius="4">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+                        <ColumnDefinition Width="50" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="scoreboard_player1_name" Grid.Row="0" Grid.Column="0" />
+                    <TextBlock x:Name="scoreboard_player1_score" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="scoreboard_player2_name" Grid.Row="1" Grid.Column="0" />
+                    <TextBlock x:Name="scoreboard_player2_score" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="scoreboard_player3_name" Grid.Row="2" Grid.Column="0" />
+                    <TextBlock x:Name="scoreboard_player3_score" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="scoreboard_player4_name" Grid.Row="3" Grid.Column="0" />
+                    <TextBlock x:Name="scoreboard_player4_score" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" />
+                </Grid>
+
+            </Grid>
 
             <Canvas.Resources>
                 <Storyboard x:Name="game_canvas_storyboard" />

@@ -73,7 +73,6 @@ namespace WizardMobile.Uwp.GamePage
             {                
                 SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -7, -23));
             }, TaskScheduler.FromCurrentSynchronizationContext());
-
         }
         
 
@@ -93,9 +92,15 @@ namespace WizardMobile.Uwp.GamePage
             player_bid_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public void SetPlayerName(PlayerOrdinal player, string name) => PlayerEnumToPersonaElements(player).Name.Text = name;
+        public void SetPlayerName(PlayerOrdinal player, string name)
+        {
+            PlayerEnumToUserElements(player).Name.Text = name;
+            PlayerEnumToUserElements(player).ScoreboardName.Text = name;
+        }
 
-        public void SetPlayerStatus(PlayerOrdinal player, string status) => PlayerEnumToPersonaElements(player).Status.Text = status;
+        public void SetPlayerStatus(PlayerOrdinal player, string status) => PlayerEnumToUserElements(player).Status.Text = status;
+
+        public void SetPlayerScore(PlayerOrdinal player, int score) => PlayerEnumToUserElements(player).ScoreboardScore.Text = score.ToString();
 
         public void SetAllPersonasVisibility(bool isVisible)
         {
@@ -113,6 +118,12 @@ namespace WizardMobile.Uwp.GamePage
             player4_name.Visibility = visibility;
             player4_status.Visibility = visibility;
             player4_avatar.Visibility = visibility;
+        }
+
+        public void SetScoreboardVisibility(bool isVisible)
+        {
+            var visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            scoreboard.Visibility = Visibility;
         }
 
         public Task<bool> RunQueuedAnimations()
@@ -239,6 +250,8 @@ namespace WizardMobile.Uwp.GamePage
             _userLastName = userInfo.LastName;
             _userAccountName = userInfo.AccountName;
 
+            player_creation_input.Text = userInfo.FirstName;
+
             return true;
         }
 
@@ -247,14 +260,18 @@ namespace WizardMobile.Uwp.GamePage
             return new NormalizedPosition(relativeTo.NormalizedX + xOffset, relativeTo.NormalizedY + yOffset);
         }
 
-        private PersonaElements PlayerEnumToPersonaElements(PlayerOrdinal player)
+        private UserElements PlayerEnumToUserElements(PlayerOrdinal player)
         {
             switch (player)
             {
-                case PlayerOrdinal.PLAYER1: return new PersonaElements { Name = player1_name, Status = player1_status, Avatar = player1_avatar };
-                case PlayerOrdinal.PLAYER2: return new PersonaElements { Name = player2_name, Status = player2_status, Avatar = player2_avatar };
-                case PlayerOrdinal.PLAYER3: return new PersonaElements { Name = player3_name, Status = player3_status, Avatar = player3_avatar };
-                case PlayerOrdinal.PLAYER4: return new PersonaElements { Name = player4_name, Status = player4_status, Avatar = player4_avatar };
+                case PlayerOrdinal.PLAYER1: return new UserElements { Name = player1_name, Status = player1_status, Avatar = player1_avatar,
+                    ScoreboardName = scoreboard_player1_name, ScoreboardScore = scoreboard_player1_score};
+                case PlayerOrdinal.PLAYER2: return new UserElements { Name = player2_name, Status = player2_status, Avatar = player2_avatar,
+                    ScoreboardName = scoreboard_player2_name, ScoreboardScore = scoreboard_player2_score };
+                case PlayerOrdinal.PLAYER3: return new UserElements { Name = player3_name, Status = player3_status, Avatar = player3_avatar,
+                    ScoreboardName = scoreboard_player3_name, ScoreboardScore = scoreboard_player3_score };
+                case PlayerOrdinal.PLAYER4: return new UserElements { Name = player4_name, Status = player4_status, Avatar = player4_avatar,
+                    ScoreboardName = scoreboard_player4_name, ScoreboardScore = scoreboard_player4_score };
                 default: throw new ArgumentOutOfRangeException("PlayerEnum value out of range");
             }
         }
@@ -308,11 +325,13 @@ namespace WizardMobile.Uwp.GamePage
             return new Size(scaledWidth, scaledHeight);
         }
 
-        private class PersonaElements
+        private class UserElements
         {
             public TextBlock Name { get; set; }
             public TextBlock Status { get; set; }
             public PersonPicture Avatar { get; set; }
+            public TextBlock ScoreboardName { get; set; }
+            public TextBlock ScoreboardScore { get; set; }
         }
     }
 }
