@@ -16,8 +16,9 @@ namespace WizardMobile.Uwp.GamePage
         void SetAllPersonasVisibility(bool isVisible); // Persona refers to the element grouping of player name, status, and avatar
         void SetPlayerName(PlayerOrdinal player, string name);
         void SetPlayerStatus(PlayerOrdinal player, string status); // status referred to round score vs bids (e.g. "2/4")
-        Task<bool> RunQueuedAnimations();
-        //void QueueAnimationsCompletedHandler(Action action);        
+        void SetPlayerScore(PlayerOrdinal player, int score);
+        void SetScoreboardVisibility(bool isVisible);
+        Task<bool> RunQueuedAnimations();       
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
