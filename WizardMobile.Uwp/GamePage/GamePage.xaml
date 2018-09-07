@@ -20,25 +20,25 @@
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player1_status"  FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray"/>
-            <PersonPicture x:Name="player1_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player1_avatar" MaxHeight="42" MaxWidth="42" />
 
             <Border x:Name="player2_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player2_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player2_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player2_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player2_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
 
             <Border x:Name="player3_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player3_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player3_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player3_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player3_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
             
             <Border x:Name="player4_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player4_name" FontSize="26" Margin="4" />
             </Border>
             <TextBlock x:Name="player4_status" FontSize="22" IsColorFontEnabled="True" Foreground="SlateGray" />
-            <PersonPicture x:Name="player4_avatar" MaxHeight="45" MaxWidth="45" />
+            <PersonPicture x:Name="player4_avatar" MaxHeight="42" MaxWidth="42" ProfilePicture="../Assets/robot.png" />
 
             <TextBlock x:Name="game_message_box" FontSize="34"/>
 

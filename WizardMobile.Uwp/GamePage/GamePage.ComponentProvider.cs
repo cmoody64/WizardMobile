@@ -73,7 +73,6 @@ namespace WizardMobile.Uwp.GamePage
             {                
                 SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -7, -23));
             }, TaskScheduler.FromCurrentSynchronizationContext());
-
         }
         
 
@@ -238,6 +237,8 @@ namespace WizardMobile.Uwp.GamePage
             _userFirstName = userInfo.FirstName;
             _userLastName = userInfo.LastName;
             _userAccountName = userInfo.AccountName;
+
+            player_creation_input.Text = userInfo.FirstName;
 
             return true;
         }
