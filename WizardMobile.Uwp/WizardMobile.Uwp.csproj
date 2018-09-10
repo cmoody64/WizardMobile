@@ -96,7 +96,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Common\AnimationHelper.cs" />
-    <Compile Include="Common\AnimationPropertyStrings.cs" />
+    <Compile Include="Common\AnimationProperties.cs" />
     <Compile Include="Common\DispatcherTaskExtensions.cs" />
     <Compile Include="Common\TimelineCollectionExtensions.cs" />
     <Compile Include="GamePage\CanvasNormalization.cs" />

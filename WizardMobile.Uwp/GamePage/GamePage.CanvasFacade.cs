@@ -157,19 +157,9 @@ namespace WizardMobile.Uwp.GamePage
             var targetProperty = Storyboard.GetTargetProperty(animation);
 
             var element = FindName(imageName) as FrameworkElement;
-            var animEndvalue = animation.To ?? 0.0;
 
-            // set the end property of the animation to the end property of the image
-            if (targetProperty == AnimationPropertyStrings.CANVAS_TOP)
-                Canvas.SetTop(element, animEndvalue);
-            else if (targetProperty == AnimationPropertyStrings.CANVAS_LEFT)
-                Canvas.SetLeft(element, animEndvalue);
-            else if (targetProperty == AnimationPropertyStrings.ANGLE)
-                ((RotateTransform)element.RenderTransform).Angle = animEndvalue;
-            else if (targetProperty == AnimationPropertyStrings.OPACITY)
-                element.Opacity += animation.By.Value;
-            else if (targetProperty == AnimationPropertyStrings.FONT_SIZE)
-                (element as TextBlock).FontSize += animation.By.Value;
+            var animationCompletedCallback = AnimationProperties.AnimationCompletedCallbacks[targetProperty];
+            animationCompletedCallback(animation, element);
         }
 
         private static void SetCardImageAngle(Image cardImage, double angle)

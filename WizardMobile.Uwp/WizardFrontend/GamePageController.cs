@@ -258,7 +258,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
             {
                 TargetElementName = "scoreboard_container",
-                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationPropertyStrings.OPACITY, -.5 } },
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, -.5 } },
                 Duration = 0.5
             });
 
@@ -267,7 +267,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             {
                 TargetElementName = targetName,
                 Duration = 0.5,
-                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationPropertyStrings.FONT_SIZE, fontSize } }
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.FONT_SIZE, fontSize } }
             };
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", 30));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", 20));

@@ -39,7 +39,7 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(leftPropAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(leftPropAnimation, AnimationPropertyStrings.CANVAS_LEFT);
+                Storyboard.SetTargetProperty(leftPropAnimation, AnimationProperties.CANVAS_LEFT);
 
                 animations.Add(leftPropAnimation);
             }
@@ -59,7 +59,7 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(topPropAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(topPropAnimation, AnimationPropertyStrings.CANVAS_TOP);                
+                Storyboard.SetTargetProperty(topPropAnimation, AnimationProperties.CANVAS_TOP);                
 
                 animations.Add(topPropAnimation);
             }
@@ -83,7 +83,7 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(rotationAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(rotationAnimation, AnimationPropertyStrings.ANGLE);
+                Storyboard.SetTargetProperty(rotationAnimation, AnimationProperties.ANGLE);
 
                 animations.Add(rotationAnimation);
             }
