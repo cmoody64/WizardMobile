@@ -83,10 +83,12 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(rotationAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
+                Storyboard.SetTargetProperty(rotationAnimation, "(FrameworkElement.RenderTransform).(RotateTransform.Angle)");
 
                 animations.Add(rotationAnimation);
             }
+
+            animReq
 
             return animations;
         }
