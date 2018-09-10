@@ -10,7 +10,7 @@ using WizardMobile.Uwp.Common;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public interface ICanvasFacade
+    public interface ICardCanvasProvider: IAnimationProvider
     {
         void AddCard
         (
@@ -29,8 +29,6 @@ namespace WizardMobile.Uwp.GamePage
         );
         void RemoveCard(UniqueDisplayCard card);
         Task<NormalizedSize> GetNormalizedCardImageSize();
-        void QueueAnimationRequest(AnimationRequest animation);
-        void QueueAnimationRequests(IEnumerable<AnimationRequest> animations);
         event Action<UniqueDisplayCard> CardClicked; // fires when any card is clicked, passing the card to the handler
         event Action<UniqueDisplayCard> CardPointerEntered;
         event Action<UniqueDisplayCard> CardPointerExited;

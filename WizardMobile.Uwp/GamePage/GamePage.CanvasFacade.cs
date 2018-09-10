@@ -19,7 +19,7 @@ using WizardMobile.Uwp.WizardFrontend;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public sealed partial class GamePage: ICanvasFacade
+    public sealed partial class GamePage: ICardCanvasProvider
     {
         public void InitializeCanvasFacade()
         {
@@ -94,9 +94,9 @@ namespace WizardMobile.Uwp.GamePage
 
         }
 
-        public void QueueAnimationRequest(AnimationRequest animationRequest)
+        public void QueueAnimationRequest(NamedAnimationRequest animationRequest)
         {
-            Image targetImage = FindName(animationRequest.ImageGuid) as Image;
+            Image targetImage = FindName(animationRequest.TargetElementName) as Image;
             Point destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
@@ -106,7 +106,7 @@ namespace WizardMobile.Uwp.GamePage
             RegisterElementCanvasPosition(targetImage, animationRequest.Destination, _cardBitmapSize);
         }
 
-        public void QueueAnimationRequests(IEnumerable<AnimationRequest> animations)
+        public void QueueAnimationRequests(IEnumerable<NamedAnimationRequest> animations)
         {
             foreach (var animation in animations)
                 QueueAnimationRequest(animation);

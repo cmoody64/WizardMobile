@@ -20,7 +20,7 @@ using Windows.System;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public sealed partial class GamePage: IWizardComponentProvider, ICanvasFacade
+    public sealed partial class GamePage: IWizardComponentProvider
     {
         private GamePageController _gamePageController;
 

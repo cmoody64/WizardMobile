@@ -17,7 +17,7 @@ namespace WizardMobile.Uwp.GamePage
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICanvasFacade canvasFacade, NormalizedPosition origin, Orientation orientation)
+        public CardGroup(ICardCanvasProvider canvasFacade, NormalizedPosition origin, Orientation orientation)
         {
             _canvasFacade = canvasFacade;
             _displayCards = new List<UniqueDisplayCard>();
@@ -34,7 +34,7 @@ namespace WizardMobile.Uwp.GamePage
         public double OrientationDegress { get; }
 
         protected Orientation _orientation;
-        protected ICanvasFacade _canvasFacade;
+        protected ICardCanvasProvider _canvasFacade;
         protected List<UniqueDisplayCard> _displayCards;
         protected NormalizedSize _cardImageSize;
         protected int _curZIndex;
@@ -119,13 +119,13 @@ namespace WizardMobile.Uwp.GamePage
                 // rotations are rounded up so that the card is flush with the destination
                 double resolvedRotations = ResolveRotations(destinationGroup, animationBehavior);
 
-                var transferAnimRequest = new AnimationRequest()
+                var transferAnimRequest = new NamedAnimationRequest()
                 {
                     Destination = destinationPoint,
                     Duration = animationBehavior.Duration,
                     Delay = animationBehavior.Delay,
                     Rotations = resolvedRotations,
-                    ImageGuid = cardToTransfer.Id
+                    TargetElementName = cardToTransfer.Id
                 };
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);
 
@@ -157,13 +157,13 @@ namespace WizardMobile.Uwp.GamePage
                 var destinationPoint = newPositions[i].Item1;
                 var newZIndex = newPositions[i].Item2;
 
-                var transferAnimRequest = new AnimationRequest()
+                var transferAnimRequest = new NamedAnimationRequest()
                 {
                     Destination = destinationPoint,
                     Duration = animationBehavior.Duration,
                     Delay = animationBehavior.Delay,
                     Rotations = resolvedRotations,
-                    ImageGuid = cardToTransfer.Id
+                    TargetElementName = cardToTransfer.Id
                 };
                 _canvasFacade.QueueAnimationRequest(transferAnimRequest);      
 
