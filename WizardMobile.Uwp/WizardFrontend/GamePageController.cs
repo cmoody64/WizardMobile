@@ -255,6 +255,13 @@ namespace WizardMobile.Uwp.WizardFrontend
                 Duration = 0.5                
             });
 
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationPropertyStrings.OPACITY, -.5 } },
+                Duration = 0.5
+            });
+
             // increase font size of scoreboard
             Func<string, double, NamedAnimationRequest> makeScoreboardTextAnimation = (string targetName, double fontSize) => new NamedAnimationRequest
             {

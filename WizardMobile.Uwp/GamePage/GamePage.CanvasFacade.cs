@@ -166,6 +166,10 @@ namespace WizardMobile.Uwp.GamePage
                 Canvas.SetLeft(element, animEndvalue);
             else if (targetProperty == AnimationPropertyStrings.ANGLE)
                 ((RotateTransform)element.RenderTransform).Angle = animEndvalue;
+            else if (targetProperty == AnimationPropertyStrings.OPACITY)
+                element.Opacity += animation.By.Value;
+            else if (targetProperty == AnimationPropertyStrings.FONT_SIZE)
+                (element as TextBlock).FontSize += animation.By.Value;
         }
 
         private static void SetCardImageAngle(Image cardImage, double angle)
