@@ -42,7 +42,7 @@
 
             <TextBlock x:Name="game_message_box" FontSize="34"/>
 
-            <Grid x:Name="scoreboard" Visibility="Collapsed" Canvas.Left="50" Canvas.Top="30">
+            <Grid x:Name="scoreboard_container" Visibility="Collapsed" Canvas.Left="50" Canvas.Top="30">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />

@@ -123,7 +123,7 @@ namespace WizardMobile.Uwp.GamePage
         public void SetScoreboardVisibility(bool isVisible)
         {
             var visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-            scoreboard.Visibility = Visibility;
+            scoreboard_container.Visibility = Visibility;
         }
 
         public Task<bool> RunQueuedAnimations()

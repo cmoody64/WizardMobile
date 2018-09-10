@@ -237,15 +237,26 @@ namespace WizardMobile.Uwp.WizardFrontend
             return true;
         }
 
-        public Task<bool> DisplayRoundScores(GameContext gameContext)
+        public async Task<bool> DisplayRoundScores(GameContext gameContext)
         {
+            // update scoreboard text
             foreach(var playerScorePair in gameContext.PlayerScores)
             {
                 var player = playerScorePair.Key;
                 var score = playerScorePair.Value;
                 _componentProvider.SetPlayerScore(_playerOrdinals[player.Name], score);
             }
-            return Task.FromResult(true);
+
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                Destination = new NormalizedPosition(50, 50),
+                Duration = 0.5                
+            });
+
+            await _componentProvider.RunQueuedAnimations();
+
+            return true;
         }
 
         public async Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
