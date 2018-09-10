@@ -24,11 +24,11 @@ namespace WizardMobile.Uwp.Common
             var destination = animReq.Destination;
 
             // position animations (Canvas.Left and Canvas.Top)
-            if (destination.X != curLocation.X)
+            if (destination.HasValue && destination.Value.X != curLocation.X)
             {
                 var leftPropAnimation = new DoubleAnimation();
                 leftPropAnimation.From = curLocation.X;
-                leftPropAnimation.To = destination.X;
+                leftPropAnimation.To = destination.Value.X;
                 leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
@@ -44,11 +44,11 @@ namespace WizardMobile.Uwp.Common
                 animations.Add(leftPropAnimation);
             }
 
-            if (destination.Y != curLocation.Y)
+            if (destination.HasValue && destination.Value.Y != curLocation.Y)
             {
                 var topPropAnimation = new DoubleAnimation();
                 topPropAnimation.From = curLocation.Y;
-                topPropAnimation.To = destination.Y;
+                topPropAnimation.To = destination.Value.Y;
                 topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 topPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
@@ -107,7 +107,7 @@ namespace WizardMobile.Uwp.Common
             return animations;
         }
 
-        public static InflatedAnimationRequest InflateAnimationRequest(NamedAnimationRequest animRequest, FrameworkElement targetElement, Point destination)
+        public static InflatedAnimationRequest InflateAnimationRequest(NamedAnimationRequest animRequest, FrameworkElement targetElement,Point? destination)
         {
             return new InflatedAnimationRequest
             {
@@ -115,7 +115,8 @@ namespace WizardMobile.Uwp.Common
                 Delay = animRequest.Delay,
                 Duration = animRequest.Duration,
                 Rotations = animRequest.Rotations,
-                TargetElement = targetElement
+                TargetElement = targetElement,
+                AdditionalBehaviors = animRequest.AdditionalBehaviors
             };
         }
     }
@@ -136,7 +137,7 @@ namespace WizardMobile.Uwp.Common
     // also contains a Destination point member that corresponds directly to a canvas position
     public class InflatedAnimationRequest: AnimationBehavior
     {
-        public Point Destination { get; set; }
+        public Point? Destination { get; set; }
         public FrameworkElement TargetElement { get; set; }
     }
 

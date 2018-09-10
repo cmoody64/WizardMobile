@@ -247,12 +247,30 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _componentProvider.SetPlayerScore(_playerOrdinals[player.Name], score);
             }
 
+            // translate scoreboard
             _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
             {
                 TargetElementName = "scoreboard_container",
                 Destination = new NormalizedPosition(50, 50),
                 Duration = 0.5                
             });
+
+            // increase font size of scoreboard
+            Func<string, double, NamedAnimationRequest> makeScoreboardTextAnimation = (string targetName, double fontSize) => new NamedAnimationRequest
+            {
+                TargetElementName = targetName,
+                Duration = 0.5,
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationPropertyStrings.FONT_SIZE, fontSize } }
+            };
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", 30));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_score", 20));
 
             await _componentProvider.RunQueuedAnimations();
 

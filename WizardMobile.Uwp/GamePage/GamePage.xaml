@@ -48,7 +48,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Scores" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" />
+                <TextBlock x:Name="scoreboard_title" Text="Scores" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" />
 
                 <Grid Background="SlateGray" Grid.Row="1" Opacity="0.8" CornerRadius="4">
                     <Grid.RowDefinitions>
