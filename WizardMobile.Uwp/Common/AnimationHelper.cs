@@ -39,7 +39,7 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(leftPropAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
+                Storyboard.SetTargetProperty(leftPropAnimation, AnimationPropertyStrings.CANVAS_LEFT);
 
                 animations.Add(leftPropAnimation);
             }
@@ -59,7 +59,7 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(topPropAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");                
+                Storyboard.SetTargetProperty(topPropAnimation, AnimationPropertyStrings.CANVAS_TOP);                
 
                 animations.Add(topPropAnimation);
             }
@@ -83,12 +83,26 @@ namespace WizardMobile.Uwp.Common
                 };
 
                 Storyboard.SetTargetName(rotationAnimation, targetElement.Name);
-                Storyboard.SetTargetProperty(rotationAnimation, "(FrameworkElement.RenderTransform).(RotateTransform.Angle)");
+                Storyboard.SetTargetProperty(rotationAnimation, AnimationPropertyStrings.ANGLE);
 
                 animations.Add(rotationAnimation);
             }
 
-            animReq
+            foreach(var animBehavior in animReq.AdditionalBehaviors)
+            {
+                var animation = new DoubleAnimation();
+                animation.By = animBehavior.Value;
+                animation.Duration = TimeSpan.FromSeconds(duration);
+                animation.BeginTime = TimeSpan.FromSeconds(delay);
+                animation.EasingFunction = new ExponentialEase()
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Exponent = 4
+                };
+                Storyboard.SetTargetName(animation, targetElement.Name);
+                Storyboard.SetTargetProperty(animation, animBehavior.Key);
+                animations.Add(animation);
+            }
 
             return animations;
         }
@@ -113,7 +127,7 @@ namespace WizardMobile.Uwp.Common
         public double Rotations { get; set; }
         public double Duration { get; set; } // length of animation in seconds
         public double Delay { get; set; } // seconds before animation begins
-        public Dictionary<string, double> AdditionalBehaviors; // maps property string to animation "by" value
+        public Dictionary<string, double> AdditionalBehaviors = new Dictionary<string, double>(); // maps property string to animation "by" value
     }
 
     // Instead of containing a named reference to a xaml element, this request contains an inflated element

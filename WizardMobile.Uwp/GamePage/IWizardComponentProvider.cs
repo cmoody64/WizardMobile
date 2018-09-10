@@ -22,7 +22,7 @@ namespace WizardMobile.Uwp.GamePage
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
         // named component references
-        string ScoreboardContainerName { get; }
+        //string ScoreboardContainerName { get; }
 
 
         // card groups 
