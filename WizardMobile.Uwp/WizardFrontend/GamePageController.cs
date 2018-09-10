@@ -239,6 +239,12 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         public Task<bool> DisplayRoundScores(GameContext gameContext)
         {
+            foreach(var playerScorePair in gameContext.PlayerScores)
+            {
+                var player = playerScorePair.Key;
+                var score = playerScorePair.Value;
+                _componentProvider.SetPlayerScore(_playerOrdinals[player.Name], score);
+            }
             return Task.FromResult(true);
         }
 
@@ -297,6 +303,12 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER3, playerNames[2]);
                 _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER4, playerNames[3]);
 
+                // initialize scores to 0
+                _componentProvider.SetPlayerScore(PlayerOrdinal.PLAYER1, 0);
+                _componentProvider.SetPlayerScore(PlayerOrdinal.PLAYER2, 0);
+                _componentProvider.SetPlayerScore(PlayerOrdinal.PLAYER3, 0);
+                _componentProvider.SetPlayerScore(PlayerOrdinal.PLAYER4, 0);
+
 
                 // cache new names in name: playerOrdinal dictionary
                 _playerOrdinals[playerNames[0]] = PlayerOrdinal.PLAYER1;
@@ -319,6 +331,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
                 _componentProvider.SetAllPersonasVisibility(true);
+                _componentProvider.SetScoreboardVisibility(true);
             });
 
             return taskCompletionSource.Task;
