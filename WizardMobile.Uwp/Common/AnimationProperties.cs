@@ -16,7 +16,7 @@ namespace WizardMobile.Uwp.Common
         public static string CANVAS_TOP => "(Canvas.Top)";
         public static string ANGLE => "(FrameworkElement.RenderTransform).(RotateTransform.Angle)";
         public static string SCALE_X => "(FrameworkElement.RenderTransform).(ScaleTransform.ScaleX)";
-        public static string SCALE_Y => "(FrameworkElement.RenderTransform).(ScaleTransform.ScaleY)";
+        public static string SCALE_Y => "(TextBlock.RenderTransform).(ScaleTransform.ScaleY)";
         public static string OPACITY => "(FrameworkElement.Opacity)";
         public static string FONT_SIZE => "(TextBlock.FontSize)";
 
@@ -43,17 +43,17 @@ namespace WizardMobile.Uwp.Common
 
         private static void OnAngleAnimationComplete(DoubleAnimation animation, FrameworkElement element)
         {
-            ((RotateTransform)element.RenderTransform).Angle = animation.To ?? 0.0;
+            ((RotateTransform)element.RenderTransform).Angle = animation.To ?? 0.0;             
         }
 
         private static void OnScaleXAnimationComplete(DoubleAnimation animation, FrameworkElement element)
         {
-            
+            ((ScaleTransform)element.RenderTransform).ScaleX += animation.By ?? 0.0;
         }
 
         private static void OnScaleYAnimationComplete(DoubleAnimation animation, FrameworkElement element)
         {
-
+            ((ScaleTransform)element.RenderTransform).ScaleY += animation.By ?? 0.0;
         }
 
         private static void OnOpacityAnimationComplete(DoubleAnimation animation, FrameworkElement element)
@@ -63,7 +63,7 @@ namespace WizardMobile.Uwp.Common
 
         private static void OnFontSizeAnimationComplete(DoubleAnimation animation, FrameworkElement element)
         {
-
+            (element as TextBlock).FontSize += animation.By ?? 0.0;
         }
     }
 }

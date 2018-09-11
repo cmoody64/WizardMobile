@@ -21,8 +21,8 @@ namespace WizardMobile.Uwp.GamePage
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
-        // named component references
-        //string ScoreboardContainerName { get; }
+        double OPACITY_HIGH { get; }
+        double OPACITY_ZERO { get; }
 
 
         // card groups 

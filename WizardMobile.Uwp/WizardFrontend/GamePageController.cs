@@ -252,14 +252,14 @@ namespace WizardMobile.Uwp.WizardFrontend
             {
                 TargetElementName = "scoreboard_container",
                 Destination = new NormalizedPosition(50, 50),
-                Duration = 0.5                
+                Duration = 0.2  
             });
 
             _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
             {
                 TargetElementName = "scoreboard_container",
-                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, -.5 } },
-                Duration = 0.5
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, _componentProvider.OPACITY_HIGH } },
+                Duration = 0.2
             });
 
             // increase font size of scoreboard
@@ -269,7 +269,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 Duration = 0.5,
                 AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.FONT_SIZE, fontSize } }
             };
-            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", 30));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", 20));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", 20));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_score", 20));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_name", 20));
@@ -278,6 +278,35 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_score", 20));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_name", 20));
             _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_score", 20));
+
+            await _componentProvider.RunQueuedAnimations();
+            await Task.Delay(1500);
+
+            // translate scoreboard back to original position
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                Destination = new NormalizedPosition(7, 7),
+                Duration = 0.2
+            });
+
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, -_componentProvider.OPACITY_HIGH } },
+                Duration = 0.2
+            });
+
+            // increase font size of scoreboard
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_score", -20));
 
             await _componentProvider.RunQueuedAnimations();
 
@@ -367,7 +396,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
                 _componentProvider.SetAllPersonasVisibility(true);
-                _componentProvider.SetScoreboardVisibility(true);
+                _componentProvider.SetScoreboardVisibility(false);
             });
 
             return taskCompletionSource.Task;

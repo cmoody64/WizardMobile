@@ -66,6 +66,8 @@ namespace WizardMobile.Uwp.GamePage
             SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -1.5));
             SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterShuffleCardGroup.Origin, 0, -17));
 
+            SetUiElementNormalizedCanvasPosition(scoreboard_container, new NormalizedPosition(7, 7));
+
             SetUiElementNormalizedCanvasPosition(player2_avatar, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, -3));
             SetUiElementNormalizedCanvasPosition(player3_avatar, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -4, 12));
             SetUiElementNormalizedCanvasPosition(player4_avatar, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -17, -9));
@@ -122,8 +124,8 @@ namespace WizardMobile.Uwp.GamePage
 
         public void SetScoreboardVisibility(bool isVisible)
         {
-            var visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
-            scoreboard_container.Visibility = Visibility;
+            var opacity = isVisible ? OPACITY_HIGH : OPACITY_ZERO;
+            scoreboard_container.Opacity = opacity;
         }
 
         public Task<bool> RunQueuedAnimations()
@@ -197,6 +199,9 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup OffScreenPlayer2CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer3CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer4CardGroup { get; private set; }
+
+        public double OPACITY_HIGH => 0.8;
+        public double OPACITY_ZERO => 0.0;
 
         private string _userAccountName;
         private string _userFirstName;

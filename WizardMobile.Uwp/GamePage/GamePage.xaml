@@ -42,7 +42,7 @@
 
             <TextBlock x:Name="game_message_box" FontSize="34"/>
 
-            <Grid x:Name="scoreboard_container" Visibility="Collapsed" Canvas.Left="50" Canvas.Top="30">
+            <Grid x:Name="scoreboard_container" Opacity="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -58,8 +58,8 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="scoreboard_player1_name" Grid.Row="0" Grid.Column="0" />
                     <TextBlock x:Name="scoreboard_player1_score" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />

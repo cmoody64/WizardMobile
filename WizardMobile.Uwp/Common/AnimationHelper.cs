@@ -94,6 +94,7 @@ namespace WizardMobile.Uwp.Common
                 animation.By = animBehavior.Value;
                 animation.Duration = TimeSpan.FromSeconds(duration);
                 animation.BeginTime = TimeSpan.FromSeconds(delay);
+                animation.EnableDependentAnimation = true;
                 animation.EasingFunction = new ExponentialEase()
                 {
                     EasingMode = EasingMode.EaseOut,
