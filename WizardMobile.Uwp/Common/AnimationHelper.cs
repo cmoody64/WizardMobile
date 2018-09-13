@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Windows.Foundation;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -14,20 +15,20 @@ namespace WizardMobile.Uwp.Common
         // creates the animation objects associated with translating / rotating a single card
         public static List<DoubleAnimation> ComposeImageAnimations(InflatedAnimationRequest animReq)
         {
-            var image = animReq.Image ?? throw new ArgumentNullException("ImageAnimationRequest.Image may not be null");
+            var targetElement = animReq.TargetElement ?? throw new ArgumentNullException("ImageAnimationRequest.Image may not be null");
             var duration = animReq.Duration;
             var delay = animReq.Delay;
 
             var animations = new List<DoubleAnimation>();
-            Point curLocation = new Point((double)image.GetValue(Canvas.LeftProperty), (double)image.GetValue(Canvas.TopProperty));
+            Point curLocation = new Point((double)targetElement.GetValue(Canvas.LeftProperty), (double)targetElement.GetValue(Canvas.TopProperty));
             var destination = animReq.Destination;
 
             // position animations (Canvas.Left and Canvas.Top)
-            if (destination.X != curLocation.X)
+            if (destination.HasValue && destination.Value.X != curLocation.X)
             {
                 var leftPropAnimation = new DoubleAnimation();
                 leftPropAnimation.From = curLocation.X;
-                leftPropAnimation.To = destination.X;
+                leftPropAnimation.To = destination.Value.X;
                 leftPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 leftPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
@@ -37,17 +38,17 @@ namespace WizardMobile.Uwp.Common
                     Exponent = 4
                 };
 
-                Storyboard.SetTargetName(leftPropAnimation, image.Name);
-                Storyboard.SetTargetProperty(leftPropAnimation, "(Canvas.Left)");
+                Storyboard.SetTargetName(leftPropAnimation, targetElement.Name);
+                Storyboard.SetTargetProperty(leftPropAnimation, AnimationProperties.CANVAS_LEFT);
 
                 animations.Add(leftPropAnimation);
             }
 
-            if (destination.Y != curLocation.Y)
+            if (destination.HasValue && destination.Value.Y != curLocation.Y)
             {
                 var topPropAnimation = new DoubleAnimation();
                 topPropAnimation.From = curLocation.Y;
-                topPropAnimation.To = destination.Y;
+                topPropAnimation.To = destination.Value.Y;
                 topPropAnimation.Duration = TimeSpan.FromSeconds(duration);
                 topPropAnimation.BeginTime = TimeSpan.FromSeconds(delay);
 
@@ -57,18 +58,18 @@ namespace WizardMobile.Uwp.Common
                     Exponent = 4
                 };
 
-                Storyboard.SetTargetName(topPropAnimation, image.Name);
-                Storyboard.SetTargetProperty(topPropAnimation, "(Canvas.Top)");                
+                Storyboard.SetTargetName(topPropAnimation, targetElement.Name);
+                Storyboard.SetTargetProperty(topPropAnimation, AnimationProperties.CANVAS_TOP);                
 
                 animations.Add(topPropAnimation);
             }
 
             // rotation animations
             var rotations = animReq.Rotations;
-            if (rotations != 0 && image.RenderTransform != null && image.RenderTransform.GetType() == typeof(RotateTransform))
+            if (rotations != 0 && targetElement.RenderTransform != null && targetElement.RenderTransform.GetType() == typeof(RotateTransform))
             {
                 var rotationAnimation = new DoubleAnimation();
-                double curAngle = ((RotateTransform)image.RenderTransform).Angle;
+                double curAngle = ((RotateTransform)targetElement.RenderTransform).Angle;
                 var finalAngle = curAngle + 360 * rotations;
                 rotationAnimation.From = curAngle;
                 rotationAnimation.To = finalAngle;
@@ -81,16 +82,33 @@ namespace WizardMobile.Uwp.Common
                     Exponent = 4
                 };
 
-                Storyboard.SetTargetName(rotationAnimation, image.Name);
-                Storyboard.SetTargetProperty(rotationAnimation, "(Image.RenderTransform).(RotateTransform.Angle)");
+                Storyboard.SetTargetName(rotationAnimation, targetElement.Name);
+                Storyboard.SetTargetProperty(rotationAnimation, AnimationProperties.ANGLE);
 
                 animations.Add(rotationAnimation);
+            }
+
+            foreach(var animBehavior in animReq.AdditionalBehaviors)
+            {
+                var animation = new DoubleAnimation();
+                animation.By = animBehavior.Value;
+                animation.Duration = TimeSpan.FromSeconds(duration);
+                animation.BeginTime = TimeSpan.FromSeconds(delay);
+                animation.EnableDependentAnimation = true;
+                animation.EasingFunction = new ExponentialEase()
+                {
+                    EasingMode = EasingMode.EaseOut,
+                    Exponent = 4
+                };
+                Storyboard.SetTargetName(animation, targetElement.Name);
+                Storyboard.SetTargetProperty(animation, animBehavior.Key);
+                animations.Add(animation);
             }
 
             return animations;
         }
 
-        public static InflatedAnimationRequest InflateAnimationRequest(AnimationRequest animRequest, Image image, Point destination)
+        public static InflatedAnimationRequest InflateAnimationRequest(NamedAnimationRequest animRequest, FrameworkElement targetElement,Point? destination)
         {
             return new InflatedAnimationRequest
             {
@@ -98,29 +116,10 @@ namespace WizardMobile.Uwp.Common
                 Delay = animRequest.Delay,
                 Duration = animRequest.Duration,
                 Rotations = animRequest.Rotations,
-                Image = image
+                TargetElement = targetElement,
+                AdditionalBehaviors = animRequest.AdditionalBehaviors
             };
         }
-    }
-
-    // identical to Animation request but instead of a Guid reference to an image, the image has been inflated
-    // to represent a full image object (bitmap, position, etc...)
-    // used in layers that deal directly with the canvas / resource map (e.g. GamePage)
-    // also contains a Destination point member that corresponds directly to a canvas position
-    public class InflatedAnimationRequest: AnimationBehavior
-    {
-        public Point Destination { get; set; }
-        public Image Image { get; set; }
-    }
-
-    // extends animation behavior by providing enough details to produce an instance of an animation.
-    // used in layers where the concept of a UniqueImage is present, meaning that the layer contains
-    // references to images but not image objects (e.g. CardGroup layer)
-    // also contains a higher-level CanvasPosition member describing the normalized position on an abstract canvas
-    public class AnimationRequest: AnimationBehavior
-    {
-        public NormalizedPosition Destination { get; set; }
-        public string ImageGuid { get; set; }
     }
 
     // description of animation without providing concrete details about an animation instance
@@ -130,5 +129,26 @@ namespace WizardMobile.Uwp.Common
         public double Rotations { get; set; }
         public double Duration { get; set; } // length of animation in seconds
         public double Delay { get; set; } // seconds before animation begins
+        public Dictionary<string, double> AdditionalBehaviors = new Dictionary<string, double>(); // maps property string to animation "by" value
+    }
+
+    // Instead of containing a named reference to a xaml element, this request contains an inflated element
+    // which represents a full image object (bitmap, position, etc...)
+    // used in layers that deal directly with the canvas / resource map (e.g. GamePage)
+    // also contains a Destination point member that corresponds directly to a canvas position
+    public class InflatedAnimationRequest: AnimationBehavior
+    {
+        public Point? Destination { get; set; }
+        public FrameworkElement TargetElement { get; set; }
+    }
+
+    // extends animation behavior by providing enough details to produce an instance of an animation.
+    // used in layers where the concept of an animatable FrameworkElement is present, meaning that the layer contains
+    // references to FrameworkElements but not FrameworkElement objects (e.g. CardGroup layer)
+    // also contains a higher-level CanvasPosition member describing the normalized position on an abstract canvas
+    public class NamedAnimationRequest : AnimationBehavior
+    {
+        public NormalizedPosition Destination { get; set; }
+        public string TargetElementName { get; set; }
     }
 }

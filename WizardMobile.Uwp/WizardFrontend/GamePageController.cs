@@ -27,6 +27,11 @@ namespace WizardMobile.Uwp.WizardFrontend
             UwpWizardFrontendProxy _proxyFrontend = new UwpWizardFrontendProxy(this, uiDispatcher);
             _engine = new WizardEngine(_proxyFrontend);
             _engine.Run();
+
+            // bind menu button handlers
+            _componentProvider.OnPauseButtonClick(this.PauseButtonClickedHandler);
+            _componentProvider.OnScoresButtonClick(this.ScoresButtonClickedHandler);
+            _componentProvider.OnQuitButtonClick(this.QuitButtonClickedHandler);
         }
 
         private IWizardComponentProvider _componentProvider;
@@ -237,15 +242,80 @@ namespace WizardMobile.Uwp.WizardFrontend
             return true;
         }
 
-        public Task<bool> DisplayRoundScores(GameContext gameContext)
+        public async Task<bool> DisplayRoundScores(GameContext gameContext)
         {
+            // update scoreboard text
             foreach(var playerScorePair in gameContext.PlayerScores)
             {
                 var player = playerScorePair.Key;
                 var score = playerScorePair.Value;
                 _componentProvider.SetPlayerScore(_playerOrdinals[player.Name], score);
             }
-            return Task.FromResult(true);
+
+            // translate scoreboard
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                Destination = new NormalizedPosition(50, 50),
+                Duration = 0.2  
+            });
+
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, _componentProvider.OPACITY_HIGH } },
+                Duration = 0.2
+            });
+
+            // increase font size of scoreboard
+            Func<string, double, NamedAnimationRequest> makeScoreboardTextAnimation = (string targetName, double fontSize) => new NamedAnimationRequest
+            {
+                TargetElementName = targetName,
+                Duration = 0.5,
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.FONT_SIZE, fontSize } }
+            };
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_score", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_name", 20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_score", 20));
+
+            await _componentProvider.RunQueuedAnimations();
+            await Task.Delay(1500);
+
+            // translate scoreboard back to original position
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                Destination = new NormalizedPosition(7, 10),
+                Duration = 0.2
+            });
+
+            _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
+            {
+                TargetElementName = "scoreboard_container",
+                AdditionalBehaviors = new Dictionary<string, double>() { { AnimationProperties.OPACITY, -_componentProvider.OPACITY_HIGH } },
+                Duration = 0.2
+            });
+
+            // increase font size of scoreboard
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_title", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player1_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player2_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player3_score", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_name", -20));
+            _componentProvider.QueueAnimationRequest(makeScoreboardTextAnimation("scoreboard_player4_score", -20));
+
+            await _componentProvider.RunQueuedAnimations();
+
+            return true;
         }
 
         public async Task<bool> DisplayBidOutcome(int roundNum, int totalBids)
@@ -331,10 +401,25 @@ namespace WizardMobile.Uwp.WizardFrontend
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);
                 _componentProvider.SetAllPersonasVisibility(true);
-                _componentProvider.SetScoreboardVisibility(true);
+                _componentProvider.SetScoreboardVisibility(false);
             });
 
             return taskCompletionSource.Task;
+        }
+
+        private void PauseButtonClickedHandler()
+        {
+
+        }
+
+        private void ScoresButtonClickedHandler()
+        {
+
+        }
+
+        private void QuitButtonClickedHandler()
+        {
+
         }
     }
 }

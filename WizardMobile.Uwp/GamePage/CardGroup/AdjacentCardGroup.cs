@@ -31,11 +31,11 @@ namespace WizardMobile.Uwp.GamePage
             List<NormalizedPosition> newPositions = GeneratePositions(_displayCards.Count + cardsToBeAdded.Count);
             for (int i = 0; i < _displayCards.Count; i++)
             {
-                _canvasFacade.QueueAnimationRequest(new AnimationRequest
+                _canvasFacade.QueueAnimationRequest(new NamedAnimationRequest
                 {
                     Destination = newPositions[i],
                     Duration = 0.3,
-                    ImageGuid = _displayCards[i].Id
+                    TargetElementName = _displayCards[i].Id
                 });
             }
             _curPositions = newPositions;
@@ -47,11 +47,11 @@ namespace WizardMobile.Uwp.GamePage
             List<NormalizedPosition> newPositions = GeneratePositions(_displayCards.Count);
             for (int i = 0; i < newPositions.Count; i++)
             {
-                _canvasFacade.QueueAnimationRequest(new AnimationRequest
+                _canvasFacade.QueueAnimationRequest(new NamedAnimationRequest
                 {
                     Destination = newPositions[i],
                     Duration = 0.3,
-                    ImageGuid = _displayCards[i].Id
+                    TargetElementName = _displayCards[i].Id
                 });
             }
             _curPositions = newPositions;

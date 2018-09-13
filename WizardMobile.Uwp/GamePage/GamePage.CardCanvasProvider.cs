@@ -19,7 +19,7 @@ using WizardMobile.Uwp.WizardFrontend;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public sealed partial class GamePage: ICanvasFacade
+    public sealed partial class GamePage: ICardCanvasProvider
     {
         public void InitializeCanvasFacade()
         {
@@ -94,24 +94,6 @@ namespace WizardMobile.Uwp.GamePage
 
         }
 
-        public void QueueAnimationRequest(AnimationRequest animationRequest)
-        {
-            Image targetImage = FindName(animationRequest.ImageGuid) as Image;
-            Point destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
-            var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetImage, destination);
-            List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
-
-            animationQueue.AddRange(animations);
-            // this does not set the position, it only registers the destination position of the image for dynamic repositioning on size change
-            RegisterElementCanvasPosition(targetImage, animationRequest.Destination, _cardBitmapSize);
-        }
-
-        public void QueueAnimationRequests(IEnumerable<AnimationRequest> animations)
-        {
-            foreach (var animation in animations)
-                QueueAnimationRequest(animation);
-        }
-
         public async Task<NormalizedSize> GetNormalizedCardImageSize()
         {
             Size size = await GetCardImageSize();
@@ -151,16 +133,10 @@ namespace WizardMobile.Uwp.GamePage
             var imageName = Storyboard.GetTargetName(animation);
             var targetProperty = Storyboard.GetTargetProperty(animation);
 
-            var image = FindName(imageName) as Image;
-            var animEndvalue = animation.To ?? 0.0;
+            var element = FindName(imageName) as FrameworkElement;
 
-            // set the end property of the animation to the end property of the image
-            if (targetProperty == "(Canvas.Top)")
-                Canvas.SetTop(image, animEndvalue);
-            else if (targetProperty == "(Canvas.Left)")
-                Canvas.SetLeft(image, animEndvalue);
-            else if (targetProperty == "(Image.RenderTransform).(RotateTransform.Angle)")
-                ((RotateTransform)image.RenderTransform).Angle = animEndvalue;
+            var animationCompletedCallback = AnimationProperties.AnimationCompletedCallbacks[targetProperty];
+            animationCompletedCallback(animation, element);
         }
 
         private static void SetCardImageAngle(Image cardImage, double angle)

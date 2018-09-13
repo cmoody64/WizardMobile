@@ -8,7 +8,7 @@ using Windows.UI.Xaml.Controls;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public interface IWizardComponentProvider
+    public interface IWizardComponentProvider: IAnimationProvider
     {
         void SetMessageBoxText(string message);
         void SetPlayerCreationInputVisibility(bool isVisible);
@@ -18,9 +18,16 @@ namespace WizardMobile.Uwp.GamePage
         void SetPlayerStatus(PlayerOrdinal player, string status); // status referred to round score vs bids (e.g. "2/4")
         void SetPlayerScore(PlayerOrdinal player, int score);
         void SetScoreboardVisibility(bool isVisible);
-        Task<bool> RunQueuedAnimations();       
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
+
+        void OnPauseButtonClick(Action handler);
+        void OnScoresButtonClick(Action handler);
+        void OnQuitButtonClick(Action handler);
+
+        double OPACITY_HIGH { get; }
+        double OPACITY_LOW { get; }
+
 
         // card groups 
         StackCardGroup CenterShuffleCardGroup { get; }

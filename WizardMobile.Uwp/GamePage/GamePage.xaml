@@ -16,6 +16,10 @@
             <TextBox x:Name="player_bid_input" PlaceholderText="Enter Bid" HorizontalAlignment="Center" Text="" VerticalAlignment="Top" Visibility="Collapsed" FontSize="36"/>
             <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" FontSize="25" Text="enter a number" Visibility="Collapsed" Foreground="Red"/>
 
+            <Button x:Name="pause_button" Content="pause" />
+            <Button x:Name="quit_button" Content="quit" />
+            <Button x:Name="scores_button" Content="scores" />
+
             <Border x:Name="player1_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />
             </Border>
@@ -42,13 +46,13 @@
 
             <TextBlock x:Name="game_message_box" FontSize="34"/>
 
-            <Grid x:Name="scoreboard" Visibility="Collapsed" Canvas.Left="50" Canvas.Top="30">
+            <Grid x:Name="scoreboard_container" Opacity="0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Scores" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" />
+                <TextBlock x:Name="scoreboard_title" Text="Scores" Grid.Row="0" HorizontalAlignment="Center" FontSize="20" />
 
                 <Grid Background="SlateGray" Grid.Row="1" Opacity="0.8" CornerRadius="4">
                     <Grid.RowDefinitions>
@@ -58,8 +62,8 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="60" />
-                        <ColumnDefinition Width="50" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="scoreboard_player1_name" Grid.Row="0" Grid.Column="0" />
                     <TextBlock x:Name="scoreboard_player1_score" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" />
