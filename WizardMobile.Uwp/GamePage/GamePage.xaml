@@ -16,6 +16,10 @@
             <TextBox x:Name="player_bid_input" PlaceholderText="Enter Bid" HorizontalAlignment="Center" Text="" VerticalAlignment="Top" Visibility="Collapsed" FontSize="36"/>
             <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" FontSize="25" Text="enter a number" Visibility="Collapsed" Foreground="Red"/>
 
+            <Button x:Name="pause_button" Content="pause" />
+            <Button x:Name="quit_button" Content="quit" />
+            <Button x:Name="scores_button" Content="scores" />
+
             <Border x:Name="player1_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />
             </Border>

@@ -27,6 +27,11 @@ namespace WizardMobile.Uwp.WizardFrontend
             UwpWizardFrontendProxy _proxyFrontend = new UwpWizardFrontendProxy(this, uiDispatcher);
             _engine = new WizardEngine(_proxyFrontend);
             _engine.Run();
+
+            // bind menu button handlers
+            _componentProvider.OnPauseButtonClick(this.PauseButtonClickedHandler);
+            _componentProvider.OnScoresButtonClick(this.ScoresButtonClickedHandler);
+            _componentProvider.OnQuitButtonClick(this.QuitButtonClickedHandler);
         }
 
         private IWizardComponentProvider _componentProvider;
@@ -400,6 +405,21 @@ namespace WizardMobile.Uwp.WizardFrontend
             });
 
             return taskCompletionSource.Task;
+        }
+
+        private void PauseButtonClickedHandler()
+        {
+
+        }
+
+        private void ScoresButtonClickedHandler()
+        {
+
+        }
+
+        private void QuitButtonClickedHandler()
+        {
+
         }
     }
 }

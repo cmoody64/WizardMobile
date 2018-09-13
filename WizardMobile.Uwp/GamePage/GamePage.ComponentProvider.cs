@@ -30,6 +30,7 @@ namespace WizardMobile.Uwp.GamePage
             _gamePageController = new GamePageController(this, this.Dispatcher);
             _animationsCompletedHandlers = new Queue<Action>();
 
+            // card groups
             CenterShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(50, 50), 0);
             LeftShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 50), 0);
             RightShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 50), 0);
@@ -50,12 +51,19 @@ namespace WizardMobile.Uwp.GamePage
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
             game_canvas_storyboard.Completed += OnAnimationsCompleted;
+            pause_button.PointerReleased += OnPauseButtonPointerReleased;
+            scores_button.PointerReleased += OnScoresButtonPointerReleased;
+            quit_button.PointerReleased += OnQuitButtonPointerReleased;
 
             // set position of UI elements using method that binds them to a responsive canvas position
             SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(62, 58));
 
+            // scoreboard
+            SetUiElementNormalizedCanvasPosition(scoreboard_container, new NormalizedPosition(7, 7));
+
+            // player personas
             SetUiElementNormalizedCanvasPosition(player1_name_container, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -20));
             SetUiElementNormalizedCanvasPosition(player1_status, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -5, -15.5));
             SetUiElementNormalizedCanvasPosition(player2_name_container, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 10, 0));
@@ -66,8 +74,7 @@ namespace WizardMobile.Uwp.GamePage
             SetUiElementNormalizedCanvasPosition(player4_status, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -15, -1.5));
             SetUiElementNormalizedCanvasPosition(game_message_box, GetRelativeNormalizedPosition(CenterShuffleCardGroup.Origin, 0, -17));
 
-            SetUiElementNormalizedCanvasPosition(scoreboard_container, new NormalizedPosition(7, 7));
-
+            // player avatars
             SetUiElementNormalizedCanvasPosition(player2_avatar, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 8, -3));
             SetUiElementNormalizedCanvasPosition(player3_avatar, GetRelativeNormalizedPosition(Player3CardGroup.Origin, -4, 12));
             SetUiElementNormalizedCanvasPosition(player4_avatar, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -17, -9));
@@ -75,6 +82,11 @@ namespace WizardMobile.Uwp.GamePage
             {                
                 SetUiElementNormalizedCanvasPosition(player1_avatar, GetRelativeNormalizedPosition(Player1CardGroup.Origin, -7, -23));
             }, TaskScheduler.FromCurrentSynchronizationContext());
+
+            // top menu buttons
+            SetUiElementNormalizedCanvasPosition(pause_button, new NormalizedPosition(2, 2));
+            SetUiElementNormalizedCanvasPosition(scores_button, new NormalizedPosition(6, 2));
+            SetUiElementNormalizedCanvasPosition(quit_button, new NormalizedPosition(10.2, 2));
         }
         
 
@@ -124,19 +136,15 @@ namespace WizardMobile.Uwp.GamePage
 
         public void SetScoreboardVisibility(bool isVisible)
         {
-            var opacity = isVisible ? OPACITY_HIGH : OPACITY_ZERO;
+            var opacity = isVisible ? OPACITY_HIGH : OPACITY_LOW;
             scoreboard_container.Opacity = opacity;
         }
 
-        public void OnPlayerCreationInputEntered(Action<string> playerCreationInputEnteredHandler)
-        {
-            _playerCreationInputEnteredHandler = playerCreationInputEnteredHandler;
-        }
-
-        public void OnPlayerBidInputEntered(Action<int> playerBidEnteredHandler)
-        {
-            _playerBidEnteredHandler = playerBidEnteredHandler;
-        }
+        public void OnPlayerCreationInputEntered(Action<string> handler) => _playerCreationInputEnteredHandler = handler;
+        public void OnPlayerBidInputEntered(Action<int> handler) => _playerBidEnteredHandler = handler;
+        public void OnPauseButtonClick(Action handler) => _pauseButtonClickedHandler = handler;
+        public void OnScoresButtonClick(Action handler) => _scoresButtonClickedHandler = handler;
+        public void OnQuitButtonClick(Action handler) => _quitButtonClickedHandler = handler;
 
 
         public StackCardGroup CenterShuffleCardGroup { get; private set; }
@@ -160,7 +168,7 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup OffScreenPlayer4CardGroup { get; private set; }
 
         public double OPACITY_HIGH => 0.8;
-        public double OPACITY_ZERO => 0.0;
+        public double OPACITY_LOW => 0.0;
 
         private string _userAccountName;
         private string _userFirstName;
@@ -171,6 +179,9 @@ namespace WizardMobile.Uwp.GamePage
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
+        private Action _pauseButtonClickedHandler;
+        private Action _scoresButtonClickedHandler;
+        private Action _quitButtonClickedHandler;
 
         /************************************** event handlers **********************************************/
         private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
@@ -200,6 +211,10 @@ namespace WizardMobile.Uwp.GamePage
                 }                
             }
         }
+
+        private void OnPauseButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _pauseButtonClickedHandler();
+        private void OnQuitButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _quitButtonClickedHandler();
+        private void OnScoresButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _scoresButtonClickedHandler();
 
 
         // ***************************************** Helpers ********************************************/

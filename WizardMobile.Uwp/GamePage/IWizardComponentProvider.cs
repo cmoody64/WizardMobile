@@ -21,8 +21,12 @@ namespace WizardMobile.Uwp.GamePage
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
+        void OnPauseButtonClick(Action handler);
+        void OnScoresButtonClick(Action handler);
+        void OnQuitButtonClick(Action handler);
+
         double OPACITY_HIGH { get; }
-        double OPACITY_ZERO { get; }
+        double OPACITY_LOW { get; }
 
 
         // card groups 
