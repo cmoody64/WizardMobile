@@ -128,47 +128,6 @@ namespace WizardMobile.Uwp.GamePage
             scoreboard_container.Opacity = opacity;
         }
 
-        public Task<bool> RunQueuedAnimations()
-        {
-            TaskCompletionSource<bool> taskCompletionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-            game_canvas_storyboard.Children.AddRange(animationQueue);
-            animationQueue.Clear();
-
-            QueueAnimationsCompletedHandler(() =>
-            {
-                game_canvas_storyboard.Stop();
-
-                foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
-                    ApplyAnimationEndValue(anim);
-
-                game_canvas_storyboard.Children.Clear();
-
-                taskCompletionSource.SetResult(true);
-            });
-
-            game_canvas_storyboard.Begin();
-            return taskCompletionSource.Task;
-        }
-
-        private void QueueAnimationsCompletedHandler(Action handler) => _animationsCompletedHandlers.Enqueue(handler);
-        private Queue<Action> _animationsCompletedHandlers;
-        private void OnAnimationsCompleted(object sender, object eventArgs)
-        {
-            game_canvas_storyboard.Stop();
-
-            foreach (DoubleAnimation anim in game_canvas_storyboard.Children)
-                ApplyAnimationEndValue(anim);
-
-            game_canvas_storyboard.Children.Clear();
-            // run all queued animations completed handlers
-            while (_animationsCompletedHandlers.Count > 0)
-            {
-                var handler = _animationsCompletedHandlers.Dequeue();
-                handler();
-            }
-        }
-
         public void OnPlayerCreationInputEntered(Action<string> playerCreationInputEnteredHandler)
         {
             _playerCreationInputEnteredHandler = playerCreationInputEnteredHandler;

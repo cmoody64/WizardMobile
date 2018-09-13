@@ -98,8 +98,8 @@ namespace WizardMobile.Core
                     _gameContext.PlayerScores[player] += (diff * MISS_SCORE);
             });
 
-            await _frontend.DisplayRoundScores(_gameContext);
             await _frontend.DisplayEndRound(roundNum);
+            await _frontend.DisplayRoundScores(_gameContext);
         }
 
         // executes a single trick and stores state in a new TrickContext instance, as well

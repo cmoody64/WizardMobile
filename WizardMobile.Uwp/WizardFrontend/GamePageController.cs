@@ -286,7 +286,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             _componentProvider.QueueAnimationRequest(new NamedAnimationRequest
             {
                 TargetElementName = "scoreboard_container",
-                Destination = new NormalizedPosition(7, 7),
+                Destination = new NormalizedPosition(7, 10),
                 Duration = 0.2
             });
 

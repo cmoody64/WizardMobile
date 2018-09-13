@@ -103,7 +103,8 @@
     <Compile Include="GamePage\CardGroup\AdjacentCardGroup.cs" />
     <Compile Include="GamePage\CardGroup\InteractiveAdjacentCardGroup.cs" />
     <Compile Include="GamePage\CardGroup\StackCardGroup.cs" />
-    <Compile Include="GamePage\GamePage.CanvasFacade.cs" />
+    <Compile Include="GamePage\GamePage.AnimationProvider.cs" />
+    <Compile Include="GamePage\GamePage.CardCanvasProvider.cs" />
     <Compile Include="GamePage\IAnimationProvider.cs" />
     <Compile Include="GamePage\ICardCanvasProvider.cs" />
     <Compile Include="GamePage\UserInfo.cs" />

@@ -94,29 +94,6 @@ namespace WizardMobile.Uwp.GamePage
 
         }
 
-        public void QueueAnimationRequest(NamedAnimationRequest animationRequest)
-        {
-            FrameworkElement targetElement = FindName(animationRequest.TargetElementName) as FrameworkElement
-                ?? throw new ArgumentNullException($"{animationRequest.TargetElementName} didn't map to XAML element");
-            Point? destination = null;
-            if(animationRequest.Destination != null)
-            {
-                destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
-                // this does not set the position, it only registers the destination position of the image for dynamic repositioning on size change
-                RegisterElementCanvasPosition(targetElement, animationRequest.Destination, _cardBitmapSize);
-            }
-            var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetElement, destination);
-            List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
-
-            animationQueue.AddRange(animations);
-        }
-
-        public void QueueAnimationRequests(IEnumerable<NamedAnimationRequest> animations)
-        {
-            foreach (var animation in animations)
-                QueueAnimationRequest(animation);
-        }
-
         public async Task<NormalizedSize> GetNormalizedCardImageSize()
         {
             Size size = await GetCardImageSize();
