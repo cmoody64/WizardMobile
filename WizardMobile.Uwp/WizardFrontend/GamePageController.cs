@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.Storage;
 using Windows.UI.Core;
 using WizardMobile.Core;
 using WizardMobile.Uwp.Common;
@@ -39,6 +40,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         private Dictionary<string, CardGroup> _playerCardGroups; // maps player names to the corresponding hand cardGroup
         private Dictionary<string, CardGroup> _offScreenPlayerCardGroups;
         private Dictionary<string, PlayerOrdinal> _playerOrdinals; // maps player names to PlayerOrdinals used in the componentProvider
+        public static readonly string GAME_STATE_FILENAME = "game_state.txt";
 
         /*************** IWizardFrontend implementation ********************/
         public async Task<bool> DisplayStartGame()
@@ -191,7 +193,10 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         private async Task<bool> DisplaySingleDealStage(GameContext gameContext, List<Player> players, int stage)
         {
-            List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder;
+            List<string> playerDealOrder = gameContext.CurRound.PlayerDealOrder
+                .OrderBy(keyValPair => keyValPair.Key)
+                .Select(keyValPair => keyValPair.Value)
+                .ToList();
 
             // iterate through all players: cards for AI players are dealt face down and cards for human players face
             for (int i = 0; i < playerDealOrder.Count(); i++)
@@ -417,9 +422,18 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         }
 
-        private void QuitButtonClickedHandler()
+        private async void QuitButtonClickedHandler()
         {
+            await SaveGameState();
+            _componentProvider.App.NavigateToPage(WizardUwpApp.Page.MAIN_MENU);
+        }
 
+        private async Task<bool> SaveGameState()
+        {
+            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile gameStateFile = await localFolder.CreateFileAsync(GAME_STATE_FILENAME, CreationCollisionOption.ReplaceExisting);
+            await FileIO.WriteTextAsync(gameStateFile, _engine.SerializeEngineState());
+            return true;
         }
     }
 }

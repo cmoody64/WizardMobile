@@ -68,11 +68,11 @@ namespace WizardMobile.Core
         {
             var curRound = gameContext.CurRound;
             var curTrick = curRound.CurTrick;
-            var curRoundTricks = curRound.Tricks;
+            var curRoundTricks = curRound.Tricks.Values;
 
             List<Card> allKnownCards = _hand.Concat(curRoundTricks.Aggregate(new List<Card>(), (acc, trick) =>
             {
-                acc.AddRange(trick.CardsPlayed);
+                acc.AddRange(trick.CardsPlayed.Values);
                 return acc;
             })).ToList();
             allKnownCards.Add(curRound.TrumpCard);
@@ -132,7 +132,7 @@ namespace WizardMobile.Core
                 foreach (var card in playableCards)
                 {
                     var curSimRemainingCards = new List<Card>(hiddenCards);
-                    var simPlayedCards = new List<Card>(trick.CardsPlayed);
+                    var simPlayedCards = new List<Card>(trick.CardsPlayed.Values);
                     simPlayedCards.Add(card);
 
                     // each remaining player plays a random card from a randomly generated hand                  
@@ -192,7 +192,7 @@ namespace WizardMobile.Core
                     {
                         var randHand = takeRandomCardsFromList(curSimRemainingCards, _hand.Count);
                         var playableCards = CardUtils.GetPlayableCards(randHand, curSimTrick.LeadingSuite);
-                        curSimTrick.CardsPlayed.Add(playableCards[_rand.Next() % playableCards.Count()]);
+                        curSimTrick.CardsPlayed[curSimPlayPos] = playableCards[_rand.Next() % playableCards.Count()];
                     }
 
                     var curSimWinsByCard = SimulateTrick(curSimTrick, curSimRemainingCards, trumpCard.Suite, playerCount, simsPerTrick);

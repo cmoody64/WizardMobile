@@ -45,6 +45,8 @@ namespace WizardMobile.Uwp.GamePage
         StackCardGroup OffScreenPlayer2CardGroup { get; }
         StackCardGroup OffScreenPlayer3CardGroup { get; }
         StackCardGroup OffScreenPlayer4CardGroup { get; }
+
+        WizardUwpApp App { get; }
     }
 
     // player positions for which components are provided for
