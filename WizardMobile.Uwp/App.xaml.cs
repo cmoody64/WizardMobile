@@ -98,19 +98,19 @@ namespace WizardMobile.Uwp
 
         private Page _currentPage;
 
-        public bool NavigateToPage(Page page)
+        public bool NavigateToPage(Page page, object navParam = null)
         {
             if (_rootFrame == null) return false;
 
             switch (page)
             {
                 case Page.GAMEPLAY:
-                    _rootFrame.Navigate(typeof(GamePage.GamePage));
+                    _rootFrame.Navigate(typeof(GamePage.GamePage), navParam);
                     break;
                 case Page.PAUSE:
                     break;
                 case Page.MAIN_MENU:
-                    _rootFrame.Navigate(typeof(MainMenuPage));
+                    _rootFrame.Navigate(typeof(MainMenuPage), navParam);
                     break;
             }
             _currentPage = page;

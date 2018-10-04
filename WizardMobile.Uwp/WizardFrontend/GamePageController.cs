@@ -430,7 +430,7 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         private async Task<bool> SaveGameState()
         {
-            StorageFolder localFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFolder localFolder = ApplicationData.Current.LocalFolder;
             StorageFile gameStateFile = await localFolder.CreateFileAsync(GAME_STATE_FILENAME, CreationCollisionOption.ReplaceExisting);
             await FileIO.WriteTextAsync(gameStateFile, _engine.SerializeEngineState());
             return true;

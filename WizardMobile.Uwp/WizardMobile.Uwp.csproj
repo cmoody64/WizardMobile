@@ -105,6 +105,7 @@
     <Compile Include="GamePage\CardGroup\StackCardGroup.cs" />
     <Compile Include="GamePage\GamePage.AnimationProvider.cs" />
     <Compile Include="GamePage\GamePage.CardCanvasProvider.cs" />
+    <Compile Include="GamePage\GamePageNavigationParams.cs" />
     <Compile Include="GamePage\IAnimationProvider.cs" />
     <Compile Include="GamePage\ICardCanvasProvider.cs" />
     <Compile Include="GamePage\UserInfo.cs" />
