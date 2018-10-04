@@ -51,9 +51,9 @@ namespace WizardMobile.Uwp.GamePage
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
             player_bid_input.KeyDown += this.OnPlayerBidInputKeyDown;
             game_canvas_storyboard.Completed += OnAnimationsCompleted;
-            pause_button.PointerReleased += OnPauseButtonPointerReleased;
-            scores_button.PointerReleased += OnScoresButtonPointerReleased;
-            quit_button.PointerReleased += OnQuitButtonPointerReleased;
+            pause_button.Click += (object sender, RoutedEventArgs args) => _pauseButtonClickedHandler();
+            scores_button.Click += (object sender, RoutedEventArgs args) => _scoresButtonClickedHandler();
+            quit_button.Click += (object sender, RoutedEventArgs args) => _quitButtonClickedHandler();
 
             // set position of UI elements using method that binds them to a responsive canvas position
             SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
@@ -137,8 +137,10 @@ namespace WizardMobile.Uwp.GamePage
         public void SetScoreboardVisibility(bool isVisible)
         {
             var opacity = isVisible ? OPACITY_HIGH : OPACITY_LOW;
-            scoreboard_container.Opacity = opacity;
+            scoreboard_container.Opacity = opacity;            
         }
+
+        public WizardUwpApp App => Application.Current as WizardUwpApp;
 
         public void OnPlayerCreationInputEntered(Action<string> handler) => _playerCreationInputEnteredHandler = handler;
         public void OnPlayerBidInputEntered(Action<int> handler) => _playerBidEnteredHandler = handler;
@@ -179,9 +181,9 @@ namespace WizardMobile.Uwp.GamePage
 
         private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
-        private Action _pauseButtonClickedHandler;
-        private Action _scoresButtonClickedHandler;
-        private Action _quitButtonClickedHandler;
+        private Action _pauseButtonClickedHandler = () => {};
+        private Action _scoresButtonClickedHandler = () => {};
+        private Action _quitButtonClickedHandler = () => {};
 
         /************************************** event handlers **********************************************/
         private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
@@ -211,11 +213,6 @@ namespace WizardMobile.Uwp.GamePage
                 }                
             }
         }
-
-        private void OnPauseButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _pauseButtonClickedHandler();
-        private void OnQuitButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _quitButtonClickedHandler();
-        private void OnScoresButtonPointerReleased(object sender, PointerRoutedEventArgs e) => _scoresButtonClickedHandler();
-
 
         // ***************************************** Helpers ********************************************/
         private async Task<bool> DoAsyncInitialization()

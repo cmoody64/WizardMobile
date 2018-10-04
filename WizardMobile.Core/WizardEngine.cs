@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace WizardMobile.Core
 {
@@ -19,6 +20,11 @@ namespace WizardMobile.Core
         {
             Thread workerThread = new Thread(this.PlaySingleGame);
             workerThread.Start();
+        }
+
+        public string SerializeEngineState()
+        {
+            return JsonConvert.SerializeObject(_gameContext);
         }
 
         private async void PlaySingleGame()
@@ -53,7 +59,7 @@ namespace WizardMobile.Core
             Card trumpCard = _curDeck.Cards.Count > 0 ? _curDeck.PopTop() : null;
             await _frontend.DisplayTrumpCardSelected(trumpCard);
 
-            _gameContext.Rounds.Add(new RoundContext(roundNum, trumpCard));
+            _gameContext.Rounds[roundNum] = new RoundContext(roundNum, trumpCard);
             var curRound = _gameContext.CurRound;
             curRound.Dealer = roundNum == 1
                 ? _players[0]
@@ -66,7 +72,8 @@ namespace WizardMobile.Core
             List<Player> playerDealOrder = _players
                 .GetRange(firstDealIndex, _players.Count - firstDealIndex)
                 .Concat(_players.GetRange(0, firstDealIndex)).ToList();
-            curRound.PlayerDealOrder = playerDealOrder.Select(player => player.Name).ToList();
+            for (int i = 0; i < playerDealOrder.Count; i++)
+                curRound.PlayerDealOrder[i] = playerDealOrder[i].Name;
 
             await _frontend.DisplayDeal(_gameContext, _players);
 
@@ -106,7 +113,7 @@ namespace WizardMobile.Core
         private async Task PlaySingleTrick(int trickNum)
         {
             await _frontend.DisplayStartTrick(trickNum);
-            _gameContext.CurRound.Tricks.Add(new TrickContext(trickNum));
+            _gameContext.CurRound.Tricks[trickNum] = new TrickContext(trickNum);
 
             var curRound = _gameContext.CurRound;
             var curTrick = curRound.CurTrick;
@@ -121,16 +128,17 @@ namespace WizardMobile.Core
                 .GetRange(leaderIndex, _players.Count - leaderIndex)
                 .Concat(_players.GetRange(0, leaderIndex)).ToList();
 
-            foreach(var player in trickPlayerOrder)
+            for(int i = 0; i < trickPlayerOrder.Count; i++)
             {
+                var player = trickPlayerOrder[i];
                 var cardPlayed = await player.MakeTurn(_gameContext);
-                curTrick.CardsPlayed.Add(cardPlayed);
+                curTrick.CardsPlayed[i] = cardPlayed;
                 await _frontend.DisplayTurnTaken(cardPlayed, player);
             }
 
             // find winner and save it to trick context
-            var winningCard = CardUtils.CalcWinningCard(curTrick.CardsPlayed, curRound.TrumpSuite, curTrick.LeadingSuite);
-            var winningPlayer = trickPlayerOrder[curTrick.CardsPlayed.IndexOf(winningCard)];
+            var winningCard = CardUtils.CalcWinningCard(curTrick.CardsPlayed.Values.ToList(), curRound.TrumpSuite, curTrick.LeadingSuite);
+            var winningPlayer = trickPlayerOrder[curTrick.CardsPlayed.Values.ToList().IndexOf(winningCard)];
             curTrick.Winner = winningPlayer;
             curTrick.WinningCard = winningCard;
             await _frontend.DisplayTrickWinner(_gameContext.CurRound);
