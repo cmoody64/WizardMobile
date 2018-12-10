@@ -18,6 +18,7 @@ namespace WizardMobile.Uwp.GamePage
         void SetPlayerStatus(PlayerOrdinal player, string status); // status referred to round score vs bids (e.g. "2/4")
         void SetPlayerScore(PlayerOrdinal player, int score);
         void SetScoreboardVisibility(bool isVisible);
+        bool ScoreboardVisibility { get; }
         void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
         void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 

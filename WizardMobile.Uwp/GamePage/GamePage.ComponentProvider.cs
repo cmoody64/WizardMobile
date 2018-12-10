@@ -140,6 +140,9 @@ namespace WizardMobile.Uwp.GamePage
             scoreboard_container.Opacity = opacity;            
         }
 
+        private readonly double EPSILON = 0.00001;
+        public bool ScoreboardVisibility { get => Math.Abs(scoreboard_container.Opacity - OPACITY_HIGH) < EPSILON ? true : false; }
+
         public WizardUwpApp App => Application.Current as WizardUwpApp;
 
         public void OnPlayerCreationInputEntered(Action<string> handler) => _playerCreationInputEnteredHandler = handler;

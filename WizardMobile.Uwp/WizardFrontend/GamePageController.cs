@@ -419,7 +419,8 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         private void ScoresButtonClickedHandler()
         {
-
+            var visibility = !_componentProvider.ScoreboardVisibility;
+            _componentProvider.SetScoreboardVisibility(visibility);
         }
 
         private async void QuitButtonClickedHandler()
