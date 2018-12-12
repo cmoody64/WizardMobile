@@ -21,7 +21,7 @@ namespace WizardMobile.Uwp.GamePage
             {
                 destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
                 // this does not set the position, it only registers the destination position of the image for dynamic repositioning on size change
-                RegisterElementCanvasPosition(targetElement, animationRequest.Destination, _cardBitmapSize);
+                RegisterElementCanvasPosition(targetElement, animationRequest.Destination, true);
             }
             var inflatedReq = AnimationHelper.InflateAnimationRequest(animationRequest, targetElement, destination);
             List<DoubleAnimation> animations = AnimationHelper.ComposeImageAnimations(inflatedReq);
