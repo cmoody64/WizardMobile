@@ -32,7 +32,7 @@ namespace WizardMobile.Uwp.GamePage
         {
             Image image = CreateCardImage(card);
 
-            SetUiElementNormalizedCanvasPosition(image, canvasPositon, _cardBitmapSize);
+            SetUiElementNormalizedCanvasPosition(image, canvasPositon, true);
             SetCardImageAngle(image, orientationDegrees);
             Canvas.SetZIndex(image, zIndex);
 
@@ -72,7 +72,7 @@ namespace WizardMobile.Uwp.GamePage
             if (canvasPositon != null)
             {
                 // update position. if already equal, this is a noop
-                SetUiElementNormalizedCanvasPosition(imageToUpdate, canvasPositon, _cardBitmapSize);
+                SetUiElementNormalizedCanvasPosition(imageToUpdate, canvasPositon, true);
             }
 
             // update the orientnation if provided
@@ -171,27 +171,44 @@ namespace WizardMobile.Uwp.GamePage
 
 
         /******************************************     Dynamic Canvas Resizing     ***********************************************************/
-        private void SetUiElementNormalizedCanvasPosition(UIElement element, NormalizedPosition position, Size? boundingRectSize = null)
+        // cache size changed handlers so that it may be unsubscribed if size ever changes, preventing an update to stale size
+        private Dictionary<FrameworkElement, SizeChangedEventHandler> _elementSizeChangedHandlers = new Dictionary<FrameworkElement, SizeChangedEventHandler>();
+        private void SetUiElementNormalizedCanvasPosition(FrameworkElement element, NormalizedPosition position, bool centered = false)
         {
-            var denormalizedPosition = DenormalizePosition(position, boundingRectSize);
-            Canvas.SetLeft(element, denormalizedPosition.X);
-            Canvas.SetTop(element, denormalizedPosition.Y);
-            RegisterElementCanvasPosition(element, position, boundingRectSize);
+            Action positionSetter = () =>
+            {
+                Size? boundingRect = centered ? new Size?(new Size(element.ActualWidth, element.ActualHeight)) : null;
+                var denormalizedPosition = DenormalizePosition(position, boundingRect);
+                Canvas.SetLeft(element, denormalizedPosition.X);
+                Canvas.SetTop(element, denormalizedPosition.Y);
+                RegisterElementCanvasPosition(element, position, centered);
+            };
+
+            positionSetter();
+            // if the element should be centered, attach a listener that recenters the elemenet on size change to guarentee that the element is always centered
+            if (centered)
+            {
+                // check if a position setter was previously subscribed to this event. If so, it must be removed so that it doesn't update to a stale position
+                if (_elementSizeChangedHandlers.ContainsKey(element))
+                    element.SizeChanged -= _elementSizeChangedHandlers[element];
+                _elementSizeChangedHandlers[element] = (object sender, SizeChangedEventArgs args) => positionSetter();
+                element.SizeChanged += _elementSizeChangedHandlers[element];
+            }
         }
 
-        private Dictionary<UIElement, Tuple<NormalizedPosition, Size?>> _normalizedCanvasPositionRegistry = new Dictionary<UIElement, Tuple<NormalizedPosition, Size?>>();
-        private void RegisterElementCanvasPosition(UIElement el, NormalizedPosition pos, Size? size)
+        private Dictionary<FrameworkElement, Tuple<NormalizedPosition, bool>> _normalizedCanvasPositionRegistry = new Dictionary<FrameworkElement, Tuple<NormalizedPosition, bool>>();
+        private void RegisterElementCanvasPosition(FrameworkElement el, NormalizedPosition pos, bool centered)
         {
-            _normalizedCanvasPositionRegistry[el] = new Tuple<NormalizedPosition, Size?>(pos, size);
+            _normalizedCanvasPositionRegistry[el] = new Tuple<NormalizedPosition, bool>(pos, centered);
         }
-        private bool UnregisterElementCanvasPosition(UIElement el)
+        private bool UnregisterElementCanvasPosition(FrameworkElement el)
         {
             return _normalizedCanvasPositionRegistry.Remove(el);
         }
         private void OnCanvasSizeChange(object sender, SizeChangedEventArgs args)
         {
             var positionRegistry = _normalizedCanvasPositionRegistry.ToList();
-            foreach (KeyValuePair<UIElement, Tuple<NormalizedPosition, Size?>> posRegistryEntry in positionRegistry)
+            foreach (KeyValuePair<FrameworkElement, Tuple<NormalizedPosition, bool>> posRegistryEntry in positionRegistry)
             {
                 var element = posRegistryEntry.Key;
                 var pos = posRegistryEntry.Value.Item1;

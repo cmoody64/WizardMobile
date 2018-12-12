@@ -56,7 +56,7 @@ namespace WizardMobile.Uwp.GamePage
             quit_button.Click += (object sender, RoutedEventArgs args) => _quitButtonClickedHandler();
 
             // set position of UI elements using method that binds them to a responsive canvas position
-            SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50));
+            SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50), true);
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(62, 58));
 
