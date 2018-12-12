@@ -32,7 +32,7 @@ namespace WizardMobile.Uwp.GamePage
         {
             Image image = CreateCardImage(card);
 
-            SetUiElementNormalizedCanvasPosition(image, canvasPositon, true);
+            SetUiElementNormalizedCanvasPosition(image, canvasPositon, true, _cardBitmapSize);
             SetCardImageAngle(image, orientationDegrees);
             Canvas.SetZIndex(image, zIndex);
 
@@ -173,18 +173,36 @@ namespace WizardMobile.Uwp.GamePage
         /******************************************     Dynamic Canvas Resizing     ***********************************************************/
         // cache size changed handlers so that it may be unsubscribed if size ever changes, preventing an update to stale size
         private Dictionary<FrameworkElement, SizeChangedEventHandler> _elementSizeChangedHandlers = new Dictionary<FrameworkElement, SizeChangedEventHandler>();
-        private void SetUiElementNormalizedCanvasPosition(FrameworkElement element, NormalizedPosition position, bool centered = false)
+
+        // sets the FrameworkElement to be at the indicated position, optionally centered around a given bounding rectangle
+        // @param centered: should element position be centered around bounding rect of element (by default the bounding rect of an element is Size(ActionWidth, ActualHeight)
+        // @param prerenderSizeOverride: if present, the bounding rectangle is set to be the size override instead of ActualWidth, ActualHieght
+        //              - this is useful for elements that are set in position before being rendered, in a state where they don't have an ActualHieght or ActualWidth yet
+        //              - if the element is ever resized
+        private void SetUiElementNormalizedCanvasPosition(FrameworkElement element, NormalizedPosition position, bool centered = false, Size? prerenderSizeOverride = null)
         {
             Action positionSetter = () =>
             {
-                Size? boundingRect = centered ? new Size?(new Size(element.ActualWidth, element.ActualHeight)) : null;
+                Size? boundingRect = null; // bounding rect is only determined if the element should be centered
+                if (centered)
+                {
+                    // if the element hasn't rendered (actual size == 0) and a prerender override size is provided, then the override size will be used
+                    if (element.ActualWidth == 0 && prerenderSizeOverride != null)
+                        boundingRect = prerenderSizeOverride;
+                    else
+                        // otherwise, the size is derived from the current width and height
+                        boundingRect = new Size?(new Size(element.ActualWidth, element.ActualHeight));
+                }
+
                 var denormalizedPosition = DenormalizePosition(position, boundingRect);
                 Canvas.SetLeft(element, denormalizedPosition.X);
                 Canvas.SetTop(element, denormalizedPosition.Y);
                 RegisterElementCanvasPosition(element, position, centered);
             };
 
+            // call the position setter once to set the position
             positionSetter();
+
             // if the element should be centered, attach a listener that recenters the elemenet on size change to guarentee that the element is always centered
             if (centered)
             {
