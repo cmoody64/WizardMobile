@@ -18,7 +18,7 @@
 
             <Button x:Name="pause_button" Content="pause" />
             <Button x:Name="quit_button" Content="quit" />
-            <Button x:Name="scores_button" Content="scores" />
+            <Button x:Name="scores_button" Content="scores" IsEnabled="False" />
 
             <Border x:Name="player1_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />

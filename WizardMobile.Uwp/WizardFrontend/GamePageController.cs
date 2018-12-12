@@ -407,6 +407,7 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _componentProvider.SetPlayerCreationInputVisibility(false);
                 _componentProvider.SetAllPersonasVisibility(true);
                 _componentProvider.SetScoreboardVisibility(false);
+                _componentProvider.SetScoresButtonEnabled(true);
             });
 
             return taskCompletionSource.Task;

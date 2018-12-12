@@ -96,6 +96,11 @@ namespace WizardMobile.Uwp.GamePage
             game_message_box.Text = message;
         }
 
+        public void SetScoresButtonEnabled(bool enabled)
+        {
+            scores_button.IsEnabled = enabled;
+        }
+
         public void SetPlayerCreationInputVisibility(bool isVisible)
         {
             player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;

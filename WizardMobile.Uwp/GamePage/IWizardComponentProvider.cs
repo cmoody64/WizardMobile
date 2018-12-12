@@ -11,6 +11,7 @@ namespace WizardMobile.Uwp.GamePage
     public interface IWizardComponentProvider: IAnimationProvider
     {
         void SetMessageBoxText(string message);
+        void SetScoresButtonEnabled(bool enabled);
         void SetPlayerCreationInputVisibility(bool isVisible);
         void SetHumanPlayerBidInputVisibility(bool isVisible);
         void SetAllPersonasVisibility(bool isVisible); // Persona refers to the element grouping of player name, status, and avatar
