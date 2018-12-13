@@ -20,6 +20,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             _playerCardGroups = new Dictionary<string, CardGroup>();
             _offScreenPlayerCardGroups = new Dictionary<string, CardGroup>();
             _playerOrdinals = new Dictionary<string, PlayerOrdinal>();
+            _dealerButtonPositions = new Dictionary<string, DealerButtonPosition>();
 
             // since engine runs certain functionality on a separate worker thread, the calls that the engine make to the frontend
             // must be marshalled through the proxy frontend which implements multithreading protocol
@@ -39,6 +40,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         private WizardEngine _engine;
         private Dictionary<string, CardGroup> _playerCardGroups; // maps player names to the corresponding hand cardGroup
         private Dictionary<string, CardGroup> _offScreenPlayerCardGroups;
+        private Dictionary<string, DealerButtonPosition> _dealerButtonPositions;
         private Dictionary<string, PlayerOrdinal> _playerOrdinals; // maps player names to PlayerOrdinals used in the componentProvider
         public static readonly string GAME_STATE_FILENAME = "game_state.txt";
 
@@ -52,9 +54,21 @@ namespace WizardMobile.Uwp.WizardFrontend
 
         }
 
-        public async Task<bool> DisplayStartRound(int roundNum)
+        public async Task<bool> DisplayStartRound(GameContext gameContext)
         {
-            _componentProvider.SetMessageBoxText($"Round {roundNum} Starting");      
+            _componentProvider.SetMessageBoxText($"Round {gameContext.CurRound.RoundNum} Starting");
+
+            if (gameContext.CurRound.RoundNum == 1)
+            {
+                _dealerButtonPositions[gameContext.CurRound.Dealer.Name].ShowButton();
+            }
+            else
+            {
+                _dealerButtonPositions[gameContext.PrevRound.Dealer.Name]
+                    .TransferButton(_dealerButtonPositions[gameContext.CurRound.Dealer.Name]);
+                await _componentProvider.RunQueuedAnimations();
+            }
+
             await Task.Delay(1000);
             return true;
         }
@@ -403,6 +417,12 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _offScreenPlayerCardGroups[playerNames[1]] = _componentProvider.OffScreenPlayer2CardGroup;
                 _offScreenPlayerCardGroups[playerNames[2]] = _componentProvider.OffScreenPlayer3CardGroup;
                 _offScreenPlayerCardGroups[playerNames[3]] = _componentProvider.OffScreenPlayer4CardGroup;
+
+                // cache new names in name: dealerButtonPosition dictionary
+                _dealerButtonPositions[playerNames[0]] = _componentProvider.Player1ButtonPosition;
+                _dealerButtonPositions[playerNames[1]] = _componentProvider.Player2ButtonPosition;
+                _dealerButtonPositions[playerNames[2]] = _componentProvider.Player3ButtonPosition;
+                _dealerButtonPositions[playerNames[3]] = _componentProvider.Player4ButtonPosition;
 
                 taskCompletionSource.SetResult(playerNames);
                 _componentProvider.SetPlayerCreationInputVisibility(false);

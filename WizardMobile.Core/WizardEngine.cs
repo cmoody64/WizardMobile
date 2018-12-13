@@ -50,7 +50,15 @@ namespace WizardMobile.Core
         private async Task PlaySingleRound(int roundNum)
         {
             _curDeck = new Deck(); // refresh the deck at the beginning of each round
-            await _frontend.DisplayStartRound(roundNum);
+
+            _gameContext.Rounds[roundNum] = new RoundContext(roundNum);
+            var curRound = _gameContext.CurRound;
+            curRound.Dealer = roundNum == 1
+                ? _players[0]
+                : _players[(_players.IndexOf(_gameContext.PrevRound.Dealer) + 1) % _players.Count];
+            _players.ForEach(player => curRound.Results[player] = 0);
+
+            await _frontend.DisplayStartRound(this._gameContext);
 
             // shuffle, deal, and initialize round context
             _curDeck.Shuffle();
@@ -58,13 +66,7 @@ namespace WizardMobile.Core
             DealDeck(roundNum);
             Card trumpCard = _curDeck.Cards.Count > 0 ? _curDeck.PopTop() : null;
             await _frontend.DisplayTrumpCardSelected(trumpCard);
-
-            _gameContext.Rounds[roundNum] = new RoundContext(roundNum, trumpCard);
-            var curRound = _gameContext.CurRound;
-            curRound.Dealer = roundNum == 1
-                ? _players[0]
-                : _players[(_players.IndexOf(_gameContext.PrevRound.Dealer) + 1) % _players.Count];
-            _players.ForEach(player => curRound.Results[player] = 0);
+            curRound.TrumpCard = trumpCard;
 
             int dealerIndex = _players.IndexOf(curRound.Dealer);
             int firstDealIndex = (dealerIndex + 1) % _players.Count;

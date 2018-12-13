@@ -20,8 +20,9 @@ namespace WizardMobile.Core.Utils
     {
         public static RoundContext FromDto(RoundContextDto roundContextDto)
         {
-            var roundContext = new RoundContext(roundContextDto.RoundNum, roundContextDto.TrumpCard);
+            var roundContext = new RoundContext(roundContextDto.RoundNum);
             roundContext.Dealer = roundContextDto.Dealer;
+            roundContext.TrumpCard = roundContextDto.TrumpCard;
 
             foreach (var kvp in roundContextDto.Bids)
                 roundContext.Bids[kvp.Key] = kvp.Value;

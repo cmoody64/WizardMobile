@@ -9,7 +9,7 @@ namespace WizardMobile.Uwp.GamePage
     // adjacent card group that is interactive on hover and click
     public class InteractiveAdjacentCardGroup : AdjacentCardGroup
     {
-        public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
+        public InteractiveAdjacentCardGroup(GamePage parent, NormalizedPosition origin, Common.Orientation orientation)
         : base(parent, origin, orientation)
         {
             EndInteractiveSession();
@@ -74,12 +74,12 @@ namespace WizardMobile.Uwp.GamePage
 
                 if (OrientationAxis == Axis.X)
                 {
-                    double offsetY = _orientation == Orientation.DEGREES_0 ? -2 : 2;
+                    double offsetY = _orientation == Common.Orientation.DEGREES_0 ? -2 : 2;
                     _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX, curPos.NormalizedY + offsetY));
                 }
                 else
                 {
-                    double offsetX = _orientation == Orientation.DEGREES_90 ? 1 : 1;
+                    double offsetX = _orientation == Common.Orientation.DEGREES_90 ? 1 : 1;
                     _canvasFacade.UpdateCard(card, new NormalizedPosition(curPos.NormalizedX + offsetX, curPos.NormalizedY));
                 }
             }

@@ -70,10 +70,9 @@ namespace WizardMobile.Core
     // state that persists across a single round
     public class RoundContext
     {
-        public RoundContext(int roundNum, Card trumpCard)
+        public RoundContext(int roundNum)
         {
             _roundNum = roundNum;
-            _trumpCard = trumpCard;
             _tricks = new ConcurrentDictionary<int, TrickContext>();
             _bids = new ConcurrentDictionary<Player, int>();
             _results = new ConcurrentDictionary<Player, int>();

@@ -10,7 +10,7 @@ using WizardMobile.Uwp.Common;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public interface ICardCanvasProvider: IAnimationProvider
+    public interface ICanvasProvider: IAnimationProvider
     {
         void AddCard
         (
@@ -32,5 +32,14 @@ namespace WizardMobile.Uwp.GamePage
         event Action<UniqueDisplayCard> CardClicked; // fires when any card is clicked, passing the card to the handler
         event Action<UniqueDisplayCard> CardPointerEntered;
         event Action<UniqueDisplayCard> CardPointerExited;
+
+        // displays an image bitmap that is stored in the canvas resources dict
+        void ShowImage
+        (
+            string imageKey,
+            NormalizedPosition position,
+            double orientationDegrees,
+            double scaleFactor
+        );
     }
 }

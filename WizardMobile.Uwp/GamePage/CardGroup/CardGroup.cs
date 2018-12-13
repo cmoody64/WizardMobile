@@ -17,7 +17,7 @@ namespace WizardMobile.Uwp.GamePage
     // only top card is visible
     public abstract class CardGroup
     {
-        public CardGroup(ICardCanvasProvider canvasFacade, NormalizedPosition origin, Orientation orientation)
+        public CardGroup(ICanvasProvider canvasFacade, NormalizedPosition origin, Common.Orientation orientation)
         {
             _canvasFacade = canvasFacade;
             _displayCards = new List<UniqueDisplayCard>();
@@ -33,8 +33,8 @@ namespace WizardMobile.Uwp.GamePage
         public NormalizedPosition Origin { get; }
         public double OrientationDegress { get; }
 
-        protected Orientation _orientation;
-        protected ICardCanvasProvider _canvasFacade;
+        protected Common.Orientation _orientation;
+        protected ICanvasProvider _canvasFacade;
         protected List<UniqueDisplayCard> _displayCards;
         protected NormalizedSize _cardImageSize;
         protected int _curZIndex;
@@ -236,14 +236,6 @@ namespace WizardMobile.Uwp.GamePage
                 resolvedRotations += difference / 360;
             }
             return resolvedRotations;
-        }
-
-        public enum Orientation
-        {
-            DEGREES_0 = 0,
-            DEGREES_90 = 90,
-            DEGREES_180 = 180,
-            DEGREES_270 = 270
         }
 
         protected enum Axis

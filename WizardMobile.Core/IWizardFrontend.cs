@@ -9,7 +9,7 @@ namespace WizardMobile.Core
     public interface IWizardFrontend
     {
         Task<bool> DisplayStartGame();
-        Task<bool> DisplayStartRound(int roundNum);
+        Task<bool> DisplayStartRound(GameContext gameContext);
         Task<bool> DisplayEndRound(int roundNum);
         Task<bool> DisplayStartTrick(int trickNum);
         Task<bool> DisplayEndTrick(int trickNum);

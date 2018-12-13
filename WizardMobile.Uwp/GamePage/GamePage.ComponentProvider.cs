@@ -35,17 +35,23 @@ namespace WizardMobile.Uwp.GamePage
             LeftShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(40, 50), 0);
             RightShuffleCardGroup = new StackCardGroup(this, new NormalizedPosition(60, 50), 0);
             DiscardCardGroup = new AdjacentCardGroup(this, new NormalizedPosition(62, 50), 0);
-            Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), 0);
-            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(4, 50), CardGroup.Orientation.DEGREES_90);
-            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 3), CardGroup.Orientation.DEGREES_180);
-            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), CardGroup.Orientation.DEGREES_270);
+            Player1CardGroup = new InteractiveAdjacentCardGroup(this, new NormalizedPosition(50, 90), Common.Orientation.DEGREES_0);
+            Player2CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(4, 50), Common.Orientation.DEGREES_90);
+            Player3CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(50, 3), Common.Orientation.DEGREES_180);
+            Player4CardGroup = new AdjacentCardGroup(this, new NormalizedPosition(96, 50), Common.Orientation.DEGREES_270);
             DeckCardGroup = new StackCardGroup(this, new NormalizedPosition(29, 50), 0);
             TrumpCardGroup = new StackCardGroup(this, new NormalizedPosition(37, 50), 0);
             CollapsedDiscardCardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(DiscardCardGroup.Origin, 0, 0), 0);
             OffScreenPlayer1CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 0, 20), 0);
-            OffScreenPlayer2CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, -20, 0), CardGroup.Orientation.DEGREES_90);
-            OffScreenPlayer3CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 0, -20), CardGroup.Orientation.DEGREES_180);
-            OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 20, 0), CardGroup.Orientation.DEGREES_270);
+            OffScreenPlayer2CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, -20, 0), Common.Orientation.DEGREES_90);
+            OffScreenPlayer3CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 0, -20), Common.Orientation.DEGREES_180);
+            OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 20, 0), Common.Orientation.DEGREES_270);
+
+            // button positions
+            Player1ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 3, -22), Common.Orientation.DEGREES_0);
+            Player2ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 15, 16), Common.Orientation.DEGREES_90);
+            Player3ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 15, 22), Common.Orientation.DEGREES_180);
+            Player4ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -14, -15), Common.Orientation.DEGREES_270);
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
@@ -176,6 +182,11 @@ namespace WizardMobile.Uwp.GamePage
         public StackCardGroup OffScreenPlayer2CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer3CardGroup { get; private set; }
         public StackCardGroup OffScreenPlayer4CardGroup { get; private set; }
+
+        public DealerButtonPosition Player1ButtonPosition { get; private set; }
+        public DealerButtonPosition Player2ButtonPosition { get; private set; }
+        public DealerButtonPosition Player3ButtonPosition { get; private set; }
+        public DealerButtonPosition Player4ButtonPosition { get; private set; }
 
         public double OPACITY_HIGH => 0.8;
         public double OPACITY_LOW => 0.0;

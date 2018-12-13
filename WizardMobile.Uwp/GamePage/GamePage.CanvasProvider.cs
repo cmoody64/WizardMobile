@@ -19,7 +19,7 @@ using WizardMobile.Uwp.WizardFrontend;
 
 namespace WizardMobile.Uwp.GamePage
 {
-    public sealed partial class GamePage: ICardCanvasProvider
+    public sealed partial class GamePage: ICanvasProvider
     {
         public void InitializeCanvasFacade()
         {
@@ -233,6 +233,21 @@ namespace WizardMobile.Uwp.GamePage
                 var size = posRegistryEntry.Value.Item2;
                 SetUiElementNormalizedCanvasPosition(element, pos, size);
             }
+        }
+
+        public void ShowImage(string imageKey, NormalizedPosition position, double orientationDegrees, double scaleFactor)
+        {
+            var bitmapImage = game_canvas.Resources[imageKey] as BitmapImage;
+            // scale down and maintain aspect ratio
+            bitmapImage.DecodePixelHeight = (int)(game_canvas.ActualHeight * scaleFactor);
+            Image image = new Image();
+            image.Source = bitmapImage;
+            image.Name = imageKey;            
+
+            SetUiElementNormalizedCanvasPosition(image, position);
+            Canvas.SetZIndex(image, 1);
+
+            game_canvas.Children.Add(image);
         }
     }
 }

@@ -134,6 +134,7 @@
                 <BitmapImage x:Key="king_of_spades" UriSource="../Assets/cards/king_of_spades.png" />
                 <BitmapImage x:Key="jester" UriSource="../Assets/cards/jester.png" />
                 <BitmapImage x:Key="wizard" UriSource="../Assets/cards/wizard.png" />
+                <BitmapImage x:Key="dealer_button" UriSource="../Assets/dealer_button.png" />
             </Canvas.Resources>
         </Canvas>
     </Grid>

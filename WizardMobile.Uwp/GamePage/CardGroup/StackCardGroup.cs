@@ -12,7 +12,7 @@ namespace WizardMobile.Uwp.GamePage
     // due to the fancy addition / removal animations, more than one transfer can't take place at a given time - will result in runtime error
     public class StackCardGroup : CardGroup
     {
-        public StackCardGroup(GamePage parent, NormalizedPosition origin, Orientation orientation)
+        public StackCardGroup(GamePage parent, NormalizedPosition origin, Common.Orientation orientation)
             : base(parent, origin, orientation)
         { }
 

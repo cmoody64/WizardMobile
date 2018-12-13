@@ -48,6 +48,11 @@ namespace WizardMobile.Uwp.GamePage
         StackCardGroup OffScreenPlayer3CardGroup { get; }
         StackCardGroup OffScreenPlayer4CardGroup { get; }
 
+        DealerButtonPosition Player1ButtonPosition { get; }
+        DealerButtonPosition Player2ButtonPosition { get; }
+        DealerButtonPosition Player3ButtonPosition { get; }
+        DealerButtonPosition Player4ButtonPosition { get; }
+
         WizardUwpApp App { get; }
     }
 
