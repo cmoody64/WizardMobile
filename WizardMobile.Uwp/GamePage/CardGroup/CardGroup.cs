@@ -179,7 +179,7 @@ namespace WizardMobile.Uwp.GamePage
 
         // sets the given card to have the highest z Index in the card group, thus displaying it on top of any other card it may overlap with
         // returns true if successfully found and updated, false otherwise
-        public bool BringToFront(Core.Card card)
+        public bool BringCardToFront(Core.Card card)
         {
             var displayCardIndex = _displayCards.FindIndex(displayCard => displayCard.CoreCard == card);
             if(displayCardIndex != -1)
@@ -204,6 +204,14 @@ namespace WizardMobile.Uwp.GamePage
                 return true;
             }
             return false;
+        }
+
+        // ensures that the card group passed in ends up in front of this card group
+        // it does this by ensuring that the lowest z index of the passed in card group is higher than the highest z index of this card group
+        public void BringCardGroupToFront(CardGroup groupToMove)
+        {
+            groupToMove._displayCards.ForEach(card => _canvasFacade.UpdateCard(card, zIndex: this._curZIndex + 1));
+            groupToMove._curZIndex = this._curZIndex + 1;
         }
 
         protected UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)

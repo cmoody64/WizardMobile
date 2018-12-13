@@ -187,6 +187,7 @@ namespace WizardMobile.Uwp.WizardFrontend
         {
             _componentProvider.CenterShuffleCardGroup.TransferAll(_componentProvider.DeckCardGroup, new AnimationBehavior { Duration = 0.3 });
             _componentProvider.RightShuffleCardGroup.TransferAll(_componentProvider.TrumpCardGroup, new AnimationBehavior { Duration = 0.3 });
+            _componentProvider.DeckCardGroup.BringCardGroupToFront(_componentProvider.TrumpCardGroup);
             await _componentProvider.RunQueuedAnimations();
             return true;
         }
@@ -228,7 +229,7 @@ namespace WizardMobile.Uwp.WizardFrontend
             var tricksTaken = curRound.Results[winner] + 1;
             _componentProvider.SetPlayerStatus(_playerOrdinals[winner.Name], $"{tricksTaken}/{bid}");
 
-            _componentProvider.DiscardCardGroup.BringToFront(curTrick.WinningCard);
+            _componentProvider.DiscardCardGroup.BringCardToFront(curTrick.WinningCard);
             _componentProvider.DiscardCardGroup.TransferAll
             (
                 _componentProvider.CollapsedDiscardCardGroup,
