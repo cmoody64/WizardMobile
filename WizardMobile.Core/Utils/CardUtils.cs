@@ -53,7 +53,7 @@ namespace WizardMobile.Core
 
         public static List<Card> GetPlayableCards(List<Card> hand, CardSuite? leadingSuite)
         {
-            if (leadingSuite == CardSuite.SPECIAL)
+            if (leadingSuite == null || leadingSuite == CardSuite.SPECIAL)
             {
                 return hand;
             }

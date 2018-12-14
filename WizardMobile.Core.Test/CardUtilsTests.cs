@@ -66,5 +66,34 @@ namespace WizardMobile.Core.Test
             Assert.IsTrue(playableCards.Contains(new Card(CardValue.JESTER, CardSuite.SPECIAL)));
             Assert.IsTrue(playableCards.Contains(new Card(CardValue.WIZARD, CardSuite.SPECIAL)));
         }
+
+        [TestMethod]
+        public void TestGetPlayableCards_NullLeadingSuite()
+        {
+            List<Card> hand = new List<Card>
+            {
+                new Card(CardValue.JESTER, CardSuite.SPECIAL),
+                new Card(CardValue.WIZARD, CardSuite.SPECIAL),
+                new Card(CardValue.KING, CardSuite.SPADES),
+                new Card(CardValue.QUEEN, CardSuite.CLUBS),
+                new Card(CardValue.WIZARD, CardSuite.SPECIAL),
+                new Card(CardValue.TWO, CardSuite.DIAMONDS),
+                new Card(CardValue.JACK, CardSuite.SPADES),
+                new Card(CardValue.SIX, CardSuite.CLUBS),
+            };
+
+            var playableCards = CardUtils.GetPlayableCards(hand, null);
+
+            Assert.AreEqual(8, playableCards.Count);
+
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.JESTER, CardSuite.SPECIAL)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.WIZARD, CardSuite.SPECIAL)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.KING, CardSuite.SPADES)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.QUEEN, CardSuite.CLUBS)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.WIZARD, CardSuite.SPECIAL)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.TWO, CardSuite.DIAMONDS)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.JACK, CardSuite.SPADES)));
+            Assert.IsTrue(playableCards.Contains(new Card(CardValue.SIX, CardSuite.CLUBS)));
+        }
     }
 }

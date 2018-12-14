@@ -51,7 +51,7 @@ namespace WizardMobile.Uwp.GamePage
             Player1ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(55, 70));
             Player2ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(15, 59));
             Player3ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(58, 17));
-            Player4ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(82, 51));
+            Player4ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(82, 53));
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;
