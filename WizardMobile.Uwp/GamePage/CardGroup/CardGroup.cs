@@ -214,9 +214,27 @@ namespace WizardMobile.Uwp.GamePage
             groupToMove._curZIndex = this._curZIndex + 1;
         }
 
+        // returns the first display card matching the core card passed in without unique mapping of core cards to display cards
+        // if two different wizard core cards are passed in, they will return the same display card. 
+        // to get unique mapping of core card to display card, use GetDisplayCardsFromCoreCards
         protected UniqueDisplayCard GetDisplayCardFromCoreCard(Core.Card card)
         {
             return _displayCards.Find(displayCard => displayCard.CoreCard.Equals(card));
+        }
+
+        protected List<UniqueDisplayCard> GetDisplayCardsFromCoreCards(IEnumerable<Core.Card> cards)
+        {            
+            var tempDisplayCards = new List<UniqueDisplayCard>(this._displayCards); // shallow copy of display cards
+
+            var retDisplayCards = new List<UniqueDisplayCard>();
+            foreach (var card in cards)
+            {
+                var displayCard = tempDisplayCards.Find(curDisplayCard => curDisplayCard.CoreCard.Equals(card));                
+                retDisplayCards.Add(displayCard);
+                tempDisplayCards.Remove(displayCard);
+            }
+
+            return retDisplayCards;
         }
 
         // added / transfered cards will be placed in this location

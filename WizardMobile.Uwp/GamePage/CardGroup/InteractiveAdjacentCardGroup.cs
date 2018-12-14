@@ -29,9 +29,7 @@ namespace WizardMobile.Uwp.GamePage
             if (_isInInteractiveState)
                 throw new InvalidOperationException("attempted to start interactive card group session while session was already in progress");
 
-            List<UniqueDisplayCard> interactiveDisplayCards = new List<UniqueDisplayCard>();
-            foreach (Core.Card card in interactiveCards)
-                interactiveDisplayCards.Add(GetDisplayCardFromCoreCard(card));
+            List<UniqueDisplayCard> interactiveDisplayCards = GetDisplayCardsFromCoreCards(interactiveCards);
 
             _isInInteractiveState = true;
             _curCardClickedHandler = cardClickedHandler;
