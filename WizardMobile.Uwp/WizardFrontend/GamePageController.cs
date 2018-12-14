@@ -383,9 +383,15 @@ namespace WizardMobile.Uwp.WizardFrontend
             TaskCompletionSource<List<string>> taskCompletionSource = new TaskCompletionSource<List<string>>();
             _componentProvider.OnPlayerCreationInputEntered((string input) =>
             {
+                List<string> botNames = new List<string> { "wizbot1", "wizbot2", "wizbot3" };
+
                 // input is the nanme of the user
+                // check to make sure that user input is unique, if not it is modified slightly
+                if (botNames.Contains(input))
+                    input = $"{input}+";
+
                 // default bot players will be added too
-                List<string> playerNames = new List<string> { input, "wizbot1", "wizbot2", "wizbot3" };
+                List<string> playerNames = new List<string> { input }.Concat(botNames).ToList();
 
                 // set names to frontend name elements
                 _componentProvider.SetPlayerName(PlayerOrdinal.PLAYER1, playerNames[0]);

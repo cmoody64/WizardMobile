@@ -12,7 +12,7 @@
             <ImageBrush ImageSource="../Assets/card_table_background.jpg" Stretch="Fill" />
         </Grid.Background>
         <Canvas x:Name="game_canvas" RenderTransformOrigin="0.75,0.5" Margin="0,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TextBox x:Name="player_creation_input" PlaceholderText="Enter Player Name" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" FontSize="36"/>
+            <TextBox x:Name="player_creation_input" PlaceholderText="Enter Player Name" HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="Collapsed" FontSize="36" MaxLength="10" />
             <TextBox x:Name="player_bid_input" PlaceholderText="Enter Bid" HorizontalAlignment="Center" Text="" VerticalAlignment="Top" Visibility="Collapsed" FontSize="36"/>
             <TextBlock x:Name="player_bid_error_message" HorizontalAlignment="Left" IsColorFontEnabled="True" FontSize="25" Text="enter a number" Visibility="Collapsed" Foreground="Red"/>
 

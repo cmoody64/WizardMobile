@@ -38,7 +38,8 @@ namespace WizardMobile.Uwp.GamePage
                 {
                     Destination = other._origin,
                     Duration = 0.3,
-                    TargetElementName = BUTTON_IMAGE_KEY
+                    TargetElementName = BUTTON_IMAGE_KEY,
+                    IsCenteredAtDestination = false                    
                 };
 
                 _canvasProvider.QueueAnimationRequest(transferAnimRequest);

@@ -48,10 +48,10 @@ namespace WizardMobile.Uwp.GamePage
             OffScreenPlayer4CardGroup = new StackCardGroup(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, 20, 0), Common.Orientation.DEGREES_270);
 
             // button positions
-            Player1ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player1CardGroup.Origin, 4, -22));
-            Player2ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player2CardGroup.Origin, 15, 19));
-            Player3ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player3CardGroup.Origin, 12, 24));
-            Player4ButtonPosition = new DealerButtonPosition(this, GetRelativeNormalizedPosition(Player4CardGroup.Origin, -9, 14));
+            Player1ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(55, 70));
+            Player2ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(15, 59));
+            Player3ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(58, 17));
+            Player4ButtonPosition = new DealerButtonPosition(this, new NormalizedPosition(82, 51));
 
             // bind callbacks to UI elements
             player_creation_input.KeyDown += this.OnPlayerCreationInputKeyDown;

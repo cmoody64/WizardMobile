@@ -150,5 +150,6 @@ namespace WizardMobile.Uwp.Common
     {
         public NormalizedPosition Destination { get; set; }
         public string TargetElementName { get; set; }
+        public bool IsCenteredAtDestination = true;
     }
 }

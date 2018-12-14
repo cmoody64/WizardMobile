@@ -19,7 +19,10 @@ namespace WizardMobile.Uwp.GamePage
             Point? destination = null;
             if (animationRequest.Destination != null)
             {
-                destination = DenormalizePosition(animationRequest.Destination, _cardBitmapSize);
+                Size? targetSize = animationRequest.IsCenteredAtDestination
+                    ? TryGetElementSize(targetElement)
+                    : null;
+                destination = DenormalizePosition(animationRequest.Destination, targetSize);
                 // this does not set the position, it only registers the destination position of the image for dynamic repositioning on size change
                 RegisterElementCanvasPosition(targetElement, animationRequest.Destination, true);
             }
@@ -72,6 +75,19 @@ namespace WizardMobile.Uwp.GamePage
             {
                 var handler = _animationsCompletedHandlers.Dequeue();
                 handler();
+            }
+        }
+
+        private Size? TryGetElementSize(FrameworkElement el)
+        {
+            if(el.ActualWidth == 0)
+            {
+                // prerender case
+                return TryGetPreRenderSize(el);
+            }
+            else
+            {
+                return new Size?(new Size(el.ActualWidth, el.ActualHeight));
             }
         }
     }

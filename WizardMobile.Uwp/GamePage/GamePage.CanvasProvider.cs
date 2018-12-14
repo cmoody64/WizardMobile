@@ -188,7 +188,10 @@ namespace WizardMobile.Uwp.GamePage
                 {
                     // if the element hasn't rendered (actual size == 0) and a prerender override size is provided, then the override size will be used
                     if (element.ActualWidth == 0 && prerenderSizeOverride != null)
+                    {
                         boundingRect = prerenderSizeOverride;
+                        RegisterPreRenderSize(element, prerenderSizeOverride.Value);
+                    }                        
                     else
                         // otherwise, the size is derived from the current width and height
                         boundingRect = new Size?(new Size(element.ActualWidth, element.ActualHeight));
@@ -214,6 +217,7 @@ namespace WizardMobile.Uwp.GamePage
             }
         }
 
+        // dynamic repositioning of elements on canvas size changes
         private Dictionary<FrameworkElement, Tuple<NormalizedPosition, bool>> _normalizedCanvasPositionRegistry = new Dictionary<FrameworkElement, Tuple<NormalizedPosition, bool>>();
         private void RegisterElementCanvasPosition(FrameworkElement el, NormalizedPosition pos, bool centered)
         {
@@ -233,6 +237,21 @@ namespace WizardMobile.Uwp.GamePage
                 var size = posRegistryEntry.Value.Item2;
                 SetUiElementNormalizedCanvasPosition(element, pos, size);
             }
+        }
+
+        // this registry exists so that positions and animations that rely on prerender sizes (sizes that must be discovered before an image renders)
+        // can share the size data since pre render size lookup may be expensive
+        // maps asset uris to sizes
+        private Dictionary<FrameworkElement, Size> _prerenderSizeRegistry = new Dictionary<FrameworkElement, Size>();
+        private void RegisterPreRenderSize(FrameworkElement el, Size size)        
+        {
+            _prerenderSizeRegistry[el] = size;
+        }
+        private Size? TryGetPreRenderSize(FrameworkElement el)
+        {
+            return _prerenderSizeRegistry.ContainsKey(el)
+                ? new Size?(_prerenderSizeRegistry[el])
+                : null;
         }
 
         public void ShowImage(string imageKey, NormalizedPosition position, double orientationDegrees, double scaleFactor)
