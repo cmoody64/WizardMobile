@@ -40,14 +40,15 @@ namespace WizardMobile.Core.Tests
             var testGameContext = new GameContext(testPlayers);
 
             var trumpCard = new Card(CardValue.EIGHT, CardSuite.DIAMONDS);
-            var curRound = new RoundContext(roundNum, trumpCard);
+            var curRound = new RoundContext(roundNum);
+            curRound.TrumpCard = trumpCard;
             testPlayers.ForEach(player => curRound.Bids[player] = 0);
             testPlayers.ForEach(player => curRound.Results[player] = 0);
             var trick1 = new TrickContext(1);
-            trick1.CardsPlayed.Add(new Card(CardValue.JACK, CardSuite.CLUBS));
+            trick1.CardsPlayed[0] = (new Card(CardValue.JACK, CardSuite.CLUBS));
 
-            curRound.Tricks.Add(trick1);
-            testGameContext.Rounds.Add(curRound);
+            curRound.Tricks[0] = (trick1);
+            testGameContext.Rounds[0] = (curRound);
 
             aiPlayer.MakeTurn(testGameContext);
         }
@@ -80,8 +81,9 @@ namespace WizardMobile.Core.Tests
             var testGameContext = new GameContext(testPlayers);
 
             var trumpCard = new Card(CardValue.EIGHT, CardSuite.DIAMONDS);
-            var curRound = new RoundContext(roundNum, trumpCard);
-            testGameContext.Rounds.Add(curRound);
+            var curRound = new RoundContext(roundNum);
+            curRound.TrumpCard = trumpCard;
+            testGameContext.Rounds[0] = (curRound);
 
             aiPlayer.MakeBid(testGameContext);
         }

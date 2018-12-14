@@ -53,10 +53,17 @@ namespace WizardMobile.Core
 
         public static List<Card> GetPlayableCards(List<Card> hand, CardSuite? leadingSuite)
         {
-            var leadingSuiteCards = hand.Where(card => card.Suite == leadingSuite);
-            return leadingSuiteCards.Count() > 0
-                ? leadingSuiteCards.Concat(hand.Where(card => card.Suite == CardSuite.SPECIAL)).ToList()
-                : hand;
+            if (leadingSuite == CardSuite.SPECIAL)
+            {
+                return hand;
+            }
+            else
+            {
+                var leadingSuiteCards = hand.Where(card => card.Suite == leadingSuite);
+                return leadingSuiteCards.Count() > 0
+                    ? leadingSuiteCards.Concat(hand.Where(card => card.Suite == CardSuite.SPECIAL)).ToList()
+                    : hand;
+            }
         }
     }
 }
