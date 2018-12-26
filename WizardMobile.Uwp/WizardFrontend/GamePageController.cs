@@ -375,13 +375,13 @@ namespace WizardMobile.Uwp.WizardFrontend
             return taskCompletionSource.Task;
         }
 
-        public Task<List<string>> PromptPlayerCreation()
+        public Task<GameConfiguration> PromptGameConfiguration()
         {
             _componentProvider.SetMessageBoxText("Player Creation");
-            _componentProvider.SetPlayerCreationInputVisibility(true);            
+            _componentProvider.SetGameConfigurationInputVisibility(true);
 
-            TaskCompletionSource<List<string>> taskCompletionSource = new TaskCompletionSource<List<string>>();
-            _componentProvider.OnPlayerCreationInputEntered((string input) =>
+            TaskCompletionSource<GameConfiguration> taskCompletionSource = new TaskCompletionSource<GameConfiguration>();
+            _componentProvider.OnGameConfigurationFinished((int roundCount, string input) =>
             {
                 List<string> botNames = new List<string> { "wizbot1", "wizbot2", "wizbot3" };
 
@@ -430,8 +430,8 @@ namespace WizardMobile.Uwp.WizardFrontend
                 _dealerButtonPositions[playerNames[2]] = _componentProvider.Player3ButtonPosition;
                 _dealerButtonPositions[playerNames[3]] = _componentProvider.Player4ButtonPosition;
 
-                taskCompletionSource.SetResult(playerNames);
-                _componentProvider.SetPlayerCreationInputVisibility(false);
+                taskCompletionSource.SetResult(new GameConfiguration { RoundCount = roundCount, PlayerNames = playerNames });
+                _componentProvider.SetGameConfigurationInputVisibility(false);
                 _componentProvider.SetAllPersonasVisibility(true);
                 _componentProvider.SetScoreboardVisibility(false);
                 _componentProvider.SetScoresButtonEnabled(true);

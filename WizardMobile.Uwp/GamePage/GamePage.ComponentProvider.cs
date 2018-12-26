@@ -60,9 +60,16 @@ namespace WizardMobile.Uwp.GamePage
             pause_button.Click += (object sender, RoutedEventArgs args) => _pauseButtonClickedHandler();
             scores_button.Click += (object sender, RoutedEventArgs args) => _scoresButtonClickedHandler();
             quit_button.Click += (object sender, RoutedEventArgs args) => _quitButtonClickedHandler();
+            short_game_button.Click += (object sender, RoutedEventArgs args) => OnGameLengthButtonClicked(5);
+            medium_game_button.Click += (object sender, RoutedEventArgs args) => OnGameLengthButtonClicked(10);
+            full_game_button.Click += (object sender, RoutedEventArgs args) => OnGameLengthButtonClicked(15);
+
 
             // set position of UI elements using method that binds them to a responsive canvas position
             SetUiElementNormalizedCanvasPosition(player_creation_input, new NormalizedPosition(50, 50), true);
+            SetUiElementNormalizedCanvasPosition(short_game_button, new NormalizedPosition(50, 60), true);
+            SetUiElementNormalizedCanvasPosition(medium_game_button, new NormalizedPosition(50, 68), true);
+            SetUiElementNormalizedCanvasPosition(full_game_button, new NormalizedPosition(50, 76), true);
             SetUiElementNormalizedCanvasPosition(player_bid_input, new NormalizedPosition(62, 50));
             SetUiElementNormalizedCanvasPosition(player_bid_error_message, new NormalizedPosition(62, 58));
 
@@ -107,9 +114,13 @@ namespace WizardMobile.Uwp.GamePage
             scores_button.IsEnabled = enabled;
         }
 
-        public void SetPlayerCreationInputVisibility(bool isVisible)
+        public void SetGameConfigurationInputVisibility(bool isVisible)
         {
-            player_creation_input.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            Visibility visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            player_creation_input.Visibility = visibility;
+            short_game_button.Visibility = visibility;
+            medium_game_button.Visibility = visibility;
+            full_game_button.Visibility = visibility;
         }
 
         public void SetHumanPlayerBidInputVisibility(bool isVisible)
@@ -156,7 +167,7 @@ namespace WizardMobile.Uwp.GamePage
 
         public WizardUwpApp App => Application.Current as WizardUwpApp;
 
-        public void OnPlayerCreationInputEntered(Action<string> handler) => _playerCreationInputEnteredHandler = handler;
+        public void OnGameConfigurationFinished(Action<int, string> handler) => _gameConfigurationFinishedHandler = handler;
         public void OnPlayerBidInputEntered(Action<int> handler) => _playerBidEnteredHandler = handler;
         public void OnPauseButtonClick(Action handler) => _pauseButtonClickedHandler = handler;
         public void OnScoresButtonClick(Action handler) => _scoresButtonClickedHandler = handler;
@@ -198,7 +209,7 @@ namespace WizardMobile.Uwp.GamePage
         private Size _cardBitmapSize;
         private int _cardBitmapDecodePixelHeight;
 
-        private Action<string> _playerCreationInputEnteredHandler = (string s) => {};
+        private Action<int, string> _gameConfigurationFinishedHandler = (int i, string s) => {};
         private Action<int> _playerBidEnteredHandler = (int i) => {};
         private Action _pauseButtonClickedHandler = () => {};
         private Action _scoresButtonClickedHandler = () => {};
@@ -208,10 +219,13 @@ namespace WizardMobile.Uwp.GamePage
         private void OnPlayerCreationInputKeyDown(object sender, KeyRoutedEventArgs e)
         {
             var textInput = player_creation_input.Text;
-            if (e.Key == Windows.System.VirtualKey.Enter && textInput.Length > 0)
-            {
-                this._playerCreationInputEnteredHandler(textInput);
-            }
+        }
+
+        private void OnGameLengthButtonClicked(int roundLength)
+        {
+            // if the player name input is empty, automatically configure game with the user's first name
+            var playerName = player_creation_input.Text.Length > 0 ? player_creation_input.Text : _userFirstName;
+            this._gameConfigurationFinishedHandler(roundLength, playerName);
         }
 
         private void OnPlayerBidInputKeyDown(object sender, KeyRoutedEventArgs e)

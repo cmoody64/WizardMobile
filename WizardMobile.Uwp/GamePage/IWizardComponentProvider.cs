@@ -12,7 +12,7 @@ namespace WizardMobile.Uwp.GamePage
     {
         void SetMessageBoxText(string message);
         void SetScoresButtonEnabled(bool enabled);
-        void SetPlayerCreationInputVisibility(bool isVisible);
+        void SetGameConfigurationInputVisibility(bool isVisible);
         void SetHumanPlayerBidInputVisibility(bool isVisible);
         void SetAllPersonasVisibility(bool isVisible); // Persona refers to the element grouping of player name, status, and avatar
         void SetPlayerName(PlayerOrdinal player, string name);
@@ -20,9 +20,10 @@ namespace WizardMobile.Uwp.GamePage
         void SetPlayerScore(PlayerOrdinal player, int score);
         void SetScoreboardVisibility(bool isVisible);
         bool ScoreboardVisibility { get; }
-        void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
-        void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
 
+        //void OnPlayerCreationInputEntered(Action<string> action); // action receives (string playerInput)
+        void OnPlayerBidInputEntered(Action<int> action); // action receives (string playerName, int bid)
+        void OnGameConfigurationFinished(Action<int, string> action); // action receives (int roundCount, string playerName)
         void OnPauseButtonClick(Action handler);
         void OnScoresButtonClick(Action handler);
         void OnQuitButtonClick(Action handler);

@@ -30,9 +30,9 @@ namespace WizardMobile.Core
         private async void PlaySingleGame()
         {
             await _frontend.DisplayStartGame();
-            List<string> playerNames = await _frontend.PromptPlayerCreation();            
+            GameConfiguration config = await _frontend.PromptGameConfiguration();            
 
-            _players = playerNames.Select<string, Player>((string name) =>
+            _players = config.PlayerNames.Select<string, Player>((string name) =>
             {
                 if (name.Contains("bot"))
                     return new AIPlayer(this._frontend, name);
@@ -42,9 +42,11 @@ namespace WizardMobile.Core
 
             _gameContext = new GameContext(_players);
 
-            int roundCount = Deck.STARTING_CARD_COUNT / _players.Count;
+            int roundCount = config.RoundCount ?? Deck.STARTING_CARD_COUNT / _players.Count;
             for (int round = 1; round <= roundCount; round++)
                 await PlaySingleRound(round);
+
+            // TODO need game over hook
         }
 
         private async Task PlaySingleRound(int roundNum)
