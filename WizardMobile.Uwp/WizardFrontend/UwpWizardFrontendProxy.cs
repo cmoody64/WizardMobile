@@ -104,9 +104,9 @@ namespace WizardMobile.Uwp.WizardFrontend
             return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerBid(player));
         }
 
-        public async Task<List<string>> PromptPlayerCreation()
+        public async Task<Core.GameConfiguration> PromptGameConfiguration()
         {
-            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptPlayerCreation());
+            return await _dispatcher.RunAsyncWithResult(CoreDispatcherPriority.Normal, async () => await _principalFrontend.PromptGameConfiguration());
         }
     }
 }

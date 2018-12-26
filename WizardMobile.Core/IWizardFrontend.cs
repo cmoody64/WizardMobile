@@ -24,6 +24,6 @@ namespace WizardMobile.Core
         Task<bool> DisplayBidOutcome(int roundNum, int totalBids);
         Task<Card> PromptPlayerCardSelection(HumanPlayer player, IReadOnlyList<Card> playableCards);
         Task<int> PromptPlayerBid(HumanPlayer player);
-        Task<List<string>> PromptPlayerCreation();
+        Task<GameConfiguration> PromptGameConfiguration();
     }
 }

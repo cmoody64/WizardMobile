@@ -20,6 +20,10 @@
             <Button x:Name="quit_button" Content="quit" />
             <Button x:Name="scores_button" Content="scores" IsEnabled="False" />
 
+            <Button x:Name="short_game_button" Content="Short Game - 5 Turns" IsEnabled="True" Visibility="Collapsed" FontSize="24" />
+            <Button x:Name="medium_game_button" Content="Medium Game - 10 Turns" IsEnabled="True" Visibility="Collapsed" FontSize="24" />
+            <Button x:Name="full_game_button" Content="Full Game - 15 Turns" IsEnabled="True" Visibility="Collapsed" FontSize="24" />
+
             <Border x:Name="player1_name_container" Background="SlateGray" CornerRadius="4" Opacity="0.8">
                 <TextBlock x:Name="player1_name"  FontSize="26" Margin="4" />
             </Border>
