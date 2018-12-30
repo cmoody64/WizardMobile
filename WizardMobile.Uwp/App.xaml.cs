@@ -67,6 +67,11 @@ namespace WizardMobile.Uwp
                     // configuring the new page by passing required information as a navigation parameter
                     NavigateToPage(Page.MAIN_MENU);
                 }
+
+                ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(500, 500));
+                ApplicationView.PreferredLaunchViewSize = new Size(Window.Current.Bounds.Width, Window.Current.Bounds.Height);
+                ApplicationView.PreferredLaunchWindowingMode = Windows.UI.ViewManagement.ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
